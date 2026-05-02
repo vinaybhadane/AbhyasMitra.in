@@ -1,0 +1,62 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ─── Helper functions ─────────────────────────────────────────────────────
+    function isAdmin() {
+      return request.auth != null &&
+        (request.auth.token.email == 'vinaybhadane06@gmail.com' ||
+         request.auth.token.email == 'bhadane123vinay@gmail.com');
+    }
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isValidComment() {
+      let data = request.resource.data;
+      return data.keys().hasAll(['postId', 'content', 'authorName', 'authorEmail', 'userId', 'createdAt'])
+        && data.content is string
+        && data.content.size() > 2
+        && data.content.size() <= 1000
+        && data.userId == request.auth.uid
+        && !data.content.matches('.*(?i)(spam|buy now|click here|free money).*');
+    }
+
+    function isValidContact() {
+      let data = request.resource.data;
+      return data.keys().hasAll(['name', 'email', 'message', 'createdAt'])
+        && data.name is string && data.name.size() >= 2
+        && data.email is string && data.email.matches('^[^@]+@[^@]+\\.[^@]+$')
+        && data.message is string && data.message.size() >= 10 && data.message.size() <= 2000;
+    }
+
+    // ─── Posts Collection ─────────────────────────────────────────────────────
+    match /posts/{postId} {
+      // Anyone can read published posts
+      allow read: if resource.data.status == 'published' || isAdmin();
+      // Only admin can create, update, delete
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ─── Comments Collection ──────────────────────────────────────────────────
+    match /comments/{commentId} {
+      // Anyone can read comments
+      allow read: if true;
+      // Authenticated users can create valid comments
+      allow create: if isAuthenticated() && isValidComment();
+      // Admin can delete any comment; users can delete their own
+      allow delete: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      // No one can update a comment (prevents tampering)
+      allow update: if isAdmin();
+    }
+
+    // ─── Contacts Collection ──────────────────────────────────────────────────
+    match /contacts/{contactId} {
+      // Anyone can submit a contact message
+      allow create: if isValidContact();
+      // Only admin can read, update, delete
+      allow read, update, delete: if isAdmin();
+    }
+  }
+}
