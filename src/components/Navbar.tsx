@@ -183,10 +183,13 @@ export default function Navbar() {
               <Link href="/" className="mobile-nav-link" onClick={() => setMenuOpen(false)}>Home</Link>
               <div>
                 <button
-                  className="mobile-nav-link w-full flex justify-between items-center"
+                  className="mobile-nav-link w-full flex items-center justify-between group"
                   onClick={() => setSubjectsOpen(!subjectsOpen)}
                 >
-                  Subjects <ChevronDown className={`w-4 h-4 transition-transform ${subjectsOpen ? 'rotate-180' : ''}`} />
+                  <span className="flex items-center gap-2">
+                    Subjects
+                  </span>
+                  <ChevronDown className={`w-5 h-5 text-gray-400 group-hover:text-indigo-500 transition-transform duration-300 ${subjectsOpen ? 'rotate-180 text-indigo-600' : ''}`} />
                 </button>
                 {subjectsOpen && (
                   <div className="mt-2 space-y-6 pb-4">
