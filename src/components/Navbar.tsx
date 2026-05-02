@@ -189,19 +189,46 @@ export default function Navbar() {
                   Subjects <ChevronDown className={`w-4 h-4 transition-transform ${subjectsOpen ? 'rotate-180' : ''}`} />
                 </button>
                 {subjectsOpen && (
-                  <div className="pl-4 mt-1 space-y-1 border-l-2 border-gray-100 dark:border-gray-800 ml-2 py-2">
-                    <p className="px-3 py-1 text-xs font-semibold text-gray-400 uppercase tracking-wider">1st Year</p>
-                    {firstYearSubjects.map((s) => (
-                      <Link key={s.id} href={`/subject/${s.slug}`} className="mobile-nav-link flex items-center gap-2" onClick={() => setMenuOpen(false)}>
-                        <span>{s.icon}</span> {s.name}
-                      </Link>
-                    ))}
-                    <p className="px-3 py-1 text-xs font-semibold text-gray-400 uppercase tracking-wider mt-4">2nd Year (CSE)</p>
-                    {secondYearSubjects.map((s) => (
-                      <Link key={s.id} href={`/subject/${s.slug}`} className="mobile-nav-link flex items-center gap-2" onClick={() => setMenuOpen(false)}>
-                        <span>{s.icon}</span> {s.name}
-                      </Link>
-                    ))}
+                  <div className="mt-2 space-y-6 pb-4">
+                    {/* 1st Year Section */}
+                    <div>
+                      <h4 className="px-4 py-2 text-[10px] font-bold text-indigo-500 uppercase tracking-[0.2em] mb-2 bg-indigo-50/50 dark:bg-indigo-900/10 rounded-lg">
+                        1st Year Engineering
+                      </h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 px-2">
+                        {firstYearSubjects.map((s) => (
+                          <Link 
+                            key={s.id} 
+                            href={`/subject/${s.slug}`} 
+                            className="flex items-center gap-3 p-3 rounded-2xl bg-gray-50 dark:bg-gray-800/50 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 group transition-all" 
+                            onClick={() => setMenuOpen(false)}
+                          >
+                            <span className="w-8 h-8 flex items-center justify-center bg-white dark:bg-gray-800 rounded-xl shadow-sm group-hover:scale-110 transition-transform">{s.icon}</span>
+                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-400">{s.name}</span>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* 2nd Year Section */}
+                    <div>
+                      <h4 className="px-4 py-2 text-[10px] font-bold text-purple-500 uppercase tracking-[0.2em] mb-2 bg-purple-50/50 dark:bg-purple-900/10 rounded-lg">
+                        2nd Year (Computer)
+                      </h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 px-2">
+                        {secondYearSubjects.map((s) => (
+                          <Link 
+                            key={s.id} 
+                            href={`/subject/${s.slug}`} 
+                            className="flex items-center gap-3 p-3 rounded-2xl bg-gray-50 dark:bg-gray-800/50 hover:bg-purple-50 dark:hover:bg-purple-900/20 group transition-all" 
+                            onClick={() => setMenuOpen(false)}
+                          >
+                            <span className="w-8 h-8 flex items-center justify-center bg-white dark:bg-gray-800 rounded-xl shadow-sm group-hover:scale-110 transition-transform">{s.icon}</span>
+                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-purple-600 dark:group-hover:text-purple-400">{s.name}</span>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
