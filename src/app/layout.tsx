@@ -47,6 +47,8 @@ export const metadata: Metadata = {
   },
 };
 
+import Script from 'next/script';
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
@@ -56,8 +58,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Google Analytics */}
         {process.env.NEXT_PUBLIC_GA_ID && (
           <>
-            <script async src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`} />
-            <script
+            <Script strategy="afterInteractive" src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`} />
+            <Script
+              id="google-analytics"
+              strategy="afterInteractive"
               dangerouslySetInnerHTML={{
                 __html: `
                   window.dataLayer = window.dataLayer || [];
@@ -71,8 +75,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         )}
         {/* AdSense */}
         {process.env.NEXT_PUBLIC_ADSENSE_ID && (
-          <script
-            async
+          <Script
+            id="google-adsense"
+            strategy="afterInteractive"
             src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_ID}`}
             crossOrigin="anonymous"
           />
