@@ -3,20 +3,38 @@ import Image from 'next/image';
 import { Calendar, Clock, Tag, Eye, ArrowRight, Library } from 'lucide-react';
 import { Post } from '@/lib/types';
 import { formatDate } from '@/lib/utils';
+import slugify from 'slugify';
 
 interface BlogCardProps {
   post: Post;
   variant?: 'default' | 'featured' | 'compact';
 }
 
+/**
+ * Builds the correct post URL handling both old slugs (title-only)
+ * and new slugs (subject/title format).
+ * Old: "my-post-title"  → "/internet-of-things/my-post-title"
+ * New: "internet-of-things/my-post-title" → "/internet-of-things/my-post-title"
+ */
+function getPostUrl(post: Post): string {
+  if (post.slug.includes('/')) {
+    // Already in new format: subject/title
+    return `/${post.slug}`;
+  }
+  // Legacy slug — prefix with subject slug
+  const subjectSlug = slugify(post.subject || '', { lower: true, strict: true });
+  return `/${subjectSlug}/${post.slug}`;
+}
+
 export default function BlogCard({ post, variant = 'default' }: BlogCardProps) {
   const date = post.publishDate instanceof Date
     ? post.publishDate
     : post.publishDate?.toDate?.();
+  const postUrl = getPostUrl(post);
 
   if (variant === 'compact') {
     return (
-      <Link href={`/${post.slug}`} className="flex gap-3 group">
+      <Link href={postUrl} className="flex gap-3 group">
         {post.featuredImage && (
           <div className="relative w-16 h-16 shrink-0 rounded-lg overflow-hidden">
             <Image src={post.featuredImage} alt={post.title} fill className="object-cover group-hover:scale-105 transition-transform duration-300" />
@@ -37,7 +55,7 @@ export default function BlogCard({ post, variant = 'default' }: BlogCardProps) {
   if (variant === 'featured') {
     return (
       <article className="group relative bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:-translate-y-1">
-        <Link href={`/${post.slug}`} className="block">
+        <Link href={postUrl} className="block">
           <div className="relative h-56 bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/20 dark:to-purple-900/20">
             {post.featuredImage ? (
               <Image src={post.featuredImage} alt={post.title} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -53,7 +71,7 @@ export default function BlogCard({ post, variant = 'default' }: BlogCardProps) {
           </div>
         </Link>
         <div className="p-5">
-          <Link href={`/${post.slug}`}>
+          <Link href={postUrl}>
             <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 line-clamp-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors mb-2">
               {post.title}
             </h2>
@@ -87,7 +105,7 @@ export default function BlogCard({ post, variant = 'default' }: BlogCardProps) {
   // Default card
   return (
     <article className="group bg-white dark:bg-gray-800 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-700 hover:border-indigo-200 dark:hover:border-indigo-800 hover:shadow-lg transition-all duration-300">
-      <Link href={`/${post.slug}`} className="block">
+      <Link href={postUrl} className="block">
         <div className="relative h-44 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-700 dark:to-gray-700">
           {post.featuredImage ? (
             <Image src={post.featuredImage} alt={post.title} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -102,7 +120,7 @@ export default function BlogCard({ post, variant = 'default' }: BlogCardProps) {
             {post.subject}
           </span>
         </div>
-        <Link href={`/${post.slug}`}>
+        <Link href={postUrl}>
           <h2 className="text-base font-bold text-gray-900 dark:text-gray-100 line-clamp-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors mb-2">
             {post.title}
           </h2>
@@ -114,7 +132,7 @@ export default function BlogCard({ post, variant = 'default' }: BlogCardProps) {
             <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" />{post.readingTime}m</span>
           </div>
           <Link
-            href={`/${post.slug}`}
+            href={postUrl}
             className="flex items-center gap-1 text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:gap-2 transition-all"
           >
             Read <ArrowRight className="w-3.5 h-3.5" />
