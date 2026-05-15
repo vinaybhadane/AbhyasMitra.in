@@ -28,7 +28,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     const { posts } = await getPublishedPosts(100);
     blogPages = posts.map((post) => ({
-      url: `${SITE_URL}/blog/${post.slug}`,
+      url: `${SITE_URL}/${post.slug}`,
       lastModified:
         post.updatedAt instanceof Date
           ? post.updatedAt

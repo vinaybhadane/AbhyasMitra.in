@@ -67,7 +67,7 @@ export function generatePostMetadata(post: Post) {
     keywords: post.keywords || post.tags.join(', '),
     ogImage: post.featuredImage || DEFAULT_OG_IMAGE,
     ogType: 'article',
-    canonical: `${SITE_URL}/blog/${post.slug}`,
+    canonical: `${SITE_URL}/${post.slug}`,
     author: post.author,
     publishDate:
       post.publishDate instanceof Date
@@ -115,7 +115,7 @@ export function generateArticleJsonLd(post: Post) {
       post.updatedAt instanceof Date
         ? post.updatedAt.toISOString()
         : post.updatedAt?.toDate?.()?.toISOString(),
-    url: `${SITE_URL}/blog/${post.slug}`,
+    url: `${SITE_URL}/${post.slug}`,
   };
 }
 
