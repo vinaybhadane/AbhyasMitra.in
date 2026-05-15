@@ -225,7 +225,7 @@ export default function BlogPostClient({ slug }: BlogPostClientProps) {
             <aside className="lg:w-72 shrink-0">
               {/* Desktop TOC */}
               {toc.length > 0 && (
-                <div className="hidden lg:block sticky top-24 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-5 mb-6">
+                <div className="hidden lg:block bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-5 mb-6">
                   <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
                     <AlignLeft className="w-4 h-4" /> Table of Contents
                   </h3>

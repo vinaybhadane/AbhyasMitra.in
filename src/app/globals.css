@@ -130,10 +130,26 @@ body {
   object-fit: cover;
 }
 
-.prose table { @apply w-full my-6 text-sm; border-collapse: collapse; }
+/* Responsive table wrapper — horizontal scroll on mobile */
+.prose table {
+  @apply my-6 text-sm;
+  border-collapse: collapse;
+  min-width: 500px; /* prevents columns from crushing */
+  width: 100%;
+}
+
+/* Wrap every table in a scrollable div via CSS (no JS needed) */
+.prose :where(table) {
+  display: block; /* makes the table itself scrollable */
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+}
+
 .prose th {
   @apply bg-gray-100 dark:bg-gray-800 px-4 py-2.5 text-left font-semibold;
   border: 1px solid #e5e7eb;
+  white-space: nowrap;
 }
 .dark .prose th { border-color: #374151; }
 .prose td {
