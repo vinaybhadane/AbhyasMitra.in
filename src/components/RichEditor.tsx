@@ -1,5 +1,6 @@
 'use client';
 
+import { useRef } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
@@ -36,14 +37,39 @@ export default function RichEditor({ content, onChange }: EditorProps) {
 
   if (!editor) return null;
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const { default: imageCompression } = await import('browser-image-compression');
+      const { uploadImage } = await import('@/lib/firestore');
+      
+      const options = { maxSizeMB: 1, maxWidthOrHeight: 1920, useWebWorker: true, fileType: 'image/webp' };
+      const compressedFile = await imageCompression(file, options);
+      
+      const cleanName = file.name.toLowerCase().replace(/[^a-z0-9.]/g, '-').replace(/-+/g, '-').replace(/^[.-]|[.-]$/g, '');
+      const ext = cleanName.split('.').pop();
+      const nameWithoutExt = cleanName.replace(`.${ext}`, '');
+      const fileName = `${nameWithoutExt}-${Date.now()}.webp`;
+
+      const url = await uploadImage(compressedFile, `posts/content/${fileName}`);
+      editor.chain().focus().setImage({ src: url }).run();
+    } catch (error) {
+      console.error(error);
+      alert('Failed to upload image');
+    }
+  };
+
   const addLink = () => {
     const url = prompt('Enter URL:');
     if (url) editor.chain().focus().setLink({ href: url }).run();
   };
 
   const addImage = () => {
-    const url = prompt('Enter image URL:');
-    if (url) editor.chain().focus().setImage({ src: url }).run();
+    fileInputRef.current?.click();
   };
 
   const toolbarButtons = [
@@ -69,6 +95,7 @@ export default function RichEditor({ content, onChange }: EditorProps) {
 
   return (
     <div className="border border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden bg-white dark:bg-gray-800">
+      <input type="file" accept="image/*" ref={fileInputRef} onChange={handleImageUpload} className="hidden" />
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-0.5 px-3 py-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/80">
         {toolbarButtons.map((btn, i) =>
