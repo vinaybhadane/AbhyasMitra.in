@@ -1,16 +1,19 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
 import TipTapImage from '@tiptap/extension-image';
 import { Table, TableRow, TableHeader, TableCell } from '@tiptap/extension-table';
+import imageCompression from 'browser-image-compression';
+import { uploadImage } from '@/lib/firestore';
+import toast from 'react-hot-toast';
 import {
   Bold, Italic, Strikethrough, Code, Heading2, Heading3,
   List, ListOrdered, Quote, Minus, Link as LinkIcon,
-  Image as ImageIcon, Undo, Redo,
+  Image as ImageIcon, Undo, Redo, Loader2,
   Table as TableIcon, Columns, Rows, Trash2, Plus,
 } from 'lucide-react';
 
@@ -22,6 +25,7 @@ interface EditorProps {
 export default function RichEditor({ content, onChange }: EditorProps) {
   // ALL hooks must be declared before any early returns
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -53,24 +57,38 @@ export default function RichEditor({ content, onChange }: EditorProps) {
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    // Reset input so same file can be re-selected if needed
+    e.target.value = '';
 
+    setUploading(true);
+    const toastId = toast.loading('Uploading image...');
     try {
-      const { default: imageCompression } = await import('browser-image-compression');
-      const { uploadImage } = await import('@/lib/firestore');
-      
-      const options = { maxSizeMB: 1, maxWidthOrHeight: 1920, useWebWorker: true, fileType: 'image/webp' };
-      const compressedFile = await imageCompression(file, options);
-      
-      const cleanName = file.name.toLowerCase().replace(/[^a-z0-9.]/g, '-').replace(/-+/g, '-').replace(/^[.-]|[.-]$/g, '');
-      const ext = cleanName.split('.').pop();
-      const nameWithoutExt = cleanName.replace(`.${ext}`, '');
+      const options = { maxSizeMB: 1, maxWidthOrHeight: 1920, useWebWorker: true, fileType: 'image/webp' as const };
+      const compressed = await imageCompression(file, options);
+
+      // Force explicit webp MIME type — browser-image-compression may return
+      // a blob with the original type on some browsers
+      const webpBlob = compressed.type === 'image/webp'
+        ? compressed
+        : new Blob([compressed], { type: 'image/webp' });
+      const webpFile = new File([webpBlob], compressed.name || 'image.webp', { type: 'image/webp' });
+
+      const cleanName = file.name
+        .toLowerCase()
+        .replace(/[^a-z0-9.]/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^[.-]|[.-]$/g, '');
+      const nameWithoutExt = cleanName.replace(/\.[^.]+$/, '');
       const fileName = `${nameWithoutExt}-${Date.now()}.webp`;
 
-      const url = await uploadImage(compressedFile, `posts/content/${fileName}`);
+      const url = await uploadImage(webpFile, `posts/content/${fileName}`);
       editor.chain().focus().setImage({ src: url }).run();
+      toast.success('Image uploaded!', { id: toastId });
     } catch (error) {
-      console.error(error);
-      alert('Failed to upload image');
+      console.error('Image upload error:', error);
+      toast.error('Failed to upload image. Check your connection and permissions.', { id: toastId });
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -102,7 +120,7 @@ export default function RichEditor({ content, onChange }: EditorProps) {
     { icon: Minus, action: () => editor.chain().focus().setHorizontalRule().run(), active: () => false, title: 'Horizontal Rule' },
     null,
     { icon: LinkIcon, action: addLink, active: () => editor.isActive('link'), title: 'Add Link' },
-    { icon: ImageIcon, action: addImage, active: () => false, title: 'Add Image' },
+    { icon: ImageIcon, action: addImage, active: () => uploading, title: uploading ? 'Uploading...' : 'Add Image' },
     null,
     { icon: TableIcon, action: insertTable, active: () => editor.isActive('table'), title: 'Insert Table (3×3)' },
     null,
@@ -112,7 +130,15 @@ export default function RichEditor({ content, onChange }: EditorProps) {
 
   return (
     <div className="border border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden bg-white dark:bg-gray-800">
-      <input type="file" accept="image/*" ref={fileInputRef} onChange={handleImageUpload} className="hidden" />
+      <input type="file" accept="image/*" ref={fileInputRef} onChange={handleImageUpload} className="hidden" disabled={uploading} />
+
+      {/* Upload progress overlay */}
+      {uploading && (
+        <div className="flex items-center gap-2 px-4 py-2 bg-indigo-50 dark:bg-indigo-950/40 border-b border-indigo-200 dark:border-indigo-800 text-sm text-indigo-600 dark:text-indigo-400">
+          <Loader2 className="w-4 h-4 animate-spin" />
+          <span>Compressing &amp; uploading image...</span>
+        </div>
+      )}
 
       {/* Main Toolbar */}
       <div className="flex flex-wrap items-center gap-0.5 px-3 py-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/80">

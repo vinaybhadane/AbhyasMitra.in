@@ -30,29 +30,33 @@ export default function ImageUploader({
     setUploading(true);
 
     try {
-      // SEO Friendly Image processing and compression (Max size logic)
+      // SEO Friendly Image processing and compression
       const options = {
-        maxSizeMB: maxSizeMB, // 1MB max
+        maxSizeMB: maxSizeMB,
         maxWidthOrHeight: 1920,
         useWebWorker: true,
-        fileType: 'image/webp', // Use WebP for better SEO/performance
+        fileType: 'image/webp' as const,
       };
 
-      const compressedFile = await imageCompression(file, options);
-      
+      const compressed = await imageCompression(file, options);
+
+      // Force explicit webp MIME type — browser-image-compression may return
+      // a blob with the original type on some browsers
+      const webpBlob = compressed.type === 'image/webp'
+        ? compressed
+        : new Blob([compressed], { type: 'image/webp' });
+      const compressedFile = new File([webpBlob], compressed.name || 'image.webp', { type: 'image/webp' });
+
       // Ensure SEO friendly filename
       const cleanName = file.name
         .toLowerCase()
         .replace(/[^a-z0-9.]/g, '-')
         .replace(/-+/g, '-')
         .replace(/^[.-]|[.-]$/g, '');
-        
-      const ext = cleanName.split('.').pop();
-      const nameWithoutExt = cleanName.replace(`.${ext}`, '');
-      // SEO-friendly final filename (e.g. topic-name.webp)
+
+      const nameWithoutExt = cleanName.replace(/\.[^.]+$/, '');
       const fileName = `${nameWithoutExt}-${Date.now()}.webp`;
 
-      // Pass the compressed WebP file to upload
       const url = await uploadImage(compressedFile, `${folder}/${fileName}`);
       onChange(url);
       toast.success('Image optimized and uploaded successfully!');
