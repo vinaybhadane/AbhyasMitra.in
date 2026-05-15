@@ -4,13 +4,14 @@ import { generatePostMetadata } from '@/lib/seo';
 import BlogPostClient from './BlogPostClient';
 
 interface PageProps {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ subject: string; slug: string }>;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { slug } = await params;
+  const { subject, slug } = await params;
+  const fullSlug = `${subject}/${slug}`;
   try {
-    const post = await getPostBySlug(slug);
+    const post = await getPostBySlug(fullSlug);
     if (!post) return { title: 'Post Not Found | AbhyasMitra' };
     return generatePostMetadata(post) as Metadata;
   } catch {
@@ -19,6 +20,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function BlogPostPage({ params }: PageProps) {
-  const { slug } = await params;
-  return <BlogPostClient slug={slug} />;
+  const { subject, slug } = await params;
+  const fullSlug = `${subject}/${slug}`;
+  return <BlogPostClient slug={fullSlug} />;
 }

@@ -144,7 +144,7 @@ export default function AdminPostsPage() {
                         <div className="flex items-center gap-2 justify-end">
                           {post.status === 'published' && (
                             <Link
-                              href={`/blog/${post.slug}`}
+                              href={`/${post.slug}`}
                               target="_blank"
                               className="icon-btn text-gray-400 hover:text-indigo-600"
                               title="View post"
