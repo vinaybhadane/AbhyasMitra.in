@@ -18,6 +18,9 @@ interface EditorProps {
 }
 
 export default function RichEditor({ content, onChange }: EditorProps) {
+  // ALL hooks must be declared before any early returns
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
@@ -36,8 +39,6 @@ export default function RichEditor({ content, onChange }: EditorProps) {
   });
 
   if (!editor) return null;
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -68,9 +69,7 @@ export default function RichEditor({ content, onChange }: EditorProps) {
     if (url) editor.chain().focus().setLink({ href: url }).run();
   };
 
-  const addImage = () => {
-    fileInputRef.current?.click();
-  };
+  const addImage = () => fileInputRef.current?.click();
 
   const toolbarButtons = [
     { icon: Bold, action: () => editor.chain().focus().toggleBold().run(), active: () => editor.isActive('bold'), title: 'Bold' },
