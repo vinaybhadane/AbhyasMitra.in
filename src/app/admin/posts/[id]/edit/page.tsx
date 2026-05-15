@@ -9,6 +9,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { SUBJECTS, Post } from '@/lib/types';
 import { generateExcerpt } from '@/lib/utils';
 import toast from 'react-hot-toast';
+import ImageUploader from '@/components/ImageUploader';
 
 const RichEditor = dynamic(() => import('@/components/RichEditor'), { ssr: false });
 
@@ -49,21 +50,6 @@ export default function EditPostPage() {
     };
     fetchPost();
   }, [id]);
-
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setUploading(true);
-    try {
-      const url = await uploadImage(file, `posts/${Date.now()}_${file.name}`);
-      setForm((prev) => ({ ...prev, featuredImage: url }));
-      toast.success('Image uploaded!');
-    } catch {
-      toast.error('Upload failed');
-    } finally {
-      setUploading(false);
-    }
-  };
 
   const handleSave = async (status: 'draft' | 'published') => {
     if (!id || !form.title.trim() || !form.subject) {
@@ -161,21 +147,11 @@ export default function EditPostPage() {
 
           <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-5">
             <h3 className="text-sm font-semibold mb-4">Featured Image</h3>
-            {form.featuredImage ? (
-              <div className="relative">
-                <img src={form.featuredImage} alt="Featured" className="w-full h-36 object-cover rounded-xl" />
-                <button onClick={() => setForm({ ...form, featuredImage: '' })} className="absolute top-2 right-2 w-7 h-7 bg-red-500 text-white rounded-full flex items-center justify-center">
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            ) : (
-              <label className="flex flex-col items-center gap-2 px-4 py-6 border-2 border-dashed border-gray-200 dark:border-gray-600 rounded-xl cursor-pointer hover:border-indigo-400">
-                <Upload className="w-8 h-8 text-gray-400" />
-                <span className="text-sm text-gray-500">{uploading ? 'Uploading...' : 'Upload image'}</span>
-                <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
-              </label>
-            )}
-            <input type="url" placeholder="Or paste image URL" value={form.featuredImage} onChange={(e) => setForm({ ...form, featuredImage: e.target.value })} className="mt-3 w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            <ImageUploader
+              value={form.featuredImage}
+              onChange={(url) => setForm({ ...form, featuredImage: url })}
+              folder="posts"
+            />
           </div>
 
           <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-5">
