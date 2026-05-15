@@ -243,7 +243,9 @@ export async function deleteContactMessage(id: string): Promise<void> {
 
 export async function uploadImage(file: File, path: string): Promise<string> {
   const storageRef = ref(storage, path);
-  await uploadBytes(storageRef, file);
+  // Explicitly set contentType so Firebase storage rules can validate it
+  const metadata = { contentType: file.type || 'image/webp' };
+  await uploadBytes(storageRef, file, metadata);
   return getDownloadURL(storageRef);
 }
 

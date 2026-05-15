@@ -10,8 +10,9 @@ service firebase.storage {
     }
 
     function isValidImage() {
-      return request.resource.contentType.matches('image/.*')
-        && request.resource.size <= 5 * 1024 * 1024; // 5MB max
+      return (request.resource.contentType.matches('image/.*') ||
+              request.resource.contentType == 'image/webp')
+        && request.resource.size <= 10 * 1024 * 1024; // 10MB max (client compresses to <1MB)
     }
 
     // ─── Post images (admin only can upload) ──────────────────────────────────
