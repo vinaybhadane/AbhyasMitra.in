@@ -191,3 +191,73 @@ body {
   height: 0;
   pointer-events: none;
 }
+
+/* ─── TipTap Table (inside editor) ──────────────────────────────────────── */
+.ProseMirror table,
+.ProseMirror .editor-table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+  margin: 1.25rem 0;
+  overflow: hidden;
+  border-radius: 0.5rem;
+}
+
+.ProseMirror table td,
+.ProseMirror table th {
+  min-width: 80px;
+  border: 1px solid #e5e7eb;
+  padding: 0.5rem 0.75rem;
+  vertical-align: top;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.dark .ProseMirror table td,
+.dark .ProseMirror table th {
+  border-color: #374151;
+}
+
+.ProseMirror table th {
+  background: #f3f4f6;
+  font-weight: 600;
+  text-align: left;
+}
+
+.dark .ProseMirror table th {
+  background: #1f2937;
+}
+
+.ProseMirror table tr:nth-child(even) td {
+  background: #f9fafb;
+}
+
+.dark .ProseMirror table tr:nth-child(even) td {
+  background: #111827;
+}
+
+/* Cell selected highlight */
+.ProseMirror table .selectedCell::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: oklch(0.673 0.182 276.935 / 0.18);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Column resize handle */
+.ProseMirror table .column-resize-handle {
+  position: absolute;
+  right: -2px;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background-color: oklch(0.511 0.262 276.966);
+  cursor: col-resize;
+  z-index: 10;
+}
+
+.ProseMirror.resize-cursor {
+  cursor: col-resize;
+}
