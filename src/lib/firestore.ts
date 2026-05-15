@@ -28,7 +28,9 @@ import slugify from 'slugify';
 // ─── Posts ────────────────────────────────────────────────────────────────────
 
 export async function createPost(data: Omit<Post, 'id' | 'createdAt' | 'updatedAt' | 'views' | 'readingTime' | 'slug'>): Promise<string> {
-  const slug = slugify(data.title, { lower: true, strict: true });
+  const subjectSlug = slugify(data.subject, { lower: true, strict: true });
+  const titleSlug = slugify(data.title, { lower: true, strict: true });
+  const slug = `${subjectSlug}/${titleSlug}`;
   const readingTime = calculateReadingTime(data.content);
   const docRef = await addDoc(collection(db, 'posts'), {
     ...data,
@@ -44,9 +46,20 @@ export async function createPost(data: Omit<Post, 'id' | 'createdAt' | 'updatedA
 export async function updatePost(id: string, data: Partial<Post>): Promise<void> {
   const postRef = doc(db, 'posts', id);
   const updates: Record<string, unknown> = { ...data, updatedAt: serverTimestamp() };
-  if (data.title) {
-    updates.slug = slugify(data.title, { lower: true, strict: true });
+  
+  if (data.title || data.subject) {
+    const snap = await getDoc(postRef);
+    if (snap.exists()) {
+      const currentData = snap.data() as Post;
+      const finalTitle = data.title || currentData.title;
+      const finalSubject = data.subject || currentData.subject;
+      
+      const subjectSlug = slugify(finalSubject, { lower: true, strict: true });
+      const titleSlug = slugify(finalTitle, { lower: true, strict: true });
+      updates.slug = `${subjectSlug}/${titleSlug}`;
+    }
   }
+
   if (data.content) {
     updates.readingTime = calculateReadingTime(data.content);
   }
@@ -66,7 +79,16 @@ export async function getPost(id: string): Promise<Post | null> {
 export async function getPostBySlug(slug: string): Promise<Post | null> {
   const q = query(collection(db, 'posts'), where('slug', '==', slug), where('status', '==', 'published'), limit(1));
   const snap = await getDocs(q);
-  if (snap.empty) return null;
+  if (snap.empty) {
+     // Fallback for old slugs which didn't include the subject
+     const slugParts = slug.split('/');
+     const titleSlug = slugParts.length > 1 ? slugParts[slugParts.length - 1] : slug;
+     const oldQ = query(collection(db, 'posts'), where('slug', '==', titleSlug), where('status', '==', 'published'), limit(1));
+     const oldSnap = await getDocs(oldQ);
+     if (oldSnap.empty) return null;
+     const docSnap = oldSnap.docs[0];
+     return { id: docSnap.id, ...docSnap.data() } as Post;
+  }
   const docSnap = snap.docs[0];
   return { id: docSnap.id, ...docSnap.data() } as Post;
 }
