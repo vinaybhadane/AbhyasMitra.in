@@ -1,7 +1,8 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
+import { Extension, InputRule } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
@@ -17,6 +18,124 @@ import katex from 'katex';
 import dynamic from 'next/dynamic';
 
 const MathInputPanel = dynamic(() => import('@/components/MathInputPanel'), { ssr: false });
+
+// ─── Shared Math Utilities ────────────────────────────────────────────────────
+
+/** Escapes a string for use as an HTML attribute value */
+function escapeAttr(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+/** Escapes a string for use as plain HTML text content */
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+/** Renders a LaTeX string to a KaTeX HTML node (inline or block) */
+function latexToHtml(latex: string, block: boolean): string {
+  try {
+    const rendered = katex.renderToString(latex, {
+      throwOnError: false,
+      displayMode: block,
+      output: 'html',
+      trust: false,
+    });
+    const tag = block ? 'div' : 'span';
+    const cls = block ? 'math-block' : 'math-inline';
+    return `<${tag} class="${cls}" data-latex="${escapeAttr(latex)}">${rendered}</${tag}>`;
+  } catch {
+    return block ? `<p>$$${escapeHtml(latex)}$$</p>` : escapeHtml(`$${latex}$`);
+  }
+}
+
+/**
+ * Converts a plain-text string (which may contain $$...$$ and $...$ patterns)
+ * into an HTML string suitable for insertion into TipTap.
+ *
+ * Handles:
+ *  - Multi-line block math:  $$\n...\n$$
+ *  - Inline block math:      $$formula$$
+ *  - Inline math:            $formula$
+ *  - Plain text paragraphs
+ */
+function convertMathTextToHtml(text: string): string {
+  const segments: string[] = [];
+
+  // Step 1: split on block math first ($$...$$), including multiline
+  const blockParts = text.split(/(\$\$[\s\S]*?\$\$)/g);
+
+  for (const part of blockParts) {
+    if (part.startsWith('$$') && part.endsWith('$$')) {
+      // Block math segment
+      const latex = part.slice(2, -2).trim();
+      if (latex) segments.push(latexToHtml(latex, true));
+    } else {
+      // Plain text with possible inline math — split into lines
+      const lines = part.split('\n');
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed) continue;
+
+        // Process inline $...$ in this line
+        const converted = trimmed.replace(
+          /(?<!\$)\$(?!\$)([^$\n]+?)\$(?!\$)/g,
+          (_, latex) => latexToHtml(latex.trim(), false)
+        );
+        segments.push(`<p>${converted}</p>`);
+      }
+    }
+  }
+
+  return segments.join('') || `<p>${escapeHtml(text)}</p>`;
+}
+
+// ─── TipTap Math Input Rules Extension ───────────────────────────────────────
+
+/**
+ * Auto-converts typed LaTeX delimiters to rendered KaTeX:
+ *   - Type $$formula$$ → block math
+ *   - Type $formula$   → inline math
+ */
+const MathInputRules = Extension.create({
+  name: 'mathInputRules',
+
+  addInputRules() {
+    return [
+      // ── Block math: $$formula$$ ─────────────────────────────────
+      new InputRule({
+        // Matches $$...$$  (no nested $ inside)
+        find: /\$\$([^$]+?)\$\$$/,
+        handler: ({ range, match, chain }) => {
+          const latex = match[1].trim();
+          if (!latex) return null;
+          const html = latexToHtml(latex, true);
+          chain().deleteRange(range).insertContent(html).run();
+        },
+      }),
+
+      // ── Inline math: $formula$ ──────────────────────────────────
+      new InputRule({
+        // Matches $...$ — avoid matching $$ by using negative lookahead/lookbehind
+        find: /(?<!\$)\$([^$\n]+?)\$(?!\$)$/,
+        handler: ({ range, match, chain }) => {
+          const latex = match[1].trim();
+          if (!latex) return null;
+          const html = latexToHtml(latex, false);
+          chain().deleteRange(range).insertContent(html + ' ').run();
+        },
+      }),
+    ];
+  },
+});
+
+// ─── Component ───────────────────────────────────────────────────────────────
 
 interface EditorProps {
   content: string;
@@ -34,9 +153,12 @@ export default function RichEditor({ content, onChange }: EditorProps) {
     immediatelyRender: false,
     extensions: [
       StarterKit,
+      MathInputRules,         // ← auto-render typed $...$ and $$...$$
       TipTapImage.configure({ inline: false }),
       Link.configure({ openOnClick: false }),
-      Placeholder.configure({ placeholder: 'Start writing your notes... Use $ for inline math, $$ for block math.' }),
+      Placeholder.configure({
+        placeholder: 'Write notes... Type $E=mc^2$ for inline or $$\\frac{a}{b}$$ for block math.',
+      }),
       Table.configure({
         resizable: false,
         HTMLAttributes: { class: 'editor-table' },
@@ -53,6 +175,31 @@ export default function RichEditor({ content, onChange }: EditorProps) {
       },
     },
   });
+
+  // ── Paste Handler: convert pasted LaTeX text to rendered KaTeX ──────────────
+  useEffect(() => {
+    if (!editor) return;
+
+    const MATH_PATTERN = /\$\$[\s\S]*?\$\$|\$[^$\n]+?\$/;
+
+    const handlePaste = (e: ClipboardEvent) => {
+      const text = e.clipboardData?.getData('text/plain') || '';
+      if (!text.includes('$')) return;            // no math possible
+      if (!MATH_PATTERN.test(text)) return;       // no valid math pattern
+
+      // We handle this paste — prevent the browser's default paste
+      e.preventDefault();
+      e.stopPropagation();
+
+      const html = convertMathTextToHtml(text);
+      editor.chain().focus().insertContent(html).run();
+    };
+
+    // Use capture phase so we intercept before TipTap's own paste handler
+    const dom = editor.view.dom;
+    dom.addEventListener('paste', handlePaste as EventListener, true);
+    return () => dom.removeEventListener('paste', handlePaste as EventListener, true);
+  }, [editor]);
 
   if (!editor) return null;
 
@@ -92,38 +239,15 @@ export default function RichEditor({ content, onChange }: EditorProps) {
     editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
   };
 
-  /* ─── Insert math formula ───────────────────────────────────── */
+  /* ─── Insert math formula (from MathInputPanel) ─────────────── */
   const insertMath = (latex: string, block: boolean) => {
-    try {
-      const renderedHtml = katex.renderToString(latex, {
-        throwOnError: false,
-        displayMode: block,
-        output: 'html',
-        trust: false,
-      });
-
-      if (block) {
-        // Store as a div with data-latex for re-rendering + rendered HTML for display
-        const html = `<div class="math-block" data-latex="${escapeAttr(latex)}">${renderedHtml}</div>`;
-        editor.chain().focus().insertContent(html).run();
-      } else {
-        const html = `<span class="math-inline" data-latex="${escapeAttr(latex)}">${renderedHtml}</span>`;
-        editor.chain().focus().insertContent(html).run();
-      }
-    } catch {
-      // Fallback: insert as delimiter-wrapped LaTeX text
-      const delimiter = block ? `$$${latex}$$` : `$${latex}$`;
-      editor.chain().focus().insertContent(delimiter).run();
-    }
+    const html = latexToHtml(latex, block);
+    editor.chain().focus().insertContent(html).run();
   };
-
-  /** Escapes a string for use in an HTML attribute value */
-  const escapeAttr = (str: string) =>
-    str.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
   const isInTable = editor.isActive('table');
 
-  // ── Sigma icon as SVG (inline) ──────────────────────────────────────────
+  // Sigma toolbar icon
   const SigmaIcon = () => (
     <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2}>
       <path d="M18 4H6l6 8-6 8h12" strokeLinecap="round" strokeLinejoin="round" />
@@ -149,7 +273,6 @@ export default function RichEditor({ content, onChange }: EditorProps) {
     null,
     { icon: TableIcon,     action: insertTable,                                                  active: () => editor.isActive('table'),                  title: 'Insert Table (3×3)' },
     null,
-    // Math button uses custom icon
     {
       icon: SigmaIcon,
       action: () => { setShowMathPanel((v) => !v); setShowImagePanel(false); },
@@ -163,7 +286,6 @@ export default function RichEditor({ content, onChange }: EditorProps) {
 
   return (
     <div className="border border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden bg-white dark:bg-gray-800">
-      {/* Hidden file input kept for future use */}
       <input type="file" accept="image/*" ref={fileInputRef} className="hidden" />
 
       {/* ── Main Toolbar ─────────────────────────────────────────── */}
@@ -237,7 +359,6 @@ export default function RichEditor({ content, onChange }: EditorProps) {
       {isInTable && (
         <div className="flex flex-wrap items-center gap-1 px-3 py-1.5 border-b border-indigo-200 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-950/40 text-xs">
           <span className="text-indigo-500 dark:text-indigo-400 font-semibold mr-1 text-[11px] uppercase tracking-wide">Table:</span>
-
           <TableCtxBtn title="Add Column Before" onClick={() => editor.chain().focus().addColumnBefore().run()}>
             <Plus className="w-3 h-3" /><Columns className="w-3 h-3" />←
           </TableCtxBtn>
@@ -247,9 +368,7 @@ export default function RichEditor({ content, onChange }: EditorProps) {
           <TableCtxBtn title="Delete Column" onClick={() => editor.chain().focus().deleteColumn().run()} danger>
             <Trash2 className="w-3 h-3" /><Columns className="w-3 h-3" />
           </TableCtxBtn>
-
           <div className="w-px h-4 bg-indigo-200 dark:bg-indigo-700 mx-0.5" />
-
           <TableCtxBtn title="Add Row Before" onClick={() => editor.chain().focus().addRowBefore().run()}>
             <Plus className="w-3 h-3" /><Rows className="w-3 h-3" />↑
           </TableCtxBtn>
@@ -259,18 +378,14 @@ export default function RichEditor({ content, onChange }: EditorProps) {
           <TableCtxBtn title="Delete Row" onClick={() => editor.chain().focus().deleteRow().run()} danger>
             <Trash2 className="w-3 h-3" /><Rows className="w-3 h-3" />
           </TableCtxBtn>
-
           <div className="w-px h-4 bg-indigo-200 dark:bg-indigo-700 mx-0.5" />
-
           <TableCtxBtn title="Toggle Header Row" onClick={() => editor.chain().focus().toggleHeaderRow().run()}>
             Header Row
           </TableCtxBtn>
           <TableCtxBtn title="Toggle Header Column" onClick={() => editor.chain().focus().toggleHeaderColumn().run()}>
             Header Col
           </TableCtxBtn>
-
           <div className="w-px h-4 bg-indigo-200 dark:bg-indigo-700 mx-0.5" />
-
           <TableCtxBtn title="Delete Table" onClick={() => editor.chain().focus().deleteTable().run()} danger>
             <Trash2 className="w-3 h-3" /> Delete Table
           </TableCtxBtn>
@@ -280,12 +395,13 @@ export default function RichEditor({ content, onChange }: EditorProps) {
       {/* ── Editor Content ───────────────────────────────────────── */}
       <EditorContent editor={editor} />
 
-      {/* ── Math Syntax Hint (shown at bottom) ───────────────────── */}
+      {/* ── Math Syntax Quick Reference ──────────────────────────── */}
       <div className="px-4 py-2 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60">
-        <p className="text-[10px] text-gray-400 dark:text-gray-500">
-          💡 Math syntax: <code className="font-mono bg-gray-100 dark:bg-gray-700 px-1 rounded">$E=mc^2$</code> for inline &nbsp;|&nbsp;
-          <code className="font-mono bg-gray-100 dark:bg-gray-700 px-1 rounded">$$\frac{"{a}{b}"}$$</code> for block &nbsp;|&nbsp;
-          Click <strong>∑</strong> in toolbar for formula library
+        <p className="text-[10px] text-gray-400 dark:text-gray-500 flex flex-wrap gap-x-3 gap-y-0.5">
+          <span>💡 <strong>Math auto-renders:</strong></span>
+          <span>Type or paste <code className="font-mono bg-gray-100 dark:bg-gray-700 px-1 rounded">$E=mc^2$</code> → inline</span>
+          <span><code className="font-mono bg-gray-100 dark:bg-gray-700 px-1 rounded">$$\frac{"{a}{b}"}$$</code> → block</span>
+          <span>Click <strong>∑</strong> for formula library</span>
         </p>
       </div>
     </div>
