@@ -13,6 +13,10 @@ import {
   Image as ImageIcon, Undo, Redo, Check, X,
   Table as TableIcon, Columns, Rows, Trash2, Plus,
 } from 'lucide-react';
+import katex from 'katex';
+import dynamic from 'next/dynamic';
+
+const MathInputPanel = dynamic(() => import('@/components/MathInputPanel'), { ssr: false });
 
 interface EditorProps {
   content: string;
@@ -23,6 +27,7 @@ export default function RichEditor({ content, onChange }: EditorProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageUrlInputRef = useRef<HTMLInputElement>(null);
   const [showImagePanel, setShowImagePanel] = useState(false);
+  const [showMathPanel, setShowMathPanel] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
 
   const editor = useEditor({
@@ -31,7 +36,7 @@ export default function RichEditor({ content, onChange }: EditorProps) {
       StarterKit,
       TipTapImage.configure({ inline: false }),
       Link.configure({ openOnClick: false }),
-      Placeholder.configure({ placeholder: 'Start writing your notes...' }),
+      Placeholder.configure({ placeholder: 'Start writing your notes... Use $ for inline math, $$ for block math.' }),
       Table.configure({
         resizable: false,
         HTMLAttributes: { class: 'editor-table' },
@@ -55,7 +60,7 @@ export default function RichEditor({ content, onChange }: EditorProps) {
   const openImagePanel = () => {
     setImageUrl('');
     setShowImagePanel(true);
-    // Focus the input after render
+    setShowMathPanel(false);
     setTimeout(() => imageUrlInputRef.current?.focus(), 50);
   };
 
@@ -87,7 +92,43 @@ export default function RichEditor({ content, onChange }: EditorProps) {
     editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
   };
 
+  /* ─── Insert math formula ───────────────────────────────────── */
+  const insertMath = (latex: string, block: boolean) => {
+    try {
+      const renderedHtml = katex.renderToString(latex, {
+        throwOnError: false,
+        displayMode: block,
+        output: 'html',
+        trust: false,
+      });
+
+      if (block) {
+        // Store as a div with data-latex for re-rendering + rendered HTML for display
+        const html = `<div class="math-block" data-latex="${escapeAttr(latex)}">${renderedHtml}</div>`;
+        editor.chain().focus().insertContent(html).run();
+      } else {
+        const html = `<span class="math-inline" data-latex="${escapeAttr(latex)}">${renderedHtml}</span>`;
+        editor.chain().focus().insertContent(html).run();
+      }
+    } catch {
+      // Fallback: insert as delimiter-wrapped LaTeX text
+      const delimiter = block ? `$$${latex}$$` : `$${latex}$`;
+      editor.chain().focus().insertContent(delimiter).run();
+    }
+  };
+
+  /** Escapes a string for use in an HTML attribute value */
+  const escapeAttr = (str: string) =>
+    str.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
   const isInTable = editor.isActive('table');
+
+  // ── Sigma icon as SVG (inline) ──────────────────────────────────────────
+  const SigmaIcon = () => (
+    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2}>
+      <path d="M18 4H6l6 8-6 8h12" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
 
   const toolbarButtons = [
     { icon: Bold,          action: () => editor.chain().focus().toggleBold().run(),              active: () => editor.isActive('bold'),                    title: 'Bold' },
@@ -107,6 +148,14 @@ export default function RichEditor({ content, onChange }: EditorProps) {
     { icon: ImageIcon,     action: openImagePanel,                                               active: () => showImagePanel,                            title: 'Insert Image from URL' },
     null,
     { icon: TableIcon,     action: insertTable,                                                  active: () => editor.isActive('table'),                  title: 'Insert Table (3×3)' },
+    null,
+    // Math button uses custom icon
+    {
+      icon: SigmaIcon,
+      action: () => { setShowMathPanel((v) => !v); setShowImagePanel(false); },
+      active: () => showMathPanel,
+      title: 'Insert Math Formula (LaTeX)',
+    },
     null,
     { icon: Undo,          action: () => editor.chain().focus().undo().run(),                    active: () => false,                                     title: 'Undo' },
     { icon: Redo,          action: () => editor.chain().focus().redo().run(),                    active: () => false,                                     title: 'Redo' },
@@ -176,6 +225,14 @@ export default function RichEditor({ content, onChange }: EditorProps) {
         </div>
       )}
 
+      {/* ── Math Input Panel ─────────────────────────────────────── */}
+      {showMathPanel && (
+        <MathInputPanel
+          onInsert={insertMath}
+          onClose={() => setShowMathPanel(false)}
+        />
+      )}
+
       {/* ── Contextual Table Toolbar ─────────────────────────────── */}
       {isInTable && (
         <div className="flex flex-wrap items-center gap-1 px-3 py-1.5 border-b border-indigo-200 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-950/40 text-xs">
@@ -222,6 +279,15 @@ export default function RichEditor({ content, onChange }: EditorProps) {
 
       {/* ── Editor Content ───────────────────────────────────────── */}
       <EditorContent editor={editor} />
+
+      {/* ── Math Syntax Hint (shown at bottom) ───────────────────── */}
+      <div className="px-4 py-2 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60">
+        <p className="text-[10px] text-gray-400 dark:text-gray-500">
+          💡 Math syntax: <code className="font-mono bg-gray-100 dark:bg-gray-700 px-1 rounded">$E=mc^2$</code> for inline &nbsp;|&nbsp;
+          <code className="font-mono bg-gray-100 dark:bg-gray-700 px-1 rounded">$$\frac{"{a}{b}"}$$</code> for block &nbsp;|&nbsp;
+          Click <strong>∑</strong> in toolbar for formula library
+        </p>
+      </div>
     </div>
   );
 }
