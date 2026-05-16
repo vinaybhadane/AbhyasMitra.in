@@ -1,10 +1,8 @@
 import Link from 'next/link';
-import Image from 'next/image';
-import { Suspense } from 'react';
 import { ArrowRight, BookOpen, Star, Users, Zap, ChevronRight, Target, CheckCircle2, Unlock } from 'lucide-react';
 import { Metadata } from 'next';
-import { getPublishedPosts, getPostsBySubject } from '@/lib/firestore';
-import { SUBJECTS, Post } from '@/lib/types';
+import { getPublishedPosts } from '@/lib/firestore';
+import { SUBJECTS } from '@/lib/types';
 import BlogCard from '@/components/BlogCard';
 
 export const metadata: Metadata = {
@@ -14,7 +12,8 @@ export const metadata: Metadata = {
   keywords: 'SPPU 2024 pattern notes, engineering notes, first year engineering, computer engineering notes',
 };
 
-export const revalidate = 3600; // ISR: revalidate every hour
+// Always fetch fresh data so homepage shows latest posts immediately after publish/update
+export const dynamic = 'force-dynamic';
 
 async function getHomeData() {
   try {
@@ -33,7 +32,29 @@ export default async function HomePage() {
   const firstYearSubjects = SUBJECTS.filter((s) => s.year === '1st');
   const secondYearSubjects = SUBJECTS.filter((s) => s.year === '2nd');
 
+  const websiteSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'AbhyasMitra',
+    url: 'https://abhyasmitra.in',
+    description: 'Free notes, solved problems, and study material for SPPU 2024 Pattern engineering students.',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: { '@type': 'EntryPoint', urlTemplate: 'https://abhyasmitra.in/search?q={search_term_string}' },
+      'query-input': 'required name=search_term_string',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'AbhyasMitra',
+      url: 'https://abhyasmitra.in',
+      logo: { '@type': 'ImageObject', url: 'https://abhyasmitra.in/logo12.png' },
+      contactPoint: { '@type': 'ContactPoint', email: 'vinaybhadane06@gmail.com', contactType: 'customer support' },
+    },
+  };
+
   return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }} />
     <div className="page-enter">
       {/* ─── Hero Section ─────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-900 dark:to-indigo-950/30 pt-16 pb-24">
@@ -249,5 +270,6 @@ export default async function HomePage() {
         </div>
       </section>
     </div>
+    </>
   );
 }

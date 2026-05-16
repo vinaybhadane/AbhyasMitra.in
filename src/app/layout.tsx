@@ -49,12 +49,32 @@ export const metadata: Metadata = {
 
 import Script from 'next/script';
 
+const organizationSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'AbhyasMitra',
+  url: 'https://abhyasmitra.in',
+  logo: 'https://abhyasmitra.in/logo12.png',
+  sameAs: [],
+  contactPoint: {
+    '@type': 'ContactPoint',
+    email: 'vinaybhadane06@gmail.com',
+    contactType: 'customer support',
+  },
+};
+
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/logo12.png" />
         <link rel="manifest" href="/site.webmanifest" />
+        {/* Organization schema.org markup */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        />
         {/* Google Analytics */}
         {process.env.NEXT_PUBLIC_GA_ID && (
           <>

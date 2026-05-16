@@ -10,7 +10,9 @@ import { generateTOC, generateArticleJsonLd } from '@/lib/seo';
 import { formatDate } from '@/lib/utils';
 import CommentSection from '@/components/CommentSection';
 import BlogCard from '@/components/BlogCard';
+import AdUnit from '@/components/AdUnit';
 import toast from 'react-hot-toast';
+import { onSnapshot, rtCollection, rtQuery, rtWhere, rtLimit } from '@/lib/firebase';
 
 interface BlogPostClientProps {
   slug: string;
@@ -25,24 +27,35 @@ export default function BlogPostClient({ slug }: BlogPostClientProps) {
   const [tocOpen, setTocOpen] = useState(false);
 
   useEffect(() => {
-    const fetchPost = async () => {
-      try {
-        const p = await getPostBySlug(slug);
-        if (p) {
-          setPost(p);
-          setToc(generateTOC(p.content));
-          await incrementPostViews(p.id);
-          const rel = await getRelatedPosts(p.subject, p.id, 3);
-          setRelated(rel);
-        }
-      } catch {
-        // handle error
-      } finally {
+    // Real-time listener: updates the page whenever the post is edited in Firestore
+    const q = rtQuery(rtCollection('posts'), rtWhere('slug', '==', slug), rtLimit(1));
+    let viewsIncremented = false;
+
+    const unsubscribe = onSnapshot(q, async (snap) => {
+      if (snap.empty) {
         setLoading(false);
+        return;
       }
-    };
-    fetchPost();
+      const docSnap = snap.docs[0];
+      const p = { id: docSnap.id, ...docSnap.data() } as Post;
+      setPost(p);
+      setToc(generateTOC(p.content));
+      setLoading(false);
+
+      // Increment views only once per page load (not on every real-time update)
+      if (!viewsIncremented) {
+        viewsIncremented = true;
+        incrementPostViews(p.id).catch(() => {});
+        const rel = await getRelatedPosts(p.subject, p.id, 3);
+        setRelated(rel);
+      }
+    }, () => {
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
   }, [slug]);
+
 
   // TOC scroll spy
   useEffect(() => {
@@ -95,12 +108,30 @@ export default function BlogPostClient({ slug }: BlogPostClientProps) {
 
   const publishDate = post.publishDate instanceof Date ? post.publishDate : (post.publishDate as any)?.toDate?.();
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://abhyasmitra.in';
+  const subjectSlug = post.subject.toLowerCase().replace(/\s+/g, '-');
+
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl },
+      { '@type': 'ListItem', position: 2, name: post.subject, item: `${siteUrl}/subject/${subjectSlug}` },
+      { '@type': 'ListItem', position: 3, name: post.title, item: `${siteUrl}/${post.slug}` },
+    ],
+  };
+
   return (
     <>
-      {/* JSON-LD */}
+      {/* JSON-LD: Article */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(generateArticleJsonLd(post)) }}
+      />
+      {/* JSON-LD: Breadcrumb */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
       />
 
       <div className="page-enter">
@@ -212,10 +243,13 @@ export default function BlogPostClient({ slug }: BlogPostClientProps) {
                 </div>
               )}
 
-              {/* AdSense Mid-Content */}
-              <div className="adsense-container my-8">
-                <p className="text-xs text-gray-400">Advertisement</p>
-              </div>
+              {/* AdSense – Between article content and comments (high-visibility placement) */}
+              <AdUnit
+                slot="1234567890"
+                format="horizontal"
+                className="my-8"
+                label="Advertisement"
+              />
 
               {/* Comments */}
               <CommentSection postId={post.id} />
@@ -243,9 +277,15 @@ export default function BlogPostClient({ slug }: BlogPostClientProps) {
                 </div>
               )}
 
-              {/* AdSense Sidebar */}
-              <div className="adsense-container h-60 mb-6">
-                <p className="text-xs text-gray-400">Advertisement</p>
+              {/* AdSense Sidebar – Sticky vertical unit */}
+              <div className="sticky top-20">
+                <AdUnit
+                  slot="0987654321"
+                  format="rectangle"
+                  responsive={false}
+                  className="mb-6 min-h-[250px]"
+                  label="Advertisement"
+                />
               </div>
 
               {/* Related Posts */}

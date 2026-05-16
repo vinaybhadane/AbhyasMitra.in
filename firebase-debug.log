@@ -1,0 +1,36 @@
+[debug] [2026-05-15T10:37:12.566Z] ----------------------------------------------------------------------
+[debug] [2026-05-15T10:37:12.569Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\bhada\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --project abhyasmitra-in
+[debug] [2026-05-15T10:37:12.569Z] CLI Version:   15.15.0
+[debug] [2026-05-15T10:37:12.569Z] Platform:      win32
+[debug] [2026-05-15T10:37:12.569Z] Node Version:  v24.7.0
+[debug] [2026-05-15T10:37:12.569Z] Time:          Fri May 15 2026 16:07:12 GMT+0530 (India Standard Time)
+[debug] [2026-05-15T10:37:12.569Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-05-15T10:37:14.319Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-05-15T10:37:14.320Z] > authorizing via signed-in user (bhadane123vinay@gmail.com)
+[debug] [2026-05-15T10:37:14.320Z] [iam] checking project abhyasmitra-in for permissions ["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get","firebasehosting.sites.update","firebaserules.releases.create","firebaserules.releases.update","firebaserules.rulesets.create"]
+[debug] [2026-05-15T10:37:14.321Z] Checked if tokens are valid: false, expires at: 1778835700603
+[debug] [2026-05-15T10:37:14.322Z] Checked if tokens are valid: false, expires at: 1778835700603
+[debug] [2026-05-15T10:37:14.322Z] > refreshing access token with scopes: []
+[debug] [2026-05-15T10:37:14.324Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-05-15T10:37:14.324Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-05-15T10:37:14.641Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2026-05-15T10:37:14.641Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-05-15T10:37:14.650Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/abhyasmitra-in:testIamPermissions [none]
+[debug] [2026-05-15T10:37:14.650Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/abhyasmitra-in:testIamPermissions  x-goog-user-project=abhyasmitra-in
+[debug] [2026-05-15T10:37:14.650Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/abhyasmitra-in:testIamPermissions {"permissions":["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get","firebasehosting.sites.update","firebaserules.releases.create","firebaserules.releases.update","firebaserules.rulesets.create"]}
+[debug] [2026-05-15T10:37:16.583Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/abhyasmitra-in:testIamPermissions 403
+[debug] [2026-05-15T10:37:16.583Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/abhyasmitra-in:testIamPermissions {"error":{"code":403,"message":"Caller does not have required permission to use project abhyasmitra-in. Grant the caller the roles/serviceusage.serviceUsageConsumer role, or a custom role with the serviceusage.services.use permission, by visiting https://console.developers.google.com/iam-admin/iam?project=abhyasmitra-in and then retry. Propagation of the new permission may take a few minutes.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"USER_PROJECT_DENIED","domain":"googleapis.com","metadata":{"containerInfo":"abhyasmitra-in","service":"cloudresourcemanager.googleapis.com","consoleUrl":"https://console.developers.google.com/iam-admin/iam?project=abhyasmitra-in","consumer":"projects/abhyasmitra-in"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Caller does not have required permission to use project abhyasmitra-in. Grant the caller the roles/serviceusage.serviceUsageConsumer role, or a custom role with the serviceusage.services.use permission, by visiting https://console.developers.google.com/iam-admin/iam?project=abhyasmitra-in and then retry. Propagation of the new permission may take a few minutes."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developer console IAM admin","url":"https://console.developers.google.com/iam-admin/iam?project=abhyasmitra-in"}]}]}}
+[debug] [2026-05-15T10:37:16.583Z] [iam] error while checking permissions, command may fail: Request to https://cloudresourcemanager.googleapis.com/v1/projects/abhyasmitra-in:testIamPermissions had HTTP Error: 403, Caller does not have required permission to use project abhyasmitra-in. Grant the caller the roles/serviceusage.serviceUsageConsumer role, or a custom role with the serviceusage.services.use permission, by visiting https://console.developers.google.com/iam-admin/iam?project=abhyasmitra-in and then retry. Propagation of the new permission may take a few minutes.
+[debug] [2026-05-15T10:37:16.584Z] Checked if tokens are valid: true, expires at: 1778845033641
+[debug] [2026-05-15T10:37:16.584Z] Checked if tokens are valid: true, expires at: 1778845033641
+[debug] [2026-05-15T10:37:16.585Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/abhyasmitra-in [none]
+[debug] [2026-05-15T10:37:17.060Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/abhyasmitra-in 403
+[debug] [2026-05-15T10:37:17.060Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/abhyasmitra-in {"error":{"code":403,"message":"The caller does not have permission","status":"PERMISSION_DENIED"}}
+[debug] [2026-05-15T10:37:17.061Z] Request to https://firebase.googleapis.com/v1beta1/projects/abhyasmitra-in had HTTP Error: 403, The caller does not have permission
+[debug] [2026-05-15T10:37:17.273Z] FirebaseError: Request to https://firebase.googleapis.com/v1beta1/projects/abhyasmitra-in had HTTP Error: 403, The caller does not have permission
+    at responseToError (C:\Users\bhada\AppData\Roaming\npm\node_modules\firebase-tools\lib\responseToError.js:53:12)
+    at RetryOperation._fn (C:\Users\bhada\AppData\Roaming\npm\node_modules\firebase-tools\lib\apiv2.js:333:77)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[error] 
+[error] Error: Failed to get Firebase project abhyasmitra-in. Please make sure the project exists and your account has permission to access it.

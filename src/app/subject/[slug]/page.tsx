@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   });
 }
 
-export const revalidate = 60; // 1 minute revalidation for faster updates
+export const dynamic = 'force-dynamic'; // Always fresh post counts
 
 export default async function SubjectPage({ params }: PageProps) {
   const { slug } = await params;
@@ -41,20 +41,29 @@ export default async function SubjectPage({ params }: PageProps) {
     posts = [];
   }
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://abhyasmitra.in';
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
     name: `${subject.name} Notes – SPPU 2024 Pattern`,
     description: subject.description,
-    url: `${process.env.NEXT_PUBLIC_SITE_URL}/subject/${slug}`,
+    url: `${siteUrl}/subject/${slug}`,
+  };
+
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl },
+      { '@type': 'ListItem', position: 2, name: subject.name, item: `${siteUrl}/subject/${slug}` },
+    ],
   };
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
       <div className="page-enter">
         {/* Breadcrumb */}
         <nav aria-label="Breadcrumb" className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">

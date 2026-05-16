@@ -91,8 +91,10 @@ export default function Footer() {
                 { href: '/', label: 'Home' },
                 { href: '/about', label: 'About Us' },
                 { href: '/contact', label: 'Contact' },
+                { href: '/faq', label: 'FAQ' },
                 { href: '/search', label: 'Search Notes' },
                 { href: '/privacy-policy', label: 'Privacy Policy' },
+                { href: '/cookie-policy', label: 'Cookie Policy' },
                 { href: '/terms-and-conditions', label: 'Terms & Conditions' },
               ].map(({ href, label }) => (
                 <li key={href}>
