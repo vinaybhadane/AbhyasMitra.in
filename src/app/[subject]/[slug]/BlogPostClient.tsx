@@ -11,7 +11,6 @@ import { formatDate } from '@/lib/utils';
 import CommentSection from '@/components/CommentSection';
 import BlogCard from '@/components/BlogCard';
 import AdUnit from '@/components/AdUnit';
-import MathRenderer from '@/components/MathRenderer';
 import toast from 'react-hot-toast';
 import { onSnapshot, rtCollection, rtQuery, rtWhere, rtLimit } from '@/lib/firebase';
 
@@ -221,8 +220,11 @@ export default function BlogPostClient({ slug }: BlogPostClientProps) {
                 </div>
               )}
 
-              {/* Content — rendered with KaTeX math support */}
-              <MathRenderer html={processedContent()} />
+              {/* Content */}
+              <div
+                className="prose max-w-none"
+                dangerouslySetInnerHTML={{ __html: processedContent() }}
+              />
 
               {/* Tags */}
               {post.tags?.length > 0 && (
