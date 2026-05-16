@@ -21,21 +21,38 @@ import {
   QueryDocumentSnapshot,
   Timestamp,
 } from './firebase';
-import { Post, Comment, ContactMessage } from './types';
+import { Post, Comment, ContactMessage, SubjectUnit } from './types';
 import { calculateReadingTime } from './seo';
 import slugify from 'slugify';
 
+/** Strip HTML tags and count words */
+export function countWords(html: string): number {
+  const text = html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+  return text ? text.split(' ').filter(Boolean).length : 0;
+}
+
 // ─── Posts ────────────────────────────────────────────────────────────────────
 
-export async function createPost(data: Omit<Post, 'id' | 'createdAt' | 'updatedAt' | 'views' | 'readingTime' | 'slug'>): Promise<string> {
+/**
+ * Creates a post. Pass `customSlugSuffix` (just the post part, not subject/) to override auto-slug.
+ * Slug format is always: subject-slug/post-slug
+ */
+export async function createPost(
+  data: Omit<Post, 'id' | 'createdAt' | 'updatedAt' | 'views' | 'readingTime' | 'slug' | 'wordCount'>,
+  customSlugSuffix?: string
+): Promise<string> {
   const subjectSlug = slugify(data.subject, { lower: true, strict: true });
-  const titleSlug = slugify(data.title, { lower: true, strict: true });
-  const slug = `${subjectSlug}/${titleSlug}`;
+  const postPart = customSlugSuffix
+    ? slugify(customSlugSuffix, { lower: true, strict: true })
+    : slugify(data.title, { lower: true, strict: true });
+  const slug = `${subjectSlug}/${postPart}`;
   const readingTime = calculateReadingTime(data.content);
+  const wordCount = countWords(data.content);
   const docRef = await addDoc(collection(db, 'posts'), {
     ...data,
     slug,
     readingTime,
+    wordCount,
     views: 0,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
@@ -43,25 +60,35 @@ export async function createPost(data: Omit<Post, 'id' | 'createdAt' | 'updatedA
   return docRef.id;
 }
 
-export async function updatePost(id: string, data: Partial<Post>): Promise<void> {
+/**
+ * Updates a post. Pass `customSlugSuffix` (post part only) to override the slug post-part.
+ * If title or subject changes and no custom suffix, slug is auto-regenerated.
+ */
+export async function updatePost(
+  id: string,
+  data: Partial<Post>,
+  customSlugSuffix?: string
+): Promise<void> {
   const postRef = doc(db, 'posts', id);
   const updates: Record<string, unknown> = { ...data, updatedAt: serverTimestamp() };
-  
-  if (data.title || data.subject) {
+
+  if (data.title || data.subject || customSlugSuffix !== undefined) {
     const snap = await getDoc(postRef);
     if (snap.exists()) {
       const currentData = snap.data() as Post;
-      const finalTitle = data.title || currentData.title;
       const finalSubject = data.subject || currentData.subject;
-      
+      const finalTitle = data.title || currentData.title;
       const subjectSlug = slugify(finalSubject, { lower: true, strict: true });
-      const titleSlug = slugify(finalTitle, { lower: true, strict: true });
-      updates.slug = `${subjectSlug}/${titleSlug}`;
+      const postPart = customSlugSuffix !== undefined && customSlugSuffix !== ''
+        ? slugify(customSlugSuffix, { lower: true, strict: true })
+        : slugify(finalTitle, { lower: true, strict: true });
+      updates.slug = `${subjectSlug}/${postPart}`;
     }
   }
 
   if (data.content) {
     updates.readingTime = calculateReadingTime(data.content);
+    updates.wordCount = countWords(data.content);
   }
   await updateDoc(postRef, updates);
 }
@@ -252,4 +279,29 @@ export async function uploadImage(file: File, path: string): Promise<string> {
 export async function deleteImage(url: string): Promise<void> {
   const storageRef = ref(storage, url);
   await deleteObject(storageRef);
+}
+
+// ─── Subject Units ────────────────────────────────────────────────────────────
+
+export async function getUnitsBySubject(subjectSlug: string): Promise<SubjectUnit[]> {
+  const q = query(collection(db, 'units'), where('subjectSlug', '==', subjectSlug));
+  const snap = await getDocs(q);
+  const units = snap.docs.map((d) => ({ id: d.id, ...d.data() } as SubjectUnit));
+  return units.sort((a, b) => a.order - b.order);
+}
+
+export async function createUnit(data: Omit<SubjectUnit, 'id' | 'createdAt'>): Promise<string> {
+  const docRef = await addDoc(collection(db, 'units'), {
+    ...data,
+    createdAt: serverTimestamp(),
+  });
+  return docRef.id;
+}
+
+export async function updateUnit(id: string, data: Partial<SubjectUnit>): Promise<void> {
+  await updateDoc(doc(db, 'units', id), data);
+}
+
+export async function deleteUnit(id: string): Promise<void> {
+  await deleteDoc(doc(db, 'units', id));
 }

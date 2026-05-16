@@ -26,6 +26,7 @@ export interface Post {
   tags: string[];
   category: string;
   subject: string;
+  unit?: string;          // e.g. "Unit 1: Introduction"
   year: '1st' | '2nd';
   metaTitle: string;
   metaDescription: string;
@@ -34,10 +35,20 @@ export interface Post {
   authorEmail: string;
   publishDate: Timestamp | Date;
   readingTime: number;
+  wordCount: number;      // for content quality tracking
   views: number;
   status: 'draft' | 'published';
   createdAt: Timestamp | Date;
   updatedAt: Timestamp | Date;
+}
+
+/** A unit/chapter grouping within a subject, stored in Firestore 'units' collection */
+export interface SubjectUnit {
+  id: string;
+  subjectSlug: string;    // e.g. "engineering-mathematics-2"
+  name: string;           // e.g. "Unit 1: Differential Equations"
+  order: number;          // for sorting
+  createdAt: Timestamp | Date;
 }
 
 export interface Comment {

@@ -14,6 +14,7 @@ import {
   LogOut,
   BookOpen,
   Shield,
+  BookMarked,
 } from 'lucide-react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -54,6 +55,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: '/admin', icon: LayoutDashboard, label: 'Dashboard' },
     { href: '/admin/posts', icon: FileText, label: 'All Posts' },
     { href: '/admin/posts/new', icon: PlusCircle, label: 'New Post' },
+    { href: '/admin/units', icon: BookMarked, label: 'Units' },
     { href: '/admin/comments', icon: MessageSquare, label: 'Comments' },
     { href: '/admin/messages', icon: Mail, label: 'Messages' },
     { href: '/admin/media', icon: Image, label: 'Media' },
