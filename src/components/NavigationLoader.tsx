@@ -1,13 +1,9 @@
 'use client';
 
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback, useRef, Suspense } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 
-/**
- * Thin top-of-page progress bar shown during Next.js route transitions.
- * Intercepts <a> clicks to start, listens to pathname changes to finish.
- */
-export default function NavigationLoader() {
+function NavigationLoaderContent() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
@@ -98,5 +94,18 @@ export default function NavigationLoader() {
         }}
       />
     </div>
+  );
+}
+
+/**
+ * Thin top-of-page progress bar shown during Next.js route transitions.
+ * Intercepts <a> clicks to start, listens to pathname changes to finish.
+ * Wrapped in Suspense to prevent build-time missing-suspense-with-csr-bailout errors.
+ */
+export default function NavigationLoader() {
+  return (
+    <Suspense fallback={null}>
+      <NavigationLoaderContent />
+    </Suspense>
   );
 }
