@@ -5,6 +5,7 @@ import { ThemeProvider } from 'next-themes';
 import { AuthProvider } from '@/contexts/AuthContext';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import NavigationLoader from '@/components/NavigationLoader';
 import { Toaster } from 'react-hot-toast';
 
 const inter = Inter({
@@ -103,8 +104,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           />
         )}
       </head>
-      <body className={`${inter.variable} font-sans antialiased bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100`}>
+      <body className={`${inter.variable} font-sans antialiased bg-[#f8fafc] dark:bg-[#0f172a] text-gray-900 dark:text-gray-100`}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem storageKey="abhyasmitra-theme">
+          <NavigationLoader />
           <AuthProvider>
             <Toaster position="top-right" toastOptions={{ className: 'dark:bg-gray-800 dark:text-white' }} />
             <Navbar />
