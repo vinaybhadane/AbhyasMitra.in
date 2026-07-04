@@ -110,7 +110,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <AuthProvider>
             <Toaster position="top-right" toastOptions={{ className: 'dark:bg-gray-800 dark:text-white' }} />
             <Navbar />
-            <main className="min-h-screen pt-16">{children}</main>
+            <main className="min-h-screen pt-[96px]">{children}</main>
             <Footer />
           </AuthProvider>
         </ThemeProvider>
