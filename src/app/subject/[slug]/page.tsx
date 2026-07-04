@@ -3,9 +3,10 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ChevronRight, BookOpen, TrendingUp, CheckCircle2, Layers } from 'lucide-react';
 import { getSubjectBySlug, SUBJECTS, Post, SubjectUnit } from '@/lib/types';
-import { getPostsBySubject, getUnitsBySubject } from '@/lib/firestore';
-import BlogCard from '@/components/BlogCard';
+import { getPostsBySubject, getUnitsBySubject, getAllBrowseConfigs } from '@/lib/firestore';
+import PostGridCard from '@/components/PostGridCard';
 import { generateMetadata as genMeta } from '@/lib/seo';
+import Image from 'next/image';
 
 const WA_URL = 'https://whatsapp.com/channel/0029VbD3UKE8aKvOTKJcwK1K';
 
@@ -44,11 +45,22 @@ export default async function SubjectPage({ params }: PageProps) {
 
   let posts: Post[] = [];
   let units: SubjectUnit[] = [];
+  let bgImageUrl = '';
+
   try {
-    [posts, units] = await Promise.all([
+    const configKey = subject.year === '1st' ? `first-year/${slug}` : `computer/2nd/${slug}`;
+    const [postsData, unitsData, allConfigs] = await Promise.all([
       getPostsBySubject(subject.name, 50),
       getUnitsBySubject(slug),
+      getAllBrowseConfigs(),
     ]);
+    posts = postsData;
+    units = unitsData;
+
+    const matchedConfig = allConfigs.find(c => c.id === configKey);
+    if (matchedConfig?.bgImageUrl) {
+      bgImageUrl = matchedConfig.bgImageUrl;
+    }
   } catch {
     posts = []; units = [];
   }
@@ -106,8 +118,20 @@ export default async function SubjectPage({ params }: PageProps) {
         </nav>
 
         {/* Subject Hero */}
-        <section className={`bg-gradient-to-br ${subject.color} py-16 relative overflow-hidden`}>
-          <div className="absolute inset-0 bg-black/20" />
+        <section 
+          className={`bg-gradient-to-br ${subject.color} py-16 relative overflow-hidden`}
+          style={bgImageUrl ? { background: 'none' } : undefined}
+        >
+          {bgImageUrl && (
+            <Image
+              src={bgImageUrl}
+              alt={subject.name}
+              fill
+              className="object-cover"
+              priority
+            />
+          )}
+          <div className="absolute inset-0 bg-black/45 backdrop-blur-[2px]" />
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative text-white">
             <div className="max-w-2xl">
               <div className="text-6xl mb-4">{subject.icon}</div>
@@ -165,8 +189,8 @@ export default async function SubjectPage({ params }: PageProps) {
                           <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">{unit.name}</h2>
                           <span className="text-xs text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full">{unitPosts.length} notes</span>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {unitPosts.map(post => <BlogCard key={post.id} post={post} variant="featured" />)}
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                          {unitPosts.map(post => <PostGridCard key={post.id} post={post} />)}
                         </div>
                       </section>
                     );
@@ -177,8 +201,8 @@ export default async function SubjectPage({ params }: PageProps) {
                         <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Other Notes</h2>
                         <span className="text-xs text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full">{uncategorized.length}</span>
                       </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {uncategorized.map(post => <BlogCard key={post.id} post={post} variant="featured" />)}
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                        {uncategorized.map(post => <PostGridCard key={post.id} post={post} />)}
                       </div>
                     </section>
                   )}
@@ -193,8 +217,8 @@ export default async function SubjectPage({ params }: PageProps) {
                       All {subject.name} Notes ({posts.length})
                     </h2>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-                    {posts.map(post => <BlogCard key={post.id} post={post} variant="featured" />)}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-12">
+                    {posts.map(post => <PostGridCard key={post.id} post={post} />)}
                   </div>
                   <WhatsAppBanner subjectName={subject.name} />
                 </>

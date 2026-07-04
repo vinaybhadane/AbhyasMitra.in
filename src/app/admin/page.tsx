@@ -120,9 +120,10 @@ export default function AdminDashboard() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         {[
           { href: '/admin/posts/new', icon: PlusCircle, label: 'New Post', color: 'bg-indigo-600 text-white' },
+          { href: '/admin/browse', icon: BarChart3, label: 'Browse Manager', color: 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700' },
           { href: '/admin/comments', icon: MessageSquare, label: 'View Comments', color: 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700' },
           { href: '/admin/messages', icon: Mail, label: 'View Messages', color: 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700' },
           { href: '/', icon: Eye, label: 'View Site', color: 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700' },

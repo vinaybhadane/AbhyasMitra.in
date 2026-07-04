@@ -58,5 +58,21 @@ service cloud.firestore {
       // Only admin can read, update, delete
       allow read, update, delete: if isAdmin();
     }
+
+    // ─── Units Collection ─────────────────────────────────────────────────────
+    match /units/{unitId} {
+      // Anyone can read units
+      allow read: if true;
+      // Only admin can manage
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ─── Browse Config Collection ─────────────────────────────────────────────
+    match /browseConfig/{configId} {
+      // Anyone can read config
+      allow read: if true;
+      // Only admin can manage
+      allow create, update, delete: if isAdmin();
+    }
   }
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { Save, Eye, Tag, Info, Link2, AlertTriangle, CheckCircle2, BookMarked } from 'lucide-react';
 import { createPost, getUnitsBySubject, countWords } from '@/lib/firestore';
@@ -34,12 +34,15 @@ const MIN_WORDS = 300; // minimum for SEO quality
 export default function NewPostPage() {
   const { user } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const urlSubject = searchParams.get('subject');
+
   const [form, setForm] = useState<PostFormData>({
     title: '',
     content: '',
     featuredImage: '',
     tags: '',
-    subject: '',
+    subject: urlSubject || '',
     unit: '',
     year: '1st',
     metaTitle: '',

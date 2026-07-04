@@ -6,6 +6,7 @@ import {
   getDoc,
   getDocs,
   addDoc,
+  setDoc,
   updateDoc,
   deleteDoc,
   query,
@@ -305,3 +306,34 @@ export async function updateUnit(id: string, data: Partial<SubjectUnit>): Promis
 export async function deleteUnit(id: string): Promise<void> {
   await deleteDoc(doc(db, 'units', id));
 }
+
+// ─── Browse Config (bgImageUrl per branch / year / subject) ───────────────────
+
+export interface BrowseConfig {
+  id: string;       // e.g. 'computer', 'computer/2nd', 'computer/2nd/database-management-system'
+  bgImageUrl?: string;
+}
+
+export async function getBrowseConfig(id: string): Promise<BrowseConfig | null> {
+  const snap = await getDoc(doc(db, 'browseConfig', id));
+  if (!snap.exists()) return null;
+  return { id: snap.id, ...snap.data() } as BrowseConfig;
+}
+
+export async function getAllBrowseConfigs(): Promise<BrowseConfig[]> {
+  const snap = await getDocs(collection(db, 'browseConfig'));
+  return snap.docs.map(d => ({ id: d.id, ...d.data() } as BrowseConfig));
+}
+
+export async function setBrowseConfig(id: string, data: Partial<BrowseConfig>): Promise<void> {
+  await updateDoc(doc(db, 'browseConfig', id), data).catch(async () => {
+    // If doc doesn't exist yet, create it
+    await addDoc(collection(db, 'browseConfig'), { id, ...data });
+  });
+}
+
+export async function upsertBrowseConfig(id: string, bgImageUrl: string): Promise<void> {
+  const docRef = doc(db, 'browseConfig', id);
+  await setDoc(docRef, { bgImageUrl }, { merge: true });
+}
+
