@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import { Save, Eye, Tag, Info, Link2, AlertTriangle, CheckCircle2, BookMarked } from 'lucide-react';
+import { Save, Eye, Tag, Info, Link2, AlertTriangle, CheckCircle2, BookMarked, Loader2 } from 'lucide-react';
 import { createPost, getUnitsBySubject, countWords } from '@/lib/firestore';
 import { useAuth } from '@/contexts/AuthContext';
 import { SUBJECTS, SubjectUnit } from '@/lib/types';
@@ -31,7 +31,7 @@ interface PostFormData {
 
 const MIN_WORDS = 300; // minimum for SEO quality
 
-export default function NewPostPage() {
+function NewPostForm() {
   const { user } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -371,5 +371,19 @@ export default function NewPostPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+import { Suspense } from 'react';
+
+export default function NewPostPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+      </div>
+    }>
+      <NewPostForm />
+    </Suspense>
   );
 }
