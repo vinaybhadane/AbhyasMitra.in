@@ -122,33 +122,30 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
 }
 
 export async function getPublishedPosts(limitCount = 10, lastDoc?: QueryDocumentSnapshot): Promise<{ posts: Post[]; lastDoc: QueryDocumentSnapshot | null }> {
-  // To avoid composite index requirements, we fetch ordered by date and filter in JS
   let q = query(
     collection(db, 'posts'),
+    where('status', '==', 'published'),
     orderBy('publishDate', 'desc'),
-    limit(limitCount * 3) // Fetch extra to account for drafts
+    limit(limitCount)
   );
   if (lastDoc) q = query(q, startAfter(lastDoc));
   const snap = await getDocs(q);
   
-  const allPosts = snap.docs.map((d) => ({ id: d.id, ...d.data() } as Post));
-  const publishedPosts = allPosts.filter(p => p.status === 'published').slice(0, limitCount);
-  
+  const publishedPosts = snap.docs.map((d) => ({ id: d.id, ...d.data() } as Post));
   const newLastDoc = snap.docs.length > 0 ? snap.docs[snap.docs.length - 1] : null;
   return { posts: publishedPosts, lastDoc: newLastDoc };
 }
 
 export async function getPostsBySubject(subject: string, limitCount = 10): Promise<Post[]> {
-  // Avoid composite index: fetch by subject, filter/sort in memory
   const q = query(
     collection(db, 'posts'),
-    where('subject', '==', subject)
+    where('subject', '==', subject),
+    where('status', '==', 'published')
   );
   const snap = await getDocs(q);
   const posts = snap.docs.map((d) => ({ id: d.id, ...d.data() } as Post));
   
   return posts
-    .filter(p => p.status === 'published')
     .sort((a, b) => {
       const aTime = a.publishDate instanceof Timestamp ? a.publishDate.toMillis() : (a.publishDate as Date).getTime();
       const bTime = b.publishDate instanceof Timestamp ? b.publishDate.toMillis() : (b.publishDate as Date).getTime();
@@ -164,32 +161,35 @@ export async function getAllPosts(): Promise<Post[]> {
 }
 
 export async function searchPosts(searchTerm: string): Promise<Post[]> {
-  // Fetch all and filter client-side to avoid full-text search / composite indexes
-  const q = query(collection(db, 'posts'), orderBy('publishDate', 'desc'));
+  const q = query(
+    collection(db, 'posts'),
+    where('status', '==', 'published'),
+    orderBy('publishDate', 'desc')
+  );
   const snap = await getDocs(q);
   const all = snap.docs.map((d) => ({ id: d.id, ...d.data() } as Post));
   const term = searchTerm.toLowerCase();
   
   return all.filter(
     (p) =>
-      p.status === 'published' &&
-      (p.title.toLowerCase().includes(term) ||
+      p.title.toLowerCase().includes(term) ||
       p.tags.some((t) => t.toLowerCase().includes(term)) ||
       p.subject.toLowerCase().includes(term) ||
-      p.excerpt.toLowerCase().includes(term))
+      p.excerpt.toLowerCase().includes(term)
   );
 }
 
 export async function getRelatedPosts(subject: string, currentId: string, limitCount = 3): Promise<Post[]> {
   const q = query(
     collection(db, 'posts'),
-    where('subject', '==', subject)
+    where('subject', '==', subject),
+    where('status', '==', 'published')
   );
   const snap = await getDocs(q);
   const posts = snap.docs.map((d) => ({ id: d.id, ...d.data() } as Post));
   
   return posts
-    .filter(p => p.status === 'published' && p.id !== currentId)
+    .filter(p => p.id !== currentId)
     .sort((a, b) => {
       const aTime = a.publishDate instanceof Timestamp ? a.publishDate.toMillis() : (a.publishDate as Date).getTime();
       const bTime = b.publishDate instanceof Timestamp ? b.publishDate.toMillis() : (b.publishDate as Date).getTime();
