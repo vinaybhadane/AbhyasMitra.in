@@ -80,8 +80,7 @@ export default function EditPostPage() {
       return;
     }
     if (status === 'published' && !wordCountOk) {
-      toast.error(`Need at least ${MIN_WORDS} words for quality (${wordCount} now)`);
-      return;
+      toast.error(`Warning: Content is short (${wordCount} words). Recommended minimum is ${MIN_WORDS} for SEO.`);
     }
     setSaving(true);
     try {

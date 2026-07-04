@@ -37,14 +37,21 @@ export default function NewPostPage() {
   const searchParams = useSearchParams();
   const urlSubject = searchParams.get('subject');
 
+  // Find matching subject object to determine correct year
+  const preloadedSubjectObj = urlSubject
+    ? SUBJECTS.find(s => s.name.toLowerCase() === urlSubject.toLowerCase() || s.slug === urlSubject)
+    : null;
+  const initialYear = preloadedSubjectObj ? preloadedSubjectObj.year : '1st';
+  const initialSubject = preloadedSubjectObj ? preloadedSubjectObj.name : '';
+
   const [form, setForm] = useState<PostFormData>({
     title: '',
     content: '',
     featuredImage: '',
     tags: '',
-    subject: urlSubject || '',
+    subject: initialSubject,
     unit: '',
-    year: '1st',
+    year: initialYear,
     metaTitle: '',
     metaDescription: '',
     keywords: '',
@@ -84,8 +91,7 @@ export default function NewPostPage() {
     if (!form.subject) { toast.error('Please select a subject'); return; }
     if (!user) return;
     if (status === 'published' && !wordCountOk) {
-      toast.error(`Content needs at least ${MIN_WORDS} words for SEO quality (currently ${wordCount})`);
-      return;
+      toast.error(`Warning: Content is short (${wordCount} words). Recommended minimum is ${MIN_WORDS} for SEO.`);
     }
 
     setSaving(true);
