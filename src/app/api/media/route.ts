@@ -31,9 +31,13 @@ export async function GET() {
       // Determine file extension to classify type
       const isPdf = blob.name.toLowerCase().endsWith('.pdf');
       
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || '';
+      const baseUrl = siteUrl.endsWith('/') ? siteUrl.slice(0, -1) : siteUrl;
+      const fileUrl = `${baseUrl}/media/${blob.name}`;
+
       files.push({
         name: blob.name.split('/').pop() || blob.name,
-        url: blockBlobClient.url,
+        url: fileUrl,
         path: blob.name,
         size: blob.properties.contentLength
           ? `${(blob.properties.contentLength / 1024).toFixed(0)} KB`
@@ -113,8 +117,12 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || '';
+    const baseUrl = siteUrl.endsWith('/') ? siteUrl.slice(0, -1) : siteUrl;
+    const fileUrl = `${baseUrl}/media/${blobPath}`;
+
     return NextResponse.json({
-      url: blockBlobClient.url,
+      url: fileUrl,
       name: file.name,
       path: blobPath,
       size: `${(file.size / 1024).toFixed(0)} KB`,
@@ -143,15 +151,20 @@ export async function DELETE(request: NextRequest) {
     // Parse blob name from public Azure Blob URL
     // e.g., https://myaccount.blob.core.windows.net/media/media/myimage-1234.webp -> media/myimage-1234.webp
     let blobName = '';
-    try {
-      const urlObj = new URL(fileUrl);
-      const pathParts = urlObj.pathname.split('/').filter(Boolean);
-      // Remove container name (first segment) to extract the remaining blob path
-      pathParts.shift();
-      blobName = decodeURIComponent(pathParts.join('/'));
-    } catch {
-      // Fallback: assume the input is already a direct path if URL parsing fails
-      blobName = fileUrl;
+    const cleanedUrl = fileUrl.trim();
+    
+    if (cleanedUrl.includes('/media/')) {
+      const parts = cleanedUrl.split('/media/');
+      blobName = decodeURIComponent(parts[parts.length - 1]);
+    } else {
+      try {
+        const urlObj = new URL(cleanedUrl);
+        const pathParts = urlObj.pathname.split('/').filter(Boolean);
+        pathParts.shift();
+        blobName = decodeURIComponent(pathParts.join('/'));
+      } catch {
+        blobName = cleanedUrl;
+      }
     }
 
     if (!blobName) {

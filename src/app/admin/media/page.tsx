@@ -87,7 +87,8 @@ export default function AdminMediaPage() {
   };
 
   const handleCopyUrl = (url: string) => {
-    navigator.clipboard.writeText(url);
+    const absoluteUrl = url.startsWith('/') ? `${window.location.origin}${url}` : url;
+    navigator.clipboard.writeText(absoluteUrl);
     toast.success('URL copied to clipboard!');
   };
 
