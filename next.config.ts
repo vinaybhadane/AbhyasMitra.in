@@ -25,6 +25,10 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'i.ibb.co',
       },
+      {
+        protocol: 'https',
+        hostname: '*.blob.core.windows.net',
+      },
     ],
     formats: ['image/avif', 'image/webp'],
   },

@@ -1,6 +1,5 @@
 import {
   db,
-  storage,
   collection,
   doc,
   getDoc,
@@ -15,10 +14,6 @@ import {
   limit,
   startAfter,
   serverTimestamp,
-  ref,
-  uploadBytes,
-  getDownloadURL,
-  deleteObject,
   QueryDocumentSnapshot,
   Timestamp,
 } from './firebase';
@@ -270,16 +265,33 @@ export async function deleteContactMessage(id: string): Promise<void> {
 // ─── Storage ──────────────────────────────────────────────────────────────────
 
 export async function uploadImage(file: File, path: string): Promise<string> {
-  const storageRef = ref(storage, path);
-  // Explicitly set contentType so Firebase storage rules can validate it
-  const metadata = { contentType: file.type || 'image/webp' };
-  await uploadBytes(storageRef, file, metadata);
-  return getDownloadURL(storageRef);
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('path', path);
+
+  const response = await fetch('/api/media', {
+    method: 'POST',
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || 'Failed to upload to Azure');
+  }
+
+  const data = await response.json();
+  return data.url;
 }
 
 export async function deleteImage(url: string): Promise<void> {
-  const storageRef = ref(storage, url);
-  await deleteObject(storageRef);
+  const response = await fetch(`/api/media?url=${encodeURIComponent(url)}`, {
+    method: 'DELETE',
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || 'Failed to delete from Azure');
+  }
 }
 
 // ─── Subject Units ────────────────────────────────────────────────────────────
