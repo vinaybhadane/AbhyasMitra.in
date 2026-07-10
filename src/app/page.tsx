@@ -127,7 +127,7 @@ export default async function HomePage() {
       <div style={{ background: 'var(--am-bg-page)' }}>
 
         {/* ── Hero Header ─────────────────────────────────────────────── */}
-        <section className="pt-8 pb-2">
+        <section className="pt-8 pb-2" id="branches">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             {/* Last visited resume banner */}
             <LastVisitedBanner />

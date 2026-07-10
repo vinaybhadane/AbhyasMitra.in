@@ -2,134 +2,404 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
-import { useTheme } from 'next-themes';
-import { Search, X, Sun, Moon, BookOpen, User, LogOut, Shield } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
+
+// Navigation items definition
+const NAV_ITEMS = [
+  { label: 'Home', href: '/' },
+  { label: 'Branches', href: '/#branches' },
+  { label: 'Study Material', href: '/search' },
+  { label: 'Community', href: 'https://whatsapp.com/channel/0029VbD3UKE8aKvOTKJcwK1K', external: true },
+  { label: 'Contact Us', href: '/contact' }
+];
 
 export default function Navbar() {
-  const { resolvedTheme, setTheme } = useTheme();
-  const { user, isAdminUser, signInWithGoogle, logout } = useAuth();
-  const [mounted, setMounted] = useState(false);
-  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const searchInputRef = useRef<HTMLInputElement>(null);
-  const mobileSearchRef = useRef<HTMLInputElement>(null);
+  const [activeHash, setActiveHash] = useState('');
+  
+  const drawerRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
+  // Monitor scroll for subtle shadow
   useEffect(() => {
-    setMounted(true);
-    const handler = () => setScrolled(window.scrollY > 10);
-    window.addEventListener('scroll', handler);
-    return () => window.removeEventListener('scroll', handler);
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 10);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Monitor hash changes to keep navigation states active
   useEffect(() => {
-    if (mobileSearchOpen && mobileSearchRef.current) {
-      mobileSearchRef.current.focus();
-    }
-  }, [mobileSearchOpen]);
+    const timer = setTimeout(() => {
+      setActiveHash(window.location.hash);
+    }, 0);
+    
+    const handleHashChange = () => {
+      setActiveHash(window.location.hash);
+    };
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      window.location.href = `/search?q=${encodeURIComponent(searchQuery.trim())}`;
+    window.addEventListener('hashchange', handleHashChange);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('hashchange', handleHashChange);
+    };
+  }, [pathname]);
+
+  // Support clicking Home to reset hash manually on same page
+  const handleNavClick = (item: typeof NAV_ITEMS[0]) => {
+    if (item.href === '/') {
+      setActiveHash('');
+    } else if (item.href.startsWith('/#')) {
+      setActiveHash(item.href.substring(1));
+    }
+    setIsOpen(false);
+  };
+
+  // Prevent body scrolling while drawer is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
+  // Close on ESC key press
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsOpen(false);
+        triggerRef.current?.focus();
+      }
+    };
+    if (isOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen]);
+
+  // Focus trap for accessibility
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const drawer = drawerRef.current;
+    if (!drawer) return;
+
+    const focusableElements = drawer.querySelectorAll<HTMLElement>(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    if (focusableElements.length === 0) return;
+
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+
+    firstElement.focus();
+
+    const handleTab = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return;
+
+      if (e.shiftKey) {
+        if (document.activeElement === firstElement) {
+          lastElement.focus();
+          e.preventDefault();
+        }
+      } else {
+        if (document.activeElement === lastElement) {
+          firstElement.focus();
+          e.preventDefault();
+        }
+      }
+    };
+
+    drawer.addEventListener('keydown', handleTab);
+    return () => {
+      drawer.removeEventListener('keydown', handleTab);
+    };
+  }, [isOpen]);
+
+  // Helper to determine if an item is active
+  const isItemActive = (item: typeof NAV_ITEMS[0]) => {
+    if (item.external) return false;
+
+    if (item.href === '/') {
+      return pathname === '/' && activeHash !== '#branches';
+    }
+    if (item.href === '/#branches') {
+      return pathname === '/' && activeHash === '#branches';
+    }
+    if (item.href === '/search') {
+      return (
+        pathname === '/search' ||
+        pathname.startsWith('/subject') ||
+        pathname.startsWith('/browse') ||
+        pathname.startsWith('/subjects')
+      );
+    }
+    if (item.href === '/contact') {
+      return pathname === '/contact';
+    }
+    return pathname === item.href;
+  };
+
+  // Render outline SVG icons for the mobile drawer
+  const renderDrawerIcon = (label: string) => {
+    switch (label) {
+      case 'Home':
+        return (
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+            <polyline points="9 22 9 12 15 12 15 22" />
+          </svg>
+        );
+      case 'Branches':
+        return (
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z" />
+            <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5" />
+            <path d="M21.5 12v6" />
+          </svg>
+        );
+      case 'Study Material':
+        return (
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+          </svg>
+        );
+      case 'Community':
+        return (
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          </svg>
+        );
+      case 'Contact Us':
+        return (
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <rect width="20" height="16" x="2" y="4" rx="2" />
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+          </svg>
+        );
+      default:
+        return null;
     }
   };
 
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-200 ${scrolled ? 'shadow-md' : ''}`}
-      style={{
-        backgroundColor: 'var(--am-header-bg)',
-        borderBottom: `1px solid var(--am-header-border)`,
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-      }}
-    >
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
-        {/* Top Row: Logo, Search Box, Actions */}
-        <div className="flex items-center justify-between h-14 lg:h-[56px]" style={{ minHeight: '52px' }}>
-          <Link href="/" className="flex items-center gap-2 group shrink-0" aria-label="AbhyasMitra Home">
-            <div className="w-8 h-8 rounded-xl flex items-center justify-center shadow-md shrink-0" style={{ background: 'linear-gradient(135deg, #2563eb, #3b82f6)' }}>
-              <BookOpen className="w-4 h-4 text-white" />
-            </div>
-            <span className="text-lg font-bold" style={{ color: '#2563eb' }}>AbhyasMitra</span>
-          </Link>
-
-          {/* Search (Desktop) */}
-          <div className="hidden md:flex flex-1 justify-center px-8 max-w-xl">
-            <form onSubmit={handleSearch} className="header-search">
-              <Search className="w-4 h-4 shrink-0" style={{ color: 'var(--am-text-secondary)' }} />
-              <input
-                ref={searchInputRef}
-                type="search"
-                placeholder="Search notes, subjects..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+    <header className={`premium-navbar ${scrolled ? 'premium-navbar--scrolled' : ''}`}>
+      <nav className="premium-nav-container" aria-label="Main Navigation">
+        {/* Mobile controls (hamburger + logo next to it) */}
+        <div className="premium-mobile-controls">
+          <button
+            ref={triggerRef}
+            type="button"
+            className="premium-hamburger-btn"
+            onClick={() => setIsOpen(!isOpen)}
+            aria-label={isOpen ? "Close menu" : "Open menu"}
+            aria-expanded={isOpen}
+            aria-controls="mobile-navigation-drawer"
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              aria-hidden="true"
+            >
+              {/* Top line */}
+              <line
+                x1="4"
+                y1="6"
+                x2="20"
+                y2="6"
+                style={{
+                  transform: isOpen ? 'translateY(6px) rotate(45deg)' : '',
+                  transformOrigin: '12px 12px',
+                  transition: 'transform 220ms ease-out'
+                }}
               />
-            </form>
-          </div>
-
-          <div className="flex items-center gap-1.5">
-            {/* Mobile Search Trigger */}
-            <button onClick={() => setMobileSearchOpen(!mobileSearchOpen)} className="icon-btn md:hidden" aria-label="Search">
-              <Search className="w-5 h-5" />
-            </button>
-
-            {/* Theme Toggle */}
-            <button onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')} className="icon-btn" aria-label="Toggle theme">
-              {mounted ? (resolvedTheme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />) : <div className="w-5 h-5" />}
-            </button>
-
-            {/* User Auth Info */}
-            {user ? (
-              <div className="relative group">
-                <button className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl transition-colors" style={{ border: '1px solid var(--am-border-card)' }}>
-                  {user.photoURL ? <Image src={user.photoURL} alt="Profile" width={24} height={24} className="rounded-full" /> : <User className="w-5 h-5" />}
-                  <span className="text-sm font-medium hidden sm:block max-w-[100px] truncate" style={{ color: 'var(--am-text-primary)' }}>{user.displayName}</span>
-                </button>
-                <div className="absolute right-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                  <div className="rounded-xl shadow-xl py-2 min-w-[160px]" style={{ background: 'var(--am-bg-card)', border: '1px solid var(--am-border-card)' }}>
-                    {isAdminUser && <Link href="/admin" className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"><Shield className="w-4 h-4 text-indigo-500" /> Admin Panel</Link>}
-                    <button onClick={logout} className="flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 w-full text-left"><LogOut className="w-4 h-4" /> Sign out</button>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <button onClick={signInWithGoogle} className="flex items-center gap-2 px-4 py-2 text-white text-sm font-medium rounded-xl transition-colors shadow-md" style={{ background: '#2563eb' }}>Sign In</button>
-            )}
-          </div>
+              {/* Middle line */}
+              <line
+                x1="4"
+                y1="12"
+                x2="20"
+                y2="12"
+                style={{
+                  opacity: isOpen ? 0 : 1,
+                  transition: 'opacity 220ms ease-out'
+                }}
+              />
+              {/* Bottom line */}
+              <line
+                x1="4"
+                y1="18"
+                x2="20"
+                y2="18"
+                style={{
+                  transform: isOpen ? 'translateY(-6px) rotate(-45deg)' : '',
+                  transformOrigin: '12px 12px',
+                  transition: 'transform 220ms ease-out'
+                }}
+              />
+            </svg>
+          </button>
+          
+          {/* Logo next to Hamburger on mobile */}
+          <Link href="/" className="flex items-center" aria-label="AbhyasMitra Logo" onClick={() => handleNavClick({ label: 'Home', href: '/' })}>
+            <Image
+              src="/AbhyasMitraLogo.png"
+              alt="AbhyasMitra"
+              width={200}
+              height={44}
+              priority
+              className="h-[34px] sm:h-[38px] md:h-[40px] w-auto object-contain"
+            />
+          </Link>
         </div>
 
-        {/* Mobile Search Bar Expansion */}
-        {mobileSearchOpen && (
-          <div className="md:hidden pb-3">
-            <form onSubmit={handleSearch} className="header-search">
-              <Search className="w-4 h-4 shrink-0" style={{ color: 'var(--am-text-secondary)' }} />
-              <input ref={mobileSearchRef} type="search" placeholder="Search notes, subjects..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
-              <button type="button" onClick={() => setMobileSearchOpen(false)} className="p-0.5"><X className="w-4 h-4" style={{ color: 'var(--am-text-secondary)' }} /></button>
-            </form>
-          </div>
-        )}
+        {/* Desktop Logo on Far Left */}
+        <div className="premium-desktop-logo">
+          <Link href="/" aria-label="AbhyasMitra Logo" onClick={() => handleNavClick({ label: 'Home', href: '/' })}>
+            <Image
+              src="/AbhyasMitraLogo.png"
+              alt="AbhyasMitra"
+              width={200}
+              height={44}
+              priority
+              className="h-[44px] xl:h-[48px] w-auto object-contain"
+            />
+          </Link>
+        </div>
 
-        {/* Bottom Row: Flat Categories Link Bar (horizontally scrollable on mobile) */}
-        <div 
-          className="flex items-center overflow-x-auto whitespace-nowrap gap-1 py-2 border-t border-gray-100 dark:border-gray-800 scrollbar-none"
-          style={{ WebkitOverflowScrolling: 'touch' }}
-        >
-          <Link href="/" className="nav-link px-3 py-1 text-xs rounded-full shrink-0">Home</Link>
-          <Link href="/subjects/first-year" className="nav-link px-3 py-1 text-xs rounded-full shrink-0">1st Year</Link>
-          <Link href="/browse/computer" className="nav-link px-3 py-1 text-xs rounded-full shrink-0">Computer</Link>
-          <Link href="/browse/it" className="nav-link px-3 py-1 text-xs rounded-full shrink-0">IT</Link>
-          <Link href="/browse/ai-ds" className="nav-link px-3 py-1 text-xs rounded-full shrink-0">AI & DS</Link>
-          <Link href="/browse/mechanical" className="nav-link px-3 py-1 text-xs rounded-full shrink-0">Mechanical</Link>
-          <Link href="/browse/electrical" className="nav-link px-3 py-1 text-xs rounded-full shrink-0">Electrical</Link>
-          <Link href="/browse/civil" className="nav-link px-3 py-1 text-xs rounded-full shrink-0">Civil</Link>
-          <Link href="/browse/entc" className="nav-link px-3 py-1 text-xs rounded-full shrink-0">E&TC</Link>
-          <Link href="/about" className="nav-link px-3 py-1 text-xs rounded-full shrink-0">About</Link>
+        {/* Desktop Navigation on Right */}
+        <div className="premium-nav-links" role="menubar">
+          {NAV_ITEMS.map((item) => {
+            const isActive = isItemActive(item);
+            if (item.external) {
+              return (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="premium-nav-item"
+                  role="menuitem"
+                >
+                  {item.label}
+                </a>
+              );
+            }
+            return (
+              <Link
+                key={item.label}
+                href={item.href}
+                className={`premium-nav-item ${isActive ? 'premium-nav-item--active' : ''}`}
+                onClick={() => handleNavClick(item)}
+                role="menuitem"
+              >
+                {item.label}
+              </Link>
+            );
+          })}
         </div>
       </nav>
+
+      {/* Mobile Drawer Backdrop Overlay */}
+      <div
+        className={`premium-drawer-overlay ${isOpen ? 'premium-drawer-overlay--open' : ''}`}
+        onClick={() => setIsOpen(false)}
+        aria-hidden="true"
+      />
+
+      {/* Mobile Drawer Panel */}
+      <div
+        ref={drawerRef}
+        id="mobile-navigation-drawer"
+        className={`premium-drawer ${isOpen ? 'premium-drawer--open' : ''}`}
+        aria-label="Mobile Navigation"
+        aria-hidden={!isOpen}
+      >
+        <div className="premium-drawer-header">
+          <Link href="/" aria-label="AbhyasMitra Logo" onClick={() => handleNavClick({ label: 'Home', href: '/' })}>
+            <Image
+              src="/AbhyasMitraLogo.png"
+              alt="AbhyasMitra"
+              width={160}
+              height={36}
+              priority
+              className="h-[34px] sm:h-[36px] w-auto object-contain"
+            />
+          </Link>
+          
+          <button
+            type="button"
+            className="premium-drawer-close-btn"
+            onClick={() => setIsOpen(false)}
+            aria-label="Close menu"
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+
+        <div className="premium-drawer-nav" role="menu">
+          {NAV_ITEMS.map((item) => {
+            const isActive = isItemActive(item);
+            if (item.external) {
+              return (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="premium-drawer-item"
+                  onClick={() => setIsOpen(false)}
+                  role="menuitem"
+                >
+                  {renderDrawerIcon(item.label)}
+                  <span>{item.label}</span>
+                </a>
+              );
+            }
+            return (
+              <Link
+                key={item.label}
+                href={item.href}
+                className={`premium-drawer-item ${isActive ? 'premium-drawer-item--active' : ''}`}
+                onClick={() => handleNavClick(item)}
+                role="menuitem"
+              >
+                {renderDrawerIcon(item.label)}
+                <span>{item.label}</span>
+              </Link>
+            );
+          })}
+        </div>
+      </div>
     </header>
   );
 }
