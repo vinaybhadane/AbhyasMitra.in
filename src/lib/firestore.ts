@@ -362,12 +362,26 @@ export interface Notification {
 export async function getNotifications(limitCount = 20): Promise<Notification[]> {
   try {
     const q = query(
-      collection(db, 'notifications'),
-      orderBy('createdAt', 'desc'),
-      limit(limitCount)
+      collection(db, 'units'),
+      where('type', '==', 'notification')
     );
     const snap = await getDocs(q);
-    return snap.docs.map((d) => ({ id: d.id, ...d.data() } as Notification));
+    const notifs = snap.docs.map((d) => {
+      const data = d.data();
+      return {
+        id: d.id,
+        ...data,
+      } as Notification;
+    });
+
+    // Sort client-side by createdAt descending
+    return notifs
+      .sort((a, b) => {
+        const aTime = a.createdAt instanceof Timestamp ? a.createdAt.toMillis() : new Date(a.createdAt as any).getTime();
+        const bTime = b.createdAt instanceof Timestamp ? b.createdAt.toMillis() : new Date(b.createdAt as any).getTime();
+        return bTime - aTime;
+      })
+      .slice(0, limitCount);
   } catch (e) {
     console.error('Failed to get notifications', e);
     return [];
@@ -375,16 +389,17 @@ export async function getNotifications(limitCount = 20): Promise<Notification[]>
 }
 
 export async function createNotification(title: string, content: string, link?: string): Promise<string> {
-  const docRef = await addDoc(collection(db, 'notifications'), {
+  const docRef = await addDoc(collection(db, 'units'), {
     title,
     content,
     link: link || '',
+    type: 'notification',
     createdAt: serverTimestamp(),
   });
   return docRef.id;
 }
 
 export async function deleteNotification(id: string): Promise<void> {
-  await deleteDoc(doc(db, 'notifications', id));
+  await deleteDoc(doc(db, 'units', id));
 }
 
