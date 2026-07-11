@@ -52,11 +52,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { slug } = await params;
   const subject = await resolveSubject(slug);
   if (!subject) return {};
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://abhyasmitra.in';
+
   return genMeta({
-    title: `${subject.name} Notes – SPPU 2024 Pattern`,
-    description: `${subject.description} Get free unit-wise notes, solved examples, and past paper solutions for SPPU 2024 Pattern.`,
-    keywords: `${subject.name} notes, SPPU 2024 ${subject.name}, ${subject.name} study material, SPPU ${subject.name} unit wise notes`,
-    canonical: `${process.env.NEXT_PUBLIC_SITE_URL}/subject/${slug}`,
+    title: `${subject.name} Notes (SPPU 2024 Pattern) | Free PDF`,
+    description: `Download free unit-wise study notes, syllabus, solved numericals, and exam preparation material for ${subject.name} under SPPU 2024 Pattern. Access top engineering notes.`,
+    keywords: `${subject.name} notes, sppu 2024 notes for ${subject.name}, ${subject.name} sppu notes, ${subject.name} 2024 pattern notes pdf, engineering ${subject.name} study material, ${subject.name} unit wise notes sppu, sppu ${subject.name} engineering notes`,
+    canonical: `${siteUrl}/subject/${slug}`,
   });
 }
 

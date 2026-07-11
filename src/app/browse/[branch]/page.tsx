@@ -32,9 +32,20 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { branch } = await params;
   const name = BRANCH_NAMES[branch] ?? branch;
+  const canonicalUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://abhyasmitra.in'}/browse/${branch}`;
   return {
-    title: `${name} Semesters – AbhyasMitra`,
-    description: `Browse semesters 3 to 8 engineering notes and study material for ${name} under SPPU 2024 pattern.`,
+    title: `${name} Notes (SPPU 2024 Pattern) | Free Study Material`,
+    description: `Download free unit-wise study notes, question papers, syllabus, and exam resources for SPPU 2024 Pattern ${name} (SE, TE, BE). Start scoring high in your semester exams!`,
+    keywords: `sppu ${name} notes, ${name} engineering sppu notes, sppu 2024 pattern ${name} notes, sppu ${branch} engineering study material, engineering notes for ${name}, second year ${branch} notes sppu, third year ${branch} notes sppu, sppu ${branch} syllabus`,
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    openGraph: {
+      title: `${name} Notes (SPPU 2024 Pattern) | AbhyasMitra`,
+      description: `Free study notes, question papers, and syllabus for SPPU 2024 Pattern ${name}. Access SE, TE, and BE resources instantly.`,
+      url: canonicalUrl,
+      type: 'website',
+    },
   };
 }
 

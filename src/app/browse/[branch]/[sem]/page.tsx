@@ -30,13 +30,36 @@ interface Props {
   params: Promise<{ branch: string; sem: string }>;
 }
 
+const SEM_YEARS: Record<string, string> = {
+  sem3: 'SE', sem4: 'SE', sem5: 'TE', sem6: 'TE', sem7: 'BE', sem8: 'BE'
+};
+
+const SEM_YEAR_FULL: Record<string, string> = {
+  sem3: 'Second Year', sem4: 'Second Year', sem5: 'Third Year', sem6: 'Third Year', sem7: 'Fourth Year', sem8: 'Fourth Year'
+};
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { branch, sem } = await params;
   const branchName = BRANCH_NAMES[branch] ?? branch;
   const semLabel = SEM_LABELS[sem] ?? sem;
+  const semNum = sem.replace('sem', '');
+  const yearAbbr = SEM_YEARS[sem] || 'SE/TE/BE';
+  const yearFull = SEM_YEAR_FULL[sem] || 'Engineering';
+  const canonicalUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://abhyasmitra.in'}/browse/${branch}/${sem}`;
+
   return {
-    title: `${branchName} ${semLabel} – AbhyasMitra`,
-    description: `Free notes and study material for ${semLabel} ${branchName} SPPU 2024 pattern.`,
+    title: `SPPU ${yearAbbr} ${branchName} ${semLabel} Notes (2024 Pattern)`,
+    description: `Get latest unit-wise structured notes, solved numericals, syllabus, and study material for SPPU 2024 Pattern ${yearFull} ${branchName} (${semLabel}). Download free PDF resources.`,
+    keywords: `sppu ${branch} notes, ${yearAbbr} ${branchName} sem ${semNum} notes, sppu 2024 pattern ${branch} notes, ${branchName} engineering sppu notes, sppu ${semLabel} engineering notes, ${yearFull} ${branchName} study material, sppu notes pdf download`,
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    openGraph: {
+      title: `SPPU ${yearAbbr} ${branchName} ${semLabel} Notes (2024 Pattern)`,
+      description: `Free PDF study notes, syllabus, and solved papers for SPPU 2024 Pattern ${yearFull} ${branchName} (${semLabel}).`,
+      url: canonicalUrl,
+      type: 'website',
+    },
   };
 }
 

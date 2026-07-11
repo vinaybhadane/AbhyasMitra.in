@@ -3,9 +3,21 @@ import GridCard from '@/components/GridCard';
 import Breadcrumb from '@/components/Breadcrumb';
 import { getAllBrowseConfigs } from '@/lib/firestore';
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://abhyasmitra.in';
+
 export const metadata: Metadata = {
-  title: '1st Year Engineering Semesters – AbhyasMitra',
-  description: 'Select Sem 1 or Sem 2 for First Year Engineering subjects and study material under SPPU 2024 pattern.',
+  title: 'FE SPPU 1st Year Engineering Notes (2024 Pattern) | Free PDF',
+  description: 'Download free PDF notes, solved question banks, and study material for SPPU 2024 Pattern First Year (FE) Engineering. Access Semester 1 and Semester 2 study resources instantly.',
+  keywords: 'FE sppu notes, first year engineering notes sppu, sppu 2024 pattern first year notes, engineering mathematics 1 sppu notes, engineering physics sppu notes, engineering chemistry sppu notes, sppu FE syllabus, sppu sem 1 notes, sppu sem 2 notes',
+  alternates: {
+    canonical: `${SITE_URL}/subjects/first-year`,
+  },
+  openGraph: {
+    title: 'FE SPPU 1st Year Engineering Notes (2024 Pattern) | AbhyasMitra',
+    description: 'Free study material, unit-wise notes, and syllabus for SPPU 2024 Pattern FE (Semester 1 & 2) students.',
+    url: `${SITE_URL}/subjects/first-year`,
+    type: 'website',
+  },
 };
 
 export const dynamic = 'force-dynamic';

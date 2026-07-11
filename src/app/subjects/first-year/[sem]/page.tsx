@@ -19,9 +19,22 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { sem } = await params;
   const semLabel = SEM_LABELS[sem] ?? sem;
+  const semNum = sem.replace('sem', '');
+  const canonicalUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://abhyasmitra.in'}/subjects/first-year/${sem}`;
+
   return {
-    title: `1st Year Engineering ${semLabel} Subjects – AbhyasMitra`,
-    description: `Free notes and study material for 1st Year Engineering ${semLabel} subjects under SPPU 2024 pattern.`,
+    title: `SPPU FE First Year ${semLabel} Notes (2024 Pattern)`,
+    description: `Get unit-wise study notes, solved question banks, and reference material for SPPU 2024 Pattern First Year (FE) Engineering ${semLabel} (Sem ${semNum}) subjects. Free PDF downloads.`,
+    keywords: `sppu FE ${semLabel} notes, sppu first year ${semLabel} notes, sppu 2024 pattern engineering notes, sppu sem ${semNum} notes, engineering physics notes sppu, engineering mechanics notes sppu, engineering chemistry notes sppu, engineering mathematics notes sppu`,
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    openGraph: {
+      title: `SPPU FE First Year ${semLabel} Notes (2024 Pattern)`,
+      description: `Structured unit-wise notes and solved papers for First Year Engineering (FE) ${semLabel} under SPPU 2024 pattern.`,
+      url: canonicalUrl,
+      type: 'website',
+    },
   };
 }
 
