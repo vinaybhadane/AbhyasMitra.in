@@ -2,12 +2,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
 import { Metadata } from 'next';
-import { getPublishedPosts, getAllBrowseConfigs } from '@/lib/firestore';
-import BlogCard from '@/components/BlogCard';
-import GridCard from '@/components/GridCard';
-import WhatsAppCard from '@/components/WhatsAppCard';
+import { getNotifications, getAllBrowseConfigs } from '@/lib/firestore';
 import LastVisitedBanner from '@/components/LastVisitedBanner';
-import PostGridCard from '@/components/PostGridCard';
 
 export const metadata: Metadata = {
   title: 'AbhyasMitra – Free SPPU 2024 Pattern Notes & Study Material',
@@ -20,10 +16,10 @@ export const dynamic = 'force-dynamic';
 
 async function getHomeData() {
   try {
-    const { posts } = await getPublishedPosts(6);
-    return { posts };
+    const notifications = await getNotifications(15);
+    return { notifications };
   } catch {
-    return { posts: [] };
+    return { notifications: [] };
   }
 }
 
@@ -114,9 +110,7 @@ const websiteSchema = {
 };
 
 export default async function HomePage() {
-  const { posts } = await getHomeData();
-  const featuredPosts = posts.slice(0, 3);
-  const recentPosts = posts.slice(3, 6);
+  const { notifications } = await getHomeData();
 
   // Fetch configs
   let configsMap = new Map<string, string>();
@@ -250,41 +244,69 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* ── Featured Posts ───────────────────────────────────────────── */}
-        {featuredPosts.length > 0 && (
-          <section className="py-10" style={{ borderTop: '1px solid var(--am-border-card)' }}>
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h2 className="text-xl font-bold" style={{ color: 'var(--am-text-primary)' }}>Latest Notes</h2>
-                  <p className="text-sm mt-0.5" style={{ color: 'var(--am-text-secondary)' }}>Recently published study material</p>
+        {/* ── Latest Notifications ───────────────────────────────────────── */}
+        <section className="py-12 border-t border-gray-100 dark:border-gray-800 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="mb-8">
+              <div className="flex items-center gap-2 mb-1">
+                <div className="w-8 h-8 rounded-lg bg-sky-50 flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                  </svg>
                 </div>
-                <Link href="/search" className="text-sm font-medium flex items-center gap-1 hover:underline" style={{ color: '#2563eb' }}>
-                  View all <ArrowRight className="w-4 h-4" />
-                </Link>
+                <h2 className="text-xl sm:text-2xl font-extrabold text-gray-900">
+                  Latest Notifications
+                </h2>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                {featuredPosts.map((post) => (
-                  <PostGridCard key={post.id} post={post} />
-                ))}
-              </div>
+              <p className="text-sm text-gray-500">
+                Stay updated with recent notes releases, syllabus patterns, and education updates from the administrators
+              </p>
             </div>
-          </section>
-        )}
 
-        {/* ── Recent Posts ─────────────────────────────────────────────── */}
-        {recentPosts.length > 0 && (
-          <section className="py-10" style={{ borderTop: '1px solid var(--am-border-card)' }}>
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <h2 className="text-xl font-bold mb-6" style={{ color: 'var(--am-text-primary)' }}>More Notes</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                {recentPosts.map((post) => (
-                  <PostGridCard key={post.id} post={post} />
-                ))}
-              </div>
+            <div className="space-y-4">
+              {notifications.map((n) => {
+                const date = n.createdAt instanceof Date ? n.createdAt : (n.createdAt as any)?.toDate?.();
+                
+                const cardContent = (
+                  <div className="p-5 bg-white border border-gray-100 hover:border-sky-200 hover:shadow-md hover:shadow-sky-50/50 rounded-2xl transition-all duration-300 flex items-start gap-4 cursor-pointer">
+                    <span className="flex h-2 w-2 translate-y-2 rounded-full bg-sky-400 shrink-0" />
+                    
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-base font-bold text-gray-900 group-hover:text-sky-600 transition-colors duration-200">
+                        {n.title}
+                      </h3>
+                      <p className="text-sm text-gray-600 mt-1.5 leading-relaxed whitespace-pre-line">
+                        {n.content}
+                      </p>
+                      {date && (
+                        <span className="text-xs text-gray-400 mt-3 block">
+                          Posted on {date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                );
+
+                if (n.link) {
+                  return (
+                    <Link key={n.id} href={n.link} className="block group">
+                      {cardContent}
+                    </Link>
+                  );
+                }
+
+                return <div key={n.id}>{cardContent}</div>;
+              })}
+
+              {notifications.length === 0 && (
+                <div className="py-12 text-center text-gray-400 text-sm border border-dashed border-gray-200 rounded-2xl bg-gray-50/50">
+                  No notifications or updates posted yet. Check back soon!
+                </div>
+              )}
             </div>
-          </section>
-        )}
+          </div>
+        </section>
       </div>
     </>
   );

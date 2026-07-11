@@ -349,3 +349,42 @@ export async function upsertBrowseConfig(id: string, bgImageUrl: string): Promis
   await setDoc(docRef, { bgImageUrl }, { merge: true });
 }
 
+// ─── Notifications ─────────────────────────────────────────────────────────────
+
+export interface Notification {
+  id: string;
+  title: string;
+  content: string;
+  link?: string;
+  createdAt: Date | Timestamp;
+}
+
+export async function getNotifications(limitCount = 20): Promise<Notification[]> {
+  try {
+    const q = query(
+      collection(db, 'notifications'),
+      orderBy('createdAt', 'desc'),
+      limit(limitCount)
+    );
+    const snap = await getDocs(q);
+    return snap.docs.map((d) => ({ id: d.id, ...d.data() } as Notification));
+  } catch (e) {
+    console.error('Failed to get notifications', e);
+    return [];
+  }
+}
+
+export async function createNotification(title: string, content: string, link?: string): Promise<string> {
+  const docRef = await addDoc(collection(db, 'notifications'), {
+    title,
+    content,
+    link: link || '',
+    createdAt: serverTimestamp(),
+  });
+  return docRef.id;
+}
+
+export async function deleteNotification(id: string): Promise<void> {
+  await deleteDoc(doc(db, 'notifications', id));
+}
+
