@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { BookOpen, Plus, Trash2, Loader2, Save, FileDown, ArrowRight } from 'lucide-react';
-import { getCustomSubjects, getSubjectNotes, saveSubjectNotes, SubjectNoteUnit } from '@/lib/firestore';
+import { getCustomSubjects, getSubjectNotes, saveSubjectNotes, SubjectNoteUnit, uploadImage } from '@/lib/firestore';
 import { SUBJECTS } from '@/lib/types';
 import toast from 'react-hot-toast';
 
@@ -42,6 +42,40 @@ export default function SubjectNotesManagerPage() {
   const [newUnitNo, setNewUnitNo] = useState('');
   const [newUnitName, setNewUnitName] = useState('');
   const [newDownloadUrl, setNewDownloadUrl] = useState('');
+  const [uploadingFile, setUploadingFile] = useState(false);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingFile(true);
+    try {
+      const cleanName = file.name
+        .toLowerCase()
+        .replace(/[^a-z0-9.]/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^[.-]|[.-]$/g, '');
+
+      const ext = cleanName.split('.').pop() || '';
+      const nameWithoutExt = cleanName.replace(/\.[^.]+$/, '');
+      const path = ext === 'pdf' ? `pdfs/${nameWithoutExt}-${Date.now()}.pdf` : `media/${nameWithoutExt}-${Date.now()}.${ext}`;
+
+      const url = await uploadImage(file, path);
+      setNewDownloadUrl(url);
+
+      if (!newUnitName) {
+        const friendlyName = nameWithoutExt
+          .replace(/-/g, ' ')
+          .replace(/\b\w/g, c => c.toUpperCase());
+        setNewUnitName(friendlyName);
+      }
+      toast.success('File uploaded successfully!');
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to upload file');
+    } finally {
+      setUploadingFile(false);
+    }
+  };
 
   // 1. Fetch subjects
   useEffect(() => {
@@ -246,8 +280,27 @@ export default function SubjectNotesManagerPage() {
                   value={newDownloadUrl}
                   onChange={e => setNewDownloadUrl(e.target.value)}
                   placeholder="e.g. https://abhyasmitra.in/media/pdfs/..."
-                  className="w-full text-sm px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-gray-100 placeholder-gray-400"
+                  className="w-full text-sm px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-gray-100 placeholder-gray-400 mb-2"
                 />
+                
+                <div className="relative border border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-3 bg-gray-50/50 dark:bg-gray-900/30 flex items-center justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[11px] font-bold text-gray-700 dark:text-gray-300 truncate">
+                      {uploadingFile ? 'Uploading note file...' : 'Or upload document file directly:'}
+                    </p>
+                  </div>
+                  <input
+                    type="file"
+                    accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
+                    onChange={handleFileUpload}
+                    disabled={uploadingFile}
+                    className="absolute inset-0 opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                  />
+                  <div className="px-3 py-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-xs font-bold text-gray-700 dark:text-gray-300 shadow-sm shrink-0 flex items-center gap-1">
+                    {uploadingFile ? <Loader2 className="w-3.5 h-3.5 animate-spin text-indigo-500" /> : <Plus className="w-3.5 h-3.5" />}
+                    Choose File
+                  </div>
+                </div>
               </div>
 
               <button
