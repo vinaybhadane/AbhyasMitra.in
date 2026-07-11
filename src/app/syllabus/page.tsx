@@ -10,17 +10,31 @@ export const metadata: Metadata = {
 
 export default function SyllabusPage() {
   const feSyllabus = [
-    { srNo: 1, branch: 'All Branches (Common for First Year)', href: '#' }
+    { 
+      srNo: 1, 
+      branch: 'All Branches (Common for First Year)', 
+      href: 'https://abhyasmitra.in/media/pdfs/1783762400937_FE 2024 Pattern Syllabus.pdf' 
+    }
   ];
 
-  const branches = [
-    { name: 'Computer Engineering', href: '#' },
-    { name: 'Information Technology', href: '#' },
-    { name: 'Artificial Intelligence and Data Science', href: '#' },
-    { name: 'Mechanical Engineering', href: '#' },
+  const seBranches = [
+    { name: 'Computer Engineering', href: 'https://abhyasmitra.in/media/pdfs/1783762424194_SE COMPUTER ENGINEERING 2024 PATTERN.pdf' },
+    { name: 'Information Technology', href: 'https://abhyasmitra.in/media/pdfs/1783762448027_SE IT 2024 Pattern.pdf' },
+    { name: 'Artificial Intelligence and Data Science', href: 'https://abhyasmitra.in/media/pdfs/1783762407380_SE AIDS 2024 PATTERN.pdf' },
+    { name: 'Mechanical Engineering', href: 'https://abhyasmitra.in/media/pdfs/1783762525989_SE MECHANICAL ENGINEERING 2024 PATTERN.pdf' },
     { name: 'Electrical Engineering', href: '#' },
-    { name: 'Civil Engineering', href: '#' },
+    { name: 'Civil Engineering', href: 'https://abhyasmitra.in/media/pdfs/1783762417499_SE CIVIL ENGINEERING 2024 PATTERN.pdf' },
     { name: 'Electronics and Telecommunication', href: '#' }
+  ];
+
+  const teBranches = [
+    { name: 'Computer Engineering', href: 'https://abhyasmitra.in/media/pdfs/1783762954130_TE COMPUTER ENGINEERING 2024 PATTERN.pdf' },
+    { name: 'Information Technology', href: '#' },
+    { name: 'Artificial Intelligence and Data Science', href: 'https://abhyasmitra.in/media/pdfs/1783762923963_TE AIDS 2024 PATTERN.pdf' },
+    { name: 'Mechanical Engineering', href: 'https://abhyasmitra.in/media/pdfs/1783762980518_TE MECHANICAL ENGINEERING 2024 PATTERN.pdf' },
+    { name: 'Electrical Engineering', href: '#' },
+    { name: 'Civil Engineering', href: 'https://abhyasmitra.in/media/pdfs/1783762941982_TE CIVIL ENGINEERING 2024 PATTERN.pdf' },
+    { name: 'Electronics and Telecommunication', href: 'https://abhyasmitra.in/media/pdfs/1783762972723_TE ENTC 2024 PATTERN.pdf' }
   ];
 
   const tags = [
@@ -76,15 +90,35 @@ export default function SyllabusPage() {
                     <td className="py-4 px-4 font-semibold text-gray-450">{item.srNo}</td>
                     <td className="py-4 px-4 font-bold text-gray-850 dark:text-gray-200">{item.branch}</td>
                     <td className="py-4 px-4 text-right">
-                      <a href={item.href} className="inline-flex items-center hover:scale-105 active:scale-95 transition-all duration-200 py-1">
-                        <Image
-                          src="/downloadpng.png"
-                          alt="Download PDF"
-                          width={240}
-                          height={72}
-                          className="h-10 md:h-14 w-auto object-contain rounded-xl shadow-xs hover:shadow-md transition-shadow"
-                        />
-                      </a>
+                      {item.href && item.href !== '#' ? (
+                        <a 
+                          href={item.href} 
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center hover:scale-105 active:scale-95 transition-all duration-200 py-1"
+                        >
+                          <Image 
+                            src="/downloadpng.png" 
+                            alt="Download PDF" 
+                            width={240} 
+                            height={72} 
+                            className="h-10 md:h-14 w-auto object-contain rounded-xl shadow-xs hover:shadow-md transition-shadow"
+                          />
+                        </a>
+                      ) : (
+                        <div 
+                          title="Coming Soon"
+                          className="inline-flex items-center opacity-40 cursor-not-allowed py-1"
+                        >
+                          <Image 
+                            src="/downloadpng.png" 
+                            alt="Coming Soon" 
+                            width={240} 
+                            height={72} 
+                            className="h-10 md:h-14 w-auto object-contain rounded-xl select-none"
+                          />
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -117,20 +151,40 @@ export default function SyllabusPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-gray-750">
-                {branches.map((b, index) => (
+                {seBranches.map((b, index) => (
                   <tr key={index} className="hover:bg-gray-50/50 dark:hover:bg-gray-850/50 transition-colors">
                     <td className="py-4 px-4 font-semibold text-gray-450">{index + 1}</td>
                     <td className="py-4 px-4 font-bold text-gray-850 dark:text-gray-200">{b.name}</td>
                     <td className="py-4 px-4 text-right">
-                      <a href={b.href} className="inline-flex items-center hover:scale-105 active:scale-95 transition-all duration-200 py-1">
-                        <Image
-                          src="/downloadpng.png"
-                          alt="Download PDF"
-                          width={240}
-                          height={72}
-                          className="h-10 md:h-14 w-auto object-contain rounded-xl shadow-xs hover:shadow-md transition-shadow"
-                        />
-                      </a>
+                      {b.href && b.href !== '#' ? (
+                        <a 
+                          href={b.href} 
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center hover:scale-105 active:scale-95 transition-all duration-200 py-1"
+                        >
+                          <Image 
+                            src="/downloadpng.png" 
+                            alt="Download PDF" 
+                            width={240} 
+                            height={72} 
+                            className="h-10 md:h-14 w-auto object-contain rounded-xl shadow-xs hover:shadow-md transition-shadow"
+                          />
+                        </a>
+                      ) : (
+                        <div 
+                          title="Coming Soon"
+                          className="inline-flex items-center opacity-40 cursor-not-allowed py-1"
+                        >
+                          <Image 
+                            src="/downloadpng.png" 
+                            alt="Coming Soon" 
+                            width={240} 
+                            height={72} 
+                            className="h-10 md:h-14 w-auto object-contain rounded-xl select-none"
+                          />
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -163,20 +217,40 @@ export default function SyllabusPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-gray-750">
-                {branches.map((b, index) => (
+                {teBranches.map((b, index) => (
                   <tr key={index} className="hover:bg-gray-50/50 dark:hover:bg-gray-850/50 transition-colors">
                     <td className="py-4 px-4 font-semibold text-gray-450">{index + 1}</td>
                     <td className="py-4 px-4 font-bold text-gray-850 dark:text-gray-200">{b.name}</td>
                     <td className="py-4 px-4 text-right">
-                      <a href={b.href} className="inline-flex items-center hover:scale-105 active:scale-95 transition-all duration-200 py-1">
-                        <Image
-                          src="/downloadpng.png"
-                          alt="Download PDF"
-                          width={240}
-                          height={72}
-                          className="h-10 md:h-14 w-auto object-contain rounded-xl shadow-xs hover:shadow-md transition-shadow"
-                        />
-                      </a>
+                      {b.href && b.href !== '#' ? (
+                        <a 
+                          href={b.href} 
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center hover:scale-105 active:scale-95 transition-all duration-200 py-1"
+                        >
+                          <Image 
+                            src="/downloadpng.png" 
+                            alt="Download PDF" 
+                            width={240} 
+                            height={72} 
+                            className="h-10 md:h-14 w-auto object-contain rounded-xl shadow-xs hover:shadow-md transition-shadow"
+                          />
+                        </a>
+                      ) : (
+                        <div 
+                          title="Coming Soon"
+                          className="inline-flex items-center opacity-40 cursor-not-allowed py-1"
+                        >
+                          <Image 
+                            src="/downloadpng.png" 
+                            alt="Coming Soon" 
+                            width={240} 
+                            height={72} 
+                            className="h-10 md:h-14 w-auto object-contain rounded-xl select-none"
+                          />
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ))}
