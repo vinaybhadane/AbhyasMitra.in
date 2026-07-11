@@ -227,9 +227,9 @@ export default async function HomePage() {
                       </svg>
                     </div>
                     <div className="text-left pr-1.5">
-                      <p className="text-[10px] font-extrabold uppercase tracking-wider text-green-100 opacity-90">WhatsApp Channel</p>
+                      <p className="text-[10px] font-extrabold uppercase tracking-wider text-green-100 opacity-90">Join WhatsApp Channel</p>
                       <p className="text-xs sm:text-sm font-bold leading-snug">
-                        Join the AbhyasMitra WhatsApp Channel for the latest notes, updates, and important exam notifications.
+                        Get instant SPPU notes, PYQs, and exam notifications directly on your phone!
                       </p>
                     </div>
                     <ArrowRight className="w-5 h-5 shrink-0 group-hover:translate-x-1.5 transition-transform" />
@@ -244,13 +244,15 @@ export default async function HomePage() {
         <section className="pt-10 pb-8" id="branches">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-            <div className="mb-8">
-              <h1 className="text-3xl sm:text-4xl font-extrabold mb-2 tracking-tight">
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-sky-500 to-indigo-600">Browse by Branch</span>
-              </h1>
-              <p className="text-sm sm:text-base font-medium flex items-center gap-2 text-gray-500">
-                <span className="px-2.5 py-0.5 rounded-lg text-xs font-semibold bg-sky-50 text-sky-600 border border-sky-100 shadow-sm">SPPU 2024 Pattern</span>
-                <span>— Free notes &amp; study material</span>
+            <div className="mb-8 space-y-2">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-extrabold bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/60 uppercase tracking-wider">
+                ⚡ Course Library
+              </div>
+              <h2 className="text-2xl sm:text-3.5xl font-black text-gray-900 dark:text-white tracking-tight leading-none">
+                Explore Engineering <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-purple-600">Branches</span>
+              </h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+                Select your branch to access reference books, notes, and study guides.
               </p>
             </div>
 
