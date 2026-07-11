@@ -217,8 +217,8 @@ export default async function SubjectPage({ params }: PageProps) {
                               <td className="px-6 py-4 font-black text-indigo-600 dark:text-indigo-400">{note.unitNo}</td>
                               <td className="px-6 py-4 font-semibold text-gray-900 dark:text-white">{note.unitName}</td>
                               <td className="px-6 py-3 text-center">
-                                <a href={note.downloadUrl} target="_blank" rel="noopener noreferrer" className="hover:opacity-85 transition-opacity inline-flex items-center justify-center">
-                                  <img src="/downloadpng.png" alt="Download PDF" className="h-10 w-auto object-contain" />
+                                <a href={note.downloadUrl} target="_blank" rel="noopener noreferrer" className="hover:scale-105 active:scale-95 transition-transform inline-flex items-center justify-center">
+                                  <img src="/downloadpng.png" alt="Download PDF" className="h-16 md:h-20 w-auto object-contain mx-auto" />
                                 </a>
                               </td>
                             </tr>
@@ -235,8 +235,8 @@ export default async function SubjectPage({ params }: PageProps) {
                             <span className="px-2.5 py-1 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 rounded-lg text-xs font-black">{note.unitNo}</span>
                           </div>
                           <p className="text-sm font-bold text-gray-900 dark:text-white leading-relaxed">{note.unitName}</p>
-                          <a href={note.downloadUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center pt-2">
-                            <img src="/downloadpng.png" alt="Download PDF" className="h-11 object-contain" />
+                          <a href={note.downloadUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center pt-2 hover:scale-105 active:scale-95 transition-transform">
+                            <img src="/downloadpng.png" alt="Download PDF" className="h-14 w-auto object-contain" />
                           </a>
                         </div>
                       ))}
