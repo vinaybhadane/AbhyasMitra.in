@@ -59,16 +59,6 @@ export default function SyllabusPage() {
                 <p className="text-xs text-gray-500">First Year Engineering Syllabus</p>
               </div>
             </div>
-            {/* downloadpng.png placed right after the year section title */}
-            <div className="shrink-0">
-              <Image
-                src="/downloadpng.png"
-                alt="Syllabus Download Badge"
-                width={96}
-                height={28}
-                className="h-7 w-auto object-contain rounded-md opacity-90"
-              />
-            </div>
           </div>
 
           <div className="overflow-x-auto">
@@ -115,15 +105,6 @@ export default function SyllabusPage() {
                 <p className="text-xs text-gray-500">Second Year Engineering Syllabus</p>
               </div>
             </div>
-            <div className="shrink-0">
-              <Image
-                src="/downloadpng.png"
-                alt="Syllabus Download Badge"
-                width={96}
-                height={28}
-                className="h-7 w-auto object-contain rounded-md opacity-90"
-              />
-            </div>
           </div>
 
           <div className="overflow-x-auto">
@@ -169,15 +150,6 @@ export default function SyllabusPage() {
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white">TE 2024 Pattern</h2>
                 <p className="text-xs text-gray-500">Third Year Engineering Syllabus</p>
               </div>
-            </div>
-            <div className="shrink-0">
-              <Image
-                src="/downloadpng.png"
-                alt="Syllabus Download Badge"
-                width={96}
-                height={28}
-                className="h-7 w-auto object-contain rounded-md opacity-90"
-              />
             </div>
           </div>
 
