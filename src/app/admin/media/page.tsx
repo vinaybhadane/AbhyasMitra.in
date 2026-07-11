@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { Upload, Image as ImageIcon, Copy, Trash2, Link, FileText, Loader2, AlertTriangle } from 'lucide-react';
 import { uploadImage, deleteImage } from '@/lib/firestore';
 import toast from 'react-hot-toast';
+import imageCompression from 'browser-image-compression';
 
 interface UploadedImage {
   name: string;
@@ -20,7 +21,60 @@ export default function AdminMediaPage() {
   const [loadingMedia, setLoadingMedia] = useState(true);
   const [isConfigured, setIsConfigured] = useState(true);
   const [dragOver, setDragOver] = useState(false);
+  const [uploadUrl, setUploadUrl] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleUploadFromUrl = async () => {
+    if (!uploadUrl.trim()) return;
+    setUploading(true);
+    const toastId = toast.loading('Fetching and optimizing image from URL...');
+    try {
+      const response = await fetch(uploadUrl);
+      if (!response.ok) throw new Error('Failed to fetch image from URL');
+      const blob = await response.blob();
+      
+      const mimeType = blob.type || 'image/jpeg';
+      const cleanName = uploadUrl.split('/').pop()?.split('?')[0] || 'downloaded-image';
+      const ext = mimeType.split('/')[1] || 'jpg';
+      const fileName = cleanName.endsWith(`.${ext}`) ? cleanName : `${cleanName}.${ext}`;
+      
+      const file = new File([blob], fileName, { type: mimeType });
+
+      const options = {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1920,
+        useWebWorker: true,
+        fileType: 'image/webp' as const,
+      };
+
+      const compressed = await imageCompression(file, options);
+      const webpBlob = compressed.type === 'image/webp'
+        ? compressed
+        : new Blob([compressed], { type: 'image/webp' });
+      const compressedFile = new File([webpBlob], `${cleanName.replace(/\.[^.]+$/, '')}.webp`, { type: 'image/webp' });
+
+      const path = `media/${Date.now()}_${compressedFile.name}`;
+      const url = await uploadImage(compressedFile, path);
+
+      setImages((prev) => [
+        {
+          name: compressedFile.name,
+          url,
+          path,
+          size: `${(compressedFile.size / 1024).toFixed(0)} KB`,
+          type: 'image/webp',
+        },
+        ...prev,
+      ]);
+      setUploadUrl('');
+      toast.success('Image downloaded, optimized, and saved to Azure!', { id: toastId });
+    } catch (err: any) {
+      console.error(err);
+      toast.error(`Error uploading from URL: CORS restriction. Please download and upload the file instead.`, { id: toastId });
+    } finally {
+      setUploading(false);
+    }
+  };
 
   useEffect(() => {
     fetchMedia();
@@ -165,6 +219,31 @@ export default function AdminMediaPage() {
               Browse Files
             </button>
             <p className="text-xs text-gray-400">JPG, PNG, WebP, PDF — max 10MB each</p>
+          </div>
+        </div>
+      )}
+
+      {/* URL Upload Box */}
+      {isConfigured && (
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-5 shadow-sm space-y-3">
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+            <Link className="w-4 h-4 text-indigo-500" /> Or Upload via Image URL
+          </h3>
+          <div className="flex gap-3">
+            <input
+              type="url"
+              placeholder="Paste image URL here (e.g., https://images.unsplash.com/photo-12345...)"
+              value={uploadUrl}
+              onChange={(e) => setUploadUrl(e.target.value)}
+              className="flex-1 px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+            <button
+              onClick={handleUploadFromUrl}
+              disabled={uploading || !uploadUrl.trim()}
+              className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-sm font-medium rounded-xl transition-colors shrink-0"
+            >
+              Upload
+            </button>
           </div>
         </div>
       )}

@@ -15,36 +15,41 @@ const BRANCH_NAMES: Record<string, string> = {
   entc: 'Electronics & Telecomm.',
 };
 
-const YEAR_LABELS: Record<string, string> = {
-  '2nd': '2nd Year',
-  '3rd': '3rd Year',
-  '4th': '4th Year',
+const SEM_LABELS: Record<string, string> = {
+  sem3: 'Semester 3',
+  sem4: 'Semester 4',
+  sem5: 'Semester 5',
+  sem6: 'Semester 6',
+  sem7: 'Semester 7',
+  sem8: 'Semester 8',
 };
 
 export const dynamic = 'force-dynamic';
 
 interface Props {
-  params: Promise<{ branch: string; year: string }>;
+  params: Promise<{ branch: string; sem: string }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { branch, year } = await params;
+  const { branch, sem } = await params;
   const branchName = BRANCH_NAMES[branch] ?? branch;
-  const yearLabel = YEAR_LABELS[year] ?? year;
+  const semLabel = SEM_LABELS[sem] ?? sem;
   return {
-    title: `${branchName} ${yearLabel} – AbhyasMitra`,
-    description: `Free notes and study material for ${yearLabel} ${branchName} SPPU 2024 pattern.`,
+    title: `${branchName} ${semLabel} – AbhyasMitra`,
+    description: `Free notes and study material for ${semLabel} ${branchName} SPPU 2024 pattern.`,
   };
 }
 
-export default async function BranchYearPage({ params }: Props) {
-  const { branch, year } = await params;
+export default async function BranchSemPage({ params }: Props) {
+  const { branch, sem } = await params;
   const branchName = BRANCH_NAMES[branch] ?? branch;
-  const yearLabel = YEAR_LABELS[year] ?? year;
+  const semLabel = SEM_LABELS[sem] ?? sem;
 
-  // For Computer 2nd year: show real subjects
-  const isComputer2nd = branch === 'computer' && year === '2nd';
-  const subjects = isComputer2nd ? SUBJECTS.filter((s) => s.year === '2nd') : [];
+  // Dynamically filter subjects by matching the semester suffix
+  const semString = sem.replace('sem', 'Sem '); // 'sem3' -> 'Sem 3'
+  const subjects = SUBJECTS.filter((s) => 
+    s.semester.toLowerCase().includes(semString.toLowerCase())
+  );
 
   // Load configs
   let configsMap = new Map<string, string>();
@@ -63,16 +68,16 @@ export default async function BranchYearPage({ params }: Props) {
             crumbs={[
               { label: 'Home', href: '/' },
               { label: branchName, href: `/browse/${branch}` },
-              { label: yearLabel },
+              { label: semLabel },
             ]}
           />
 
           <div className="mb-6">
             <h1 className="text-2xl sm:text-3xl font-bold mb-1" style={{ color: 'var(--am-text-primary)' }}>
-              {branchName} — {yearLabel}
+              {branchName} — {semLabel}
             </h1>
             <p className="text-sm" style={{ color: 'var(--am-text-secondary)' }}>
-              {isComputer2nd ? 'SPPU 2024 Pattern subjects' : 'Select a subject to browse notes'}
+              {subjects.length > 0 ? 'SPPU 2024 Pattern subjects' : 'Select a subject to browse notes'}
             </p>
           </div>
 
@@ -85,18 +90,18 @@ export default async function BranchYearPage({ params }: Props) {
                   href={`/subject/${subject.slug}`}
                   badge={subject.semester}
                   gradientIndex={i % 4}
-                  bgImageUrl={configsMap.get(`${branch}/${year}/${subject.slug}`)}
+                  bgImageUrl={configsMap.get(`${branch}/${sem}/${subject.slug}`)}
                 />
               ))}
               <WhatsAppCard />
             </div>
           ) : (
-            /* Empty state for branches/years not yet available */
+            /* Empty state for branches/semesters not yet available */
             <div className="empty-state">
               <div className="empty-state__icon">📚</div>
               <h2 className="empty-state__title">Coming Soon</h2>
               <p className="empty-state__sub">
-                Notes for {branchName} {yearLabel} are being added. Check back soon, or join our WhatsApp community for updates!
+                Notes for {branchName} {semLabel} are being added. Check back soon, or join our WhatsApp community for updates!
               </p>
               <div className="mt-4">
                 <WhatsAppCard />

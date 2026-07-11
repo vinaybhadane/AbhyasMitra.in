@@ -1,20 +1,21 @@
 import { Metadata } from 'next';
-import { SUBJECTS } from '@/lib/types';
 import GridCard from '@/components/GridCard';
-import WhatsAppCard from '@/components/WhatsAppCard';
 import Breadcrumb from '@/components/Breadcrumb';
 import { getAllBrowseConfigs } from '@/lib/firestore';
 
 export const metadata: Metadata = {
-  title: '1st Year Engineering Subjects – AbhyasMitra',
-  description: 'Free notes and study material for all First Year Engineering subjects under SPPU 2024 pattern.',
+  title: '1st Year Engineering Semesters – AbhyasMitra',
+  description: 'Select Sem 1 or Sem 2 for First Year Engineering subjects and study material under SPPU 2024 pattern.',
 };
 
 export const dynamic = 'force-dynamic';
 
-export default async function FirstYearPage() {
-  const subjects = SUBJECTS.filter((s) => s.year === '1st');
+const SEMESTERS = [
+  { id: 'sem1', label: 'SEMESTER 1', badge: '1st Year - Sem 1', gradientIndex: 0 },
+  { id: 'sem2', label: 'SEMESTER 2', badge: '1st Year - Sem 2', gradientIndex: 1 },
+];
 
+export default async function FirstYearPage() {
   // Load configs
   let configsMap = new Map<string, string>();
   try {
@@ -40,22 +41,21 @@ export default async function FirstYearPage() {
               1st Year Engineering
             </h1>
             <p className="text-sm" style={{ color: 'var(--am-text-secondary)' }}>
-              SPPU 2024 Pattern — All branches
+              SPPU 2024 Pattern — Select your semester
             </p>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {subjects.map((subject, i) => (
+            {SEMESTERS.map((sem) => (
               <GridCard
-                key={subject.id}
-                title={subject.name}
-                href={`/subject/${subject.slug}`}
-                badge={subject.semester}
-                gradientIndex={i % 4}
-                bgImageUrl={configsMap.get(`first-year/${subject.slug}`)}
+                key={sem.id}
+                title={sem.label}
+                href={`/subjects/first-year/${sem.id}`}
+                badge={sem.badge}
+                gradientIndex={sem.gradientIndex}
+                bgImageUrl={configsMap.get(`first-year/${sem.id}`)}
               />
             ))}
-            <WhatsAppCard />
           </div>
         </div>
       </section>

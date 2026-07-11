@@ -11,8 +11,11 @@ import {
   Bold, Italic, Strikethrough, Code, Heading2, Heading3,
   List, ListOrdered, Quote, Minus, Link as LinkIcon,
   Image as ImageIcon, Undo, Redo, Check, X,
-  Table as TableIcon, Columns, Rows, Trash2, Plus,
+  Table as TableIcon, Columns, Rows, Trash2, Plus, Upload,
 } from 'lucide-react';
+import imageCompression from 'browser-image-compression';
+import { uploadImage } from '@/lib/firestore';
+import toast from 'react-hot-toast';
 
 interface EditorProps {
   content: string;
@@ -24,6 +27,51 @@ export default function RichEditor({ content, onChange }: EditorProps) {
   const imageUrlInputRef = useRef<HTMLInputElement>(null);
   const [showImagePanel, setShowImagePanel] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
+  const [uploading, setUploading] = useState(false);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!editor) return;
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    const toastId = toast.loading('Optimizing and uploading image...');
+
+    try {
+      const options = {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1920,
+        useWebWorker: true,
+        fileType: 'image/webp' as const,
+      };
+
+      const compressed = await imageCompression(file, options);
+      const webpBlob = compressed.type === 'image/webp'
+        ? compressed
+        : new Blob([compressed], { type: 'image/webp' });
+      const compressedFile = new File([webpBlob], compressed.name || 'image.webp', { type: 'image/webp' });
+
+      const cleanName = file.name
+        .toLowerCase()
+        .replace(/[^a-z0-9.]/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^[.-]|[.-]$/g, '');
+      const nameWithoutExt = cleanName.replace(/\.[^.]+$/, '');
+      const fileName = `${nameWithoutExt}-${Date.now()}.webp`;
+
+      const url = await uploadImage(compressedFile, `posts/inline/${fileName}`);
+
+      editor.chain().focus().setImage({ src: url }).run();
+      setShowImagePanel(false);
+      setImageUrl('');
+      toast.success('Image uploaded and inserted successfully!', { id: toastId });
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to upload image to Azure Storage', { id: toastId });
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -114,8 +162,15 @@ export default function RichEditor({ content, onChange }: EditorProps) {
 
   return (
     <div className="border border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden bg-white dark:bg-gray-800">
-      {/* Hidden file input kept for future use */}
-      <input type="file" accept="image/*" ref={fileInputRef} className="hidden" />
+      {/* Hidden file input for inline uploads */}
+      <input
+        type="file"
+        accept="image/*"
+        ref={fileInputRef}
+        onChange={handleFileUpload}
+        disabled={uploading}
+        className="hidden"
+      />
 
       {/* ── Main Toolbar ─────────────────────────────────────────── */}
       <div className="flex flex-wrap items-center gap-0.5 px-3 py-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/80">
@@ -142,37 +197,50 @@ export default function RichEditor({ content, onChange }: EditorProps) {
 
       {/* ── Image URL Panel ──────────────────────────────────────── */}
       {showImagePanel && (
-        <div className="flex items-center gap-2 px-3 py-2.5 border-b border-indigo-200 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-950/50">
-          <ImageIcon className="w-4 h-4 text-indigo-500 shrink-0" />
-          <input
-            ref={imageUrlInputRef}
-            type="url"
-            value={imageUrl}
-            onChange={(e) => setImageUrl(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') insertImageFromUrl();
-              if (e.key === 'Escape') cancelImagePanel();
-            }}
-            placeholder="Paste image URL here (https://example.com/image.jpg)"
-            className="flex-1 text-sm px-3 py-1.5 rounded-lg border border-indigo-200 dark:border-indigo-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          />
-          <button
-            type="button"
-            onClick={insertImageFromUrl}
-            disabled={!imageUrl.trim()}
-            title="Insert image"
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 text-white text-xs font-medium rounded-lg transition-colors"
-          >
-            <Check className="w-3.5 h-3.5" /> Insert
-          </button>
-          <button
-            type="button"
-            onClick={cancelImagePanel}
-            title="Cancel"
-            className="p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-          >
-            <X className="w-4 h-4" />
-          </button>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 px-3 py-2.5 border-b border-indigo-200 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-950/50">
+          <div className="flex items-center gap-2 flex-1">
+            <ImageIcon className="w-4 h-4 text-indigo-500 shrink-0" />
+            <input
+              ref={imageUrlInputRef}
+              type="url"
+              value={imageUrl}
+              onChange={(e) => setImageUrl(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') insertImageFromUrl();
+                if (e.key === 'Escape') cancelImagePanel();
+              }}
+              placeholder="Paste image URL here (https://example.com/image.jpg)"
+              className="w-full text-sm px-3 py-1.5 rounded-lg border border-indigo-200 dark:border-indigo-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+          </div>
+          <div className="flex items-center gap-1.5 shrink-0 justify-end">
+            <button
+              type="button"
+              onClick={insertImageFromUrl}
+              disabled={!imageUrl.trim() || uploading}
+              title="Insert image"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 text-white text-xs font-semibold rounded-lg transition-colors"
+            >
+              <Check className="w-3.5 h-3.5" /> Insert URL
+            </button>
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-xs font-semibold rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
+              <Upload className="w-3.5 h-3.5 text-indigo-500" />
+              {uploading ? 'Uploading...' : 'Upload File'}
+            </button>
+            <button
+              type="button"
+              onClick={cancelImagePanel}
+              title="Cancel"
+              className="p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       )}
 

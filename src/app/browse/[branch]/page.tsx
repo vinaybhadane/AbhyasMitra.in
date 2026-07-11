@@ -1,6 +1,5 @@
 import { Metadata } from 'next';
-import GridCard from '@/components/GridCard';
-import WhatsAppCard from '@/components/WhatsAppCard';
+import SemesterGrid from '@/components/SemesterGrid';
 import Breadcrumb from '@/components/Breadcrumb';
 import { getAllBrowseConfigs } from '@/lib/firestore';
 
@@ -15,10 +14,13 @@ const BRANCH_NAMES: Record<string, string> = {
   entc: 'Electronics & Telecomm.',
 };
 
-const YEARS = [
-  { id: '2nd', label: '2nd Year', gradientIndex: 0 },
-  { id: '3rd', label: '3rd Year', gradientIndex: 1 },
-  { id: '4th', label: '4th Year', gradientIndex: 2 },
+const SEMESTERS = [
+  { id: 'sem3', label: 'SEMESTER 3', badge: '2nd Year - Sem 1', gradientIndex: 0 },
+  { id: 'sem4', label: 'SEMESTER 4', badge: '2nd Year - Sem 2', gradientIndex: 1 },
+  { id: 'sem5', label: 'SEMESTER 5', badge: '3rd Year - Sem 1', gradientIndex: 2 },
+  { id: 'sem6', label: 'SEMESTER 6', badge: '3rd Year - Sem 2', gradientIndex: 3 },
+  { id: 'sem7', label: 'SEMESTER 7', badge: '4th Year - Sem 1', locked: true, gradientIndex: 0 },
+  { id: 'sem8', label: 'SEMESTER 8', badge: '4th Year - Sem 2', locked: true, gradientIndex: 1 },
 ];
 
 export const dynamic = 'force-dynamic';
@@ -31,8 +33,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { branch } = await params;
   const name = BRANCH_NAMES[branch] ?? branch;
   return {
-    title: `${name} – AbhyasMitra`,
-    description: `Browse 2nd, 3rd and 4th year notes for ${name} under SPPU 2024 pattern.`,
+    title: `${name} Semesters – AbhyasMitra`,
+    description: `Browse semesters 3 to 8 engineering notes and study material for ${name} under SPPU 2024 pattern.`,
   };
 }
 
@@ -41,11 +43,11 @@ export default async function BranchPage({ params }: Props) {
   const branchName = BRANCH_NAMES[branch] ?? branch;
 
   // Load configs
-  let configsMap = new Map<string, string>();
+  let configsMapObj: Record<string, string> = {};
   try {
     const all = await getAllBrowseConfigs();
     all.forEach(c => {
-      if (c.bgImageUrl) configsMap.set(c.id, c.bgImageUrl);
+      if (c.bgImageUrl) configsMapObj[c.id] = c.bgImageUrl;
     });
   } catch {}
 
@@ -65,23 +67,11 @@ export default async function BranchPage({ params }: Props) {
               {branchName}
             </h1>
             <p className="text-sm" style={{ color: 'var(--am-text-secondary)' }}>
-              Select your year
+              Select your semester
             </p>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {YEARS.map((year) => (
-              <GridCard
-                key={year.id}
-                title={year.label}
-                href={`/browse/${branch}/${year.id}`}
-                gradientIndex={year.gradientIndex}
-                badge={year.label}
-                bgImageUrl={configsMap.get(`${branch}/${year.id}`)}
-              />
-            ))}
-            <WhatsAppCard />
-          </div>
+          <SemesterGrid branch={branch} semesters={SEMESTERS} configsMap={configsMapObj} />
         </div>
       </section>
     </div>

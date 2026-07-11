@@ -1,0 +1,85 @@
+import { Metadata } from 'next';
+import { SUBJECTS } from '@/lib/types';
+import GridCard from '@/components/GridCard';
+import WhatsAppCard from '@/components/WhatsAppCard';
+import Breadcrumb from '@/components/Breadcrumb';
+import { getAllBrowseConfigs } from '@/lib/firestore';
+
+const SEM_LABELS: Record<string, string> = {
+  sem1: 'Semester 1',
+  sem2: 'Semester 2',
+};
+
+export const dynamic = 'force-dynamic';
+
+interface Props {
+  params: Promise<{ sem: string }>;
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { sem } = await params;
+  const semLabel = SEM_LABELS[sem] ?? sem;
+  return {
+    title: `1st Year Engineering ${semLabel} Subjects – AbhyasMitra`,
+    description: `Free notes and study material for 1st Year Engineering ${semLabel} subjects under SPPU 2024 pattern.`,
+  };
+}
+
+export default async function FirstYearSemPage({ params }: Props) {
+  const { sem } = await params;
+  const semLabel = SEM_LABELS[sem] ?? sem;
+
+  // Filter subjects by semester keyword
+  const semString = sem.replace('sem', 'Sem '); // 'sem1' -> 'Sem 1'
+  const subjects = SUBJECTS.filter(
+    (s) => s.year === '1st' && s.semester.toLowerCase().includes(semString.toLowerCase())
+  );
+
+  // Load configs
+  let configsMap = new Map<string, string>();
+  try {
+    const all = await getAllBrowseConfigs();
+    all.forEach(c => {
+      if (c.bgImageUrl) configsMap.set(c.id, c.bgImageUrl);
+    });
+  } catch {}
+
+  return (
+    <div style={{ background: 'var(--am-bg-page)', minHeight: '100vh' }}>
+      <section className="pt-8 pb-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Breadcrumb
+            crumbs={[
+              { label: 'Home', href: '/' },
+              { label: '1st Year Engineering', href: '/subjects/first-year' },
+              { label: semLabel },
+            ]}
+          />
+
+          <div className="mb-6">
+            <h1 className="text-2xl sm:text-3xl font-bold mb-1" style={{ color: 'var(--am-text-primary)' }}>
+              1st Year Engineering — {semLabel}
+            </h1>
+            <p className="text-sm" style={{ color: 'var(--am-text-secondary)' }}>
+              Select a subject to browse notes and study material
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {subjects.map((subject, i) => (
+              <GridCard
+                key={subject.id}
+                title={subject.name}
+                href={`/subject/${subject.slug}`}
+                badge={subject.semester}
+                gradientIndex={i % 4}
+                bgImageUrl={configsMap.get(`first-year/${sem}/${subject.slug}`)}
+              />
+            ))}
+            <WhatsAppCard />
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
