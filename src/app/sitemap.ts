@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next';
-import { getPublishedPosts } from '@/lib/firestore';
+import { getPublishedPosts, getCustomSubjects } from '@/lib/firestore';
 import { SUBJECTS } from '@/lib/types';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://abhyasmitra.in';
@@ -17,8 +17,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/cookie-policy`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.3 },
   ];
 
+  // Combine static and custom subjects
+  let allSubjectsList = [...SUBJECTS];
+  try {
+    const customList = await getCustomSubjects();
+    const customMapped = customList.map(s => ({
+      slug: s.slug
+    }));
+    allSubjectsList = [...allSubjectsList, ...customMapped as any];
+  } catch {}
+
   // Subject pages
-  const subjectPages: MetadataRoute.Sitemap = SUBJECTS.map((s) => ({
+  const subjectPages: MetadataRoute.Sitemap = allSubjectsList.map((s) => ({
     url: `${SITE_URL}/subject/${s.slug}`,
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,

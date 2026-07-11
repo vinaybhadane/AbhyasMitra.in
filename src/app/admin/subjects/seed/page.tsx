@@ -33,6 +33,18 @@ const SEM_MAP: Record<number, string> = {
   7: 'sem7', 8: 'sem8',
 };
 
+// Branch abbreviations for de-duplication prefixing
+const BRANCH_ABBR: Record<string, string> = {
+  'first-year': 'FE',
+  'computer':   'CE',
+  'it':         'IT',
+  'ai-ds':      'AIDS',
+  'civil':      'Civil',
+  'electrical': 'EE',
+  'mechanical': 'ME',
+  'entc':       'ENTC',
+};
+
 // Icon pool — cycles deterministically
 const ICON_POOL = [
   'BookOpen', 'Cpu', 'Database', 'Binary', 'Radio',
@@ -94,7 +106,7 @@ export default function SeedSubjectsPage() {
   const appendLog = (msg: string) => setLog(prev => [msg, ...prev].slice(0, 200));
 
   const handleSeed = async () => {
-    if (!confirm(`This will attempt to import ${rawSubjects.length} subjects into Firestore. Duplicates will be skipped. Continue?`)) return;
+    if (!confirm(`This will attempt to import ${rawSubjects.length} subjects into Firestore. Duplicate slugs will be prefixed with branch name (e.g. "CE Object Oriented Programming") and added. Continue?`)) return;
 
     setSeeding(true);
     setDone(false);
@@ -137,13 +149,24 @@ export default function SeedSubjectsPage() {
       }
 
       const slug = slugify(entry.subject, { lower: true, strict: true });
+      let finalSlug = slug;
+      let finalName = entry.subject;
 
       if (existingSlugs.has(slug)) {
-        appendLog(`↩ Skip (exists): ${entry.subject}`);
-        skippedCount++;
-        setSkipped(skippedCount);
-        continue;
+        const abbr    = BRANCH_ABBR[branchId] || branchId.toUpperCase();
+        finalName     = `${abbr} ${entry.subject}`;
+        finalSlug     = slugify(finalName, { lower: true, strict: true });
+
+        if (existingSlugs.has(finalSlug)) {
+          // Prefixed slug also exists — truly a full duplicate, skip
+          appendLog(`↩ Skip (full dup): ${finalName}`);
+          skippedCount++;
+          setSkipped(skippedCount);
+          continue;
+        }
+        appendLog(`⚡ Prefix applied: "${entry.subject}" → "${finalName}"`);
       }
+      // ────────────────────────────────────────────────────────────────────────
 
       const colorObj  = COLOR_POOL[i % COLOR_POOL.length];
       const iconName  = ICON_POOL[i % ICON_POOL.length];
@@ -151,8 +174,8 @@ export default function SeedSubjectsPage() {
 
       try {
         await createCustomSubject({
-          name: entry.subject,
-          slug,
+          name: finalName,
+          slug: finalSlug,
           branch: branchId,
           year: yearId,
           semester: semId,
@@ -164,15 +187,15 @@ export default function SeedSubjectsPage() {
           bannerUrl: '',
         });
 
-        existingSlugs.add(slug);
+        existingSlugs.add(finalSlug);
         addedCount++;
         setAdded(addedCount);
-        appendLog(`✓ Added: ${entry.subject} [${semLabel}]`);
+        appendLog(`✓ Added: ${finalName} [${semLabel}]`);
       } catch (e: unknown) {
         errorCount++;
         setErrors(errorCount);
         const msg = e instanceof Error ? e.message : String(e);
-        appendLog(`✗ Error: "${entry.subject}": ${msg}`);
+        appendLog(`✗ Error: "${finalName}": ${msg}`);
       }
 
       // Small delay to avoid hammering Firestore rate limits
