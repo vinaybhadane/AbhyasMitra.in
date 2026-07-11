@@ -1,9 +1,9 @@
 import { Metadata } from 'next';
-import { SUBJECTS } from '@/lib/types';
+import { SUBJECTS, getLucideIcon } from '@/lib/types';
 import GridCard from '@/components/GridCard';
 import WhatsAppCard from '@/components/WhatsAppCard';
 import Breadcrumb from '@/components/Breadcrumb';
-import { getAllBrowseConfigs } from '@/lib/firestore';
+import { getAllBrowseConfigs, getCustomSubjects } from '@/lib/firestore';
 
 const BRANCH_NAMES: Record<string, string> = {
   computer: 'Computer Engineering',
@@ -45,11 +45,39 @@ export default async function BranchSemPage({ params }: Props) {
   const branchName = BRANCH_NAMES[branch] ?? branch;
   const semLabel = SEM_LABELS[sem] ?? sem;
 
+  // Fetch custom subjects
+  let customSubjects: any[] = [];
+  try {
+    const list = await getCustomSubjects();
+    customSubjects = list
+      .filter((s) => s.branch === branch && s.semester === sem)
+      .map((s) => ({
+        id: s.id,
+        name: s.name,
+        slug: s.slug,
+        year: s.year,
+        semester: s.semesterLabel,
+        description: s.description,
+        icon: getLucideIcon(s.iconName),
+        color: s.color,
+        iconColor: s.iconColor,
+      }));
+  } catch (e) {
+    console.error('Failed to load custom subjects', e);
+  }
+
   // Dynamically filter subjects by matching the semester suffix
   const semString = sem.replace('sem', 'Sem '); // 'sem3' -> 'Sem 3'
-  const subjects = SUBJECTS.filter((s) => 
-    s.semester.toLowerCase().includes(semString.toLowerCase())
-  );
+  const isComputerBranch = branch === 'computer';
+  const staticFiltered = SUBJECTS.filter((s) => {
+    const isSemMatch = s.semester.toLowerCase().includes(semString.toLowerCase());
+    if (s.year === '2nd') {
+      return isSemMatch && isComputerBranch;
+    }
+    return isSemMatch;
+  });
+
+  const subjects = [...staticFiltered, ...customSubjects];
 
   // Load configs
   let configsMap = new Map<string, string>();

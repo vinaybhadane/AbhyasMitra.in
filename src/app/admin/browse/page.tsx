@@ -10,6 +10,7 @@ import {
 import { getAllBrowseConfigs, upsertBrowseConfig, BrowseConfig } from '@/lib/firestore';
 import { SUBJECTS } from '@/lib/types';
 import toast from 'react-hot-toast';
+import ImageUploader from '@/components/ImageUploader';
 
 // ─── Static data matching the homepage BRANCHES ───────────────────────────────
 const BRANCHES = [
@@ -46,71 +47,24 @@ function ImageUrlEditor({
   initialUrl: string;
   onSaved: (url: string) => void;
 }) {
-  const [editing, setEditing] = useState(false);
-  const [url, setUrl] = useState(initialUrl);
-  const [saving, setSaving] = useState(false);
-
-  const save = async () => {
-    setSaving(true);
+  const save = async (newUrl: string) => {
     try {
-      await upsertBrowseConfig(configId, url.trim());
-      onSaved(url.trim());
-      setEditing(false);
+      await upsertBrowseConfig(configId, newUrl.trim());
+      onSaved(newUrl.trim());
       toast.success(`Image saved for ${label}`);
     } catch {
       toast.error('Failed to save');
-    } finally {
-      setSaving(false);
     }
   };
 
   return (
-    <div className="flex items-start gap-3 mt-2">
-      {/* Preview thumbnail */}
-      {url && !editing ? (
-        <div className="relative w-14 h-10 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 shrink-0">
-          <Image src={url} alt={label} fill className="object-cover" />
-        </div>
-      ) : (
-        <div className="w-14 h-10 rounded-lg border border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center shrink-0">
-          <ImageIcon className="w-4 h-4 text-gray-400" />
-        </div>
-      )}
-
-      {editing ? (
-        <div className="flex-1 flex gap-2">
-          <input
-            type="url"
-            value={url}
-            onChange={e => setUrl(e.target.value)}
-            placeholder="https://... paste image URL"
-            className="flex-1 text-sm px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            onKeyDown={e => { if (e.key === 'Enter') save(); if (e.key === 'Escape') setEditing(false); }}
-            autoFocus
-          />
-          <button
-            onClick={save}
-            disabled={saving}
-            className="p-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg disabled:opacity-50"
-          >
-            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-          </button>
-          <button
-            onClick={() => { setEditing(false); setUrl(initialUrl); }}
-            className="p-1.5 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-      ) : (
-        <button
-          onClick={() => setEditing(true)}
-          className="flex items-center gap-1.5 text-xs text-indigo-600 dark:text-indigo-400 hover:underline mt-1"
-        >
-          <ImageIcon className="w-3.5 h-3.5" />
-          {url ? 'Change background image' : 'Set background image'}
-        </button>
-      )}
+    <div className="mt-1.5 max-w-xs">
+      <ImageUploader
+        value={initialUrl}
+        onChange={save}
+        folder="browse"
+        label={`Upload image for ${label}`}
+      />
     </div>
   );
 }

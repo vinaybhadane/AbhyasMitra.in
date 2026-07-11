@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { Save, Eye, Tag, Link2, AlertTriangle, CheckCircle2 } from 'lucide-react';
-import { getPost, updatePost, getUnitsBySubject, countWords } from '@/lib/firestore';
+import { getPost, updatePost, getUnitsBySubject, countWords, getCustomSubjects } from '@/lib/firestore';
 import { useAuth } from '@/contexts/AuthContext';
 import { SUBJECTS, Post, SubjectUnit } from '@/lib/types';
 import { generateExcerpt } from '@/lib/utils';
@@ -27,7 +27,7 @@ export default function EditPostPage() {
   const [units, setUnits] = useState<SubjectUnit[]>([]);
   const [form, setForm] = useState({
     title: '', content: '', featuredImage: '', tags: '',
-    subject: '', unit: '', year: '1st' as '1st' | '2nd',
+    subject: '', unit: '', year: '1st' as '1st' | '2nd' | '3rd' | '4th',
     metaTitle: '', metaDescription: '', keywords: '',
     status: 'draft' as 'draft' | 'published',
     customSlug: '', // post part only
@@ -52,18 +52,43 @@ export default function EditPostPage() {
     }).catch(() => toast.error('Failed to load post')).finally(() => setLoading(false));
   }, [id]);
 
+  const [customSubjects, setCustomSubjects] = useState<any[]>([]);
+
+  useEffect(() => {
+    getCustomSubjects().then((list) => {
+      const mapped = list.map((s) => ({
+        id: s.id,
+        name: s.name,
+        slug: s.slug,
+        year: s.year,
+        semester: s.semesterLabel,
+        description: s.description,
+        icon: null,
+        color: s.color,
+        iconColor: s.iconColor,
+      }));
+      setCustomSubjects(mapped);
+    }).catch(console.error);
+  }, []);
+
   // Load units when subject changes
   useEffect(() => {
     if (!form.subject) { setUnits([]); return; }
-    const subjectObj = SUBJECTS.find(s => s.name === form.subject);
+    const all = [...SUBJECTS, ...customSubjects];
+    const subjectObj = all.find(s => s.name === form.subject);
     if (!subjectObj) return;
     getUnitsBySubject(subjectObj.slug).then(setUnits).catch(() => setUnits([]));
-  }, [form.subject]);
+  }, [form.subject, customSubjects]);
 
   // Slug preview
   const subjectSlugPart = useMemo(
-    () => form.subject ? slugify(form.subject, { lower: true, strict: true }) : 'subject',
-    [form.subject]
+    () => {
+      if (!form.subject) return 'subject';
+      const all = [...SUBJECTS, ...customSubjects];
+      const match = all.find(s => s.name === form.subject);
+      return match ? match.slug : slugify(form.subject, { lower: true, strict: true });
+    },
+    [form.subject, customSubjects]
   );
   const postSlugPart = useMemo(() => {
     const base = form.customSlug.trim() || form.title;
@@ -184,13 +209,15 @@ export default function EditPostPage() {
           <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-5">
             <h3 className="text-sm font-semibold mb-4">Subject & Unit</h3>
             <div className="space-y-3">
-              <select value={form.year} onChange={(e) => setForm({ ...form, year: e.target.value as '1st' | '2nd', subject: '', unit: '' })} className="w-full px-3 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <select value={form.year} onChange={(e) => setForm({ ...form, year: e.target.value as '1st' | '2nd' | '3rd' | '4th', subject: '', unit: '' })} className="w-full px-3 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-gray-100">
                 <option value="1st">1st Year</option>
                 <option value="2nd">2nd Year</option>
+                <option value="3rd">3rd Year</option>
+                <option value="4th">4th Year</option>
               </select>
-              <select value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value, unit: '' })} className="w-full px-3 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <select value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value, unit: '' })} className="w-full px-3 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-gray-100">
                 <option value="">Select subject</option>
-                {SUBJECTS.filter((s) => s.year === form.year).map((s) => (
+                {[...SUBJECTS, ...customSubjects].filter((s) => s.year === form.year).map((s) => (
                   <option key={s.id} value={s.name}>{s.name}</option>
                 ))}
               </select>

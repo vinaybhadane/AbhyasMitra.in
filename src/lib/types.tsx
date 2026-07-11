@@ -15,6 +15,7 @@ import {
   BarChart,
   LineChart,
 } from 'lucide-react';
+import * as Icons from 'lucide-react';
 
 export interface Post {
   id: string;
@@ -27,7 +28,7 @@ export interface Post {
   category: string;
   subject: string;
   unit?: string;          // e.g. "Unit 1: Introduction"
-  year: '1st' | '2nd';
+  year: '1st' | '2nd' | '3rd' | '4th';
   metaTitle: string;
   metaDescription: string;
   keywords: string;
@@ -77,7 +78,7 @@ export interface Subject {
   id: string;
   name: string;
   slug: string;
-  year: '1st' | '2nd';
+  year: '1st' | '2nd' | '3rd' | '4th';
   semester: string;
   description: string;
   icon: React.ReactNode;
@@ -159,7 +160,7 @@ export const SUBJECTS: Subject[] = [
     name: 'Database Management System',
     slug: 'database-management-system',
     year: '2nd',
-    semester: 'SE Comp Sem 3',
+    semester: 'SE Comp Sem 4',
     description: 'DBMS concepts, SQL queries, normalization and transactions.',
     icon: <Database className="w-5 h-5" />,
     color: 'from-blue-600 to-cyan-600',
@@ -170,7 +171,7 @@ export const SUBJECTS: Subject[] = [
     name: 'Discrete Mathematics',
     slug: 'discrete-mathematics',
     year: '2nd',
-    semester: 'SE Comp Sem 3',
+    semester: 'SE Comp Sem 4',
     description: 'Graph theory, logic, sets and combinatorics for computer engineering.',
     icon: <Binary className="w-5 h-5" />,
     color: 'from-indigo-500 to-purple-600',
@@ -181,7 +182,7 @@ export const SUBJECTS: Subject[] = [
     name: 'Computer Organization and Microprocessor',
     slug: 'computer-organization-and-microprocessor',
     year: '2nd',
-    semester: 'SE Comp Sem 3',
+    semester: 'SE Comp Sem 4',
     description: '8085/8086 microprocessor, memory organization and interfacing.',
     icon: <Cpu className="w-5 h-5" />,
     color: 'from-gray-600 to-slate-700',
@@ -192,7 +193,7 @@ export const SUBJECTS: Subject[] = [
     name: 'Internet of Things',
     slug: 'internet-of-things',
     year: '2nd',
-    semester: 'SE Comp Sem 3',
+    semester: 'SE Comp Sem 4',
     description: 'IoT architecture, protocols, Arduino and Raspberry Pi projects.',
     icon: <Radio className="w-5 h-5" />,
     color: 'from-green-500 to-teal-600',
@@ -236,5 +237,10 @@ export const SUBJECTS: Subject[] = [
 export const getSubjectBySlug = (slug: string): Subject | undefined =>
   SUBJECTS.find((s) => s.slug === slug);
 
-export const getSubjectsByYear = (year: '1st' | '2nd'): Subject[] =>
+export const getSubjectsByYear = (year: '1st' | '2nd' | '3rd' | '4th'): Subject[] =>
   SUBJECTS.filter((s) => s.year === year);
+
+export function getLucideIcon(iconName: string): React.ReactNode {
+  const IconComponent = (Icons as any)[iconName] || Icons.BookOpen;
+  return React.createElement(IconComponent, { className: 'w-5 h-5' });
+}

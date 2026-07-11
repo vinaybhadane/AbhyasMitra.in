@@ -1,9 +1,9 @@
 import { Metadata } from 'next';
-import { SUBJECTS } from '@/lib/types';
+import { SUBJECTS, getLucideIcon } from '@/lib/types';
 import GridCard from '@/components/GridCard';
 import WhatsAppCard from '@/components/WhatsAppCard';
 import Breadcrumb from '@/components/Breadcrumb';
-import { getAllBrowseConfigs } from '@/lib/firestore';
+import { getAllBrowseConfigs, getCustomSubjects } from '@/lib/firestore';
 
 const SEM_LABELS: Record<string, string> = {
   sem1: 'Semester 1',
@@ -29,11 +29,34 @@ export default async function FirstYearSemPage({ params }: Props) {
   const { sem } = await params;
   const semLabel = SEM_LABELS[sem] ?? sem;
 
+  // Fetch custom subjects for first year sem1 or sem2
+  let customSubjects: any[] = [];
+  try {
+    const list = await getCustomSubjects();
+    customSubjects = list
+      .filter((s) => s.branch === 'first-year' && s.semester === sem)
+      .map((s) => ({
+        id: s.id,
+        name: s.name,
+        slug: s.slug,
+        year: s.year,
+        semester: s.semesterLabel,
+        description: s.description,
+        icon: getLucideIcon(s.iconName),
+        color: s.color,
+        iconColor: s.iconColor,
+      }));
+  } catch (e) {
+    console.error('Failed to load custom subjects', e);
+  }
+
   // Filter subjects by semester keyword
   const semString = sem.replace('sem', 'Sem '); // 'sem1' -> 'Sem 1'
-  const subjects = SUBJECTS.filter(
+  const staticFiltered = SUBJECTS.filter(
     (s) => s.year === '1st' && s.semester.toLowerCase().includes(semString.toLowerCase())
   );
+
+  const subjects = [...staticFiltered, ...customSubjects];
 
   // Load configs
   let configsMap = new Map<string, string>();

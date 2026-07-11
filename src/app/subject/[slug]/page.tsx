@@ -2,8 +2,8 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ChevronRight, BookOpen, TrendingUp, CheckCircle2, Layers } from 'lucide-react';
-import { getSubjectBySlug, SUBJECTS, Post, SubjectUnit } from '@/lib/types';
-import { getPostsBySubject, getUnitsBySubject, getAllBrowseConfigs } from '@/lib/firestore';
+import { getSubjectBySlug, SUBJECTS, Post, SubjectUnit, getLucideIcon } from '@/lib/types';
+import { getPostsBySubject, getUnitsBySubject, getAllBrowseConfigs, getCustomSubjects } from '@/lib/firestore';
 import PostGridCard from '@/components/PostGridCard';
 import { generateMetadata as genMeta } from '@/lib/seo';
 import Image from 'next/image';
@@ -20,13 +20,37 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
+async function resolveSubject(slug: string) {
+  const staticSub = getSubjectBySlug(slug);
+  if (staticSub) return staticSub;
+
+  try {
+    const list = await getCustomSubjects();
+    const found = list.find((s) => s.slug === slug);
+    if (found) {
+      return {
+        id: found.id,
+        name: found.name,
+        slug: found.slug,
+        year: found.year,
+        semester: found.semesterLabel,
+        description: found.description,
+        icon: getLucideIcon(found.iconName),
+        color: found.color,
+        iconColor: found.iconColor,
+      };
+    }
+  } catch {}
+  return undefined;
+}
+
 export async function generateStaticParams() {
   return SUBJECTS.map((s) => ({ slug: s.slug }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const subject = getSubjectBySlug(slug);
+  const subject = await resolveSubject(slug);
   if (!subject) return {};
   return genMeta({
     title: `${subject.name} Notes – SPPU 2024 Pattern`,
@@ -40,7 +64,7 @@ export const dynamic = 'force-dynamic'; // Always fresh post counts
 
 export default async function SubjectPage({ params }: PageProps) {
   const { slug } = await params;
-  const subject = getSubjectBySlug(slug);
+  const subject = await resolveSubject(slug);
   if (!subject) notFound();
 
   let posts: Post[] = [];

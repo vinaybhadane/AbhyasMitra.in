@@ -403,3 +403,71 @@ export async function deleteNotification(id: string): Promise<void> {
   await deleteDoc(doc(db, 'units', id));
 }
 
+// ─── Custom Subjects ─────────────────────────────────────────────────────────
+
+export interface CustomSubjectDoc {
+  id: string;
+  name: string;
+  slug: string;
+  year: '1st' | '2nd' | '3rd' | '4th';
+  branch: string;       // e.g. "computer", "it"
+  semester: string;     // e.g. "sem3", "sem4" (matches the semId)
+  semesterLabel: string; // e.g. "SE Comp Sem 4"
+  description: string;
+  iconName: string;     // e.g. "BookOpen", "Cpu"
+  color: string;        // e.g. "from-blue-600 to-cyan-600"
+  iconColor: string;    // e.g. "#2563eb"
+  bannerUrl?: string;
+  createdAt: Date | Timestamp;
+}
+
+export async function getCustomSubjects(): Promise<CustomSubjectDoc[]> {
+  try {
+    const q = query(collection(db, 'subjects'), orderBy('createdAt', 'desc'));
+    const snap = await getDocs(q);
+    return snap.docs.map((d) => {
+      const data = d.data();
+      return {
+        id: d.id,
+        ...data,
+      } as CustomSubjectDoc;
+    });
+  } catch (e) {
+    console.error('Failed to fetch custom subjects', e);
+    return [];
+  }
+}
+
+export async function createCustomSubject(data: Omit<CustomSubjectDoc, 'id' | 'createdAt'>): Promise<string> {
+  // 1. Add subject document to subjects collection
+  const docRef = await addDoc(collection(db, 'subjects'), {
+    ...data,
+    createdAt: serverTimestamp(),
+  });
+
+  // 2. If a banner URL is provided, automatically register it in the configs collection
+  // so the homepage / subject listings render the banner image automatically
+  if (data.bannerUrl) {
+    // Config ID format: [branch]/[semester]/[subjectSlug]
+    const configId = `${data.branch}/${data.semester}/${data.slug}`;
+    await setDoc(doc(db, 'configs', configId), {
+      id: configId,
+      bgImageUrl: data.bannerUrl,
+      updatedAt: serverTimestamp(),
+    });
+  }
+
+  return docRef.id;
+}
+
+export async function deleteCustomSubject(id: string, branch: string, semester: string, slug: string): Promise<void> {
+  // 1. Delete subject document
+  await deleteDoc(doc(db, 'subjects', id));
+
+  // 2. Delete corresponding browse config banner if it exists
+  const configId = `${branch}/${semester}/${slug}`;
+  try {
+    await deleteDoc(doc(db, 'configs', configId));
+  } catch {}
+}
+

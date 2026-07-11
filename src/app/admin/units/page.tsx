@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { BookMarked, Plus, Trash2, Edit2, Check, X, GripVertical } from 'lucide-react';
-import { getUnitsBySubject, createUnit, updateUnit, deleteUnit } from '@/lib/firestore';
+import { getUnitsBySubject, createUnit, updateUnit, deleteUnit, getCustomSubjects } from '@/lib/firestore';
 import { SUBJECTS, SubjectUnit } from '@/lib/types';
 import toast from 'react-hot-toast';
 
@@ -14,8 +14,26 @@ export default function AdminUnitsPage() {
   const [adding, setAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
+  const [customSubjects, setCustomSubjects] = useState<any[]>([]);
 
-  const selectedSubject = SUBJECTS.find(s => s.slug === selectedSubjectSlug);
+  useEffect(() => {
+    getCustomSubjects().then((list) => {
+      const mapped = list.map((s) => ({
+        id: s.id,
+        name: s.name,
+        slug: s.slug,
+        year: s.year,
+        semester: s.semesterLabel,
+        description: s.description,
+        icon: null,
+        color: s.color,
+        iconColor: s.iconColor,
+      }));
+      setCustomSubjects(mapped);
+    }).catch(console.error);
+  }, []);
+
+  const selectedSubject = [...SUBJECTS, ...customSubjects].find(s => s.slug === selectedSubjectSlug);
 
   useEffect(() => {
     if (!selectedSubjectSlug) { setUnits([]); return; }
@@ -91,9 +109,9 @@ export default function AdminUnitsPage() {
           className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
         >
           <option value="">-- Choose a subject --</option>
-          {['1st', '2nd'].map(year => (
+          {['1st', '2nd', '3rd', '4th'].map(year => (
             <optgroup key={year} label={`${year} Year`}>
-              {SUBJECTS.filter(s => s.year === year).map(s => (
+              {[...SUBJECTS, ...customSubjects].filter(s => s.year === year).map(s => (
                 <option key={s.slug} value={s.slug}>{s.name}</option>
               ))}
             </optgroup>
