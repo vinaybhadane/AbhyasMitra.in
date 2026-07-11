@@ -90,5 +90,13 @@ service cloud.firestore {
       // Only admin can manage
       allow create, update, delete: if isAdmin();
     }
+
+    // ─── Subject Notes Collection ─────────────────────────────────────────────
+    match /subjectNotes/{subjectSlug} {
+      // Anyone can read subject notes
+      allow read: if true;
+      // Only admin can manage
+      allow create, update, delete: if isAdmin();
+    }
   }
 }
