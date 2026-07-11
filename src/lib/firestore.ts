@@ -445,12 +445,12 @@ export async function createCustomSubject(data: Omit<CustomSubjectDoc, 'id' | 'c
     createdAt: serverTimestamp(),
   });
 
-  // 2. If a banner URL is provided, automatically register it in the configs collection
+  // 2. If a banner URL is provided, automatically register it in the browseConfig collection
   // so the homepage / subject listings render the banner image automatically
   if (data.bannerUrl) {
     // Config ID format: [branch]/[semester]/[subjectSlug]
     const configId = `${data.branch}/${data.semester}/${data.slug}`;
-    await setDoc(doc(db, 'configs', configId), {
+    await setDoc(doc(db, 'browseConfig', configId), {
       id: configId,
       bgImageUrl: data.bannerUrl,
       updatedAt: serverTimestamp(),
@@ -467,7 +467,7 @@ export async function deleteCustomSubject(id: string, branch: string, semester: 
   // 2. Delete corresponding browse config banner if it exists
   const configId = `${branch}/${semester}/${slug}`;
   try {
-    await deleteDoc(doc(db, 'configs', configId));
+    await deleteDoc(doc(db, 'browseConfig', configId));
   } catch {}
 }
 

@@ -82,5 +82,13 @@ service cloud.firestore {
       // Only admin can manage
       allow create, update, delete: if isAdmin();
     }
+
+    // ─── Subjects Collection ──────────────────────────────────────────────────
+    match /subjects/{subjectId} {
+      // Anyone can read subjects
+      allow read: if true;
+      // Only admin can manage
+      allow create, update, delete: if isAdmin();
+    }
   }
 }
