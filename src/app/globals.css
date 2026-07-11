@@ -885,3 +885,122 @@ body {
   color: #38bdf8;
 }
 
+/* Premium Profile Dropdown */
+.premium-profile-container {
+  position: relative;
+  display: inline-flex;
+}
+
+.premium-profile-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  color: #0f172a;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  user-select: none;
+}
+
+.premium-profile-trigger:hover {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.premium-profile-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 180px;
+  background-color: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  border-radius: 12px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 150;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: opacity 150ms ease, transform 150ms ease, visibility 150ms ease;
+}
+
+.premium-profile-dropdown--open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.premium-profile-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: #334155;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.premium-profile-item svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2px;
+  stroke: currentColor;
+}
+
+.premium-profile-item:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+.premium-profile-item--danger {
+  color: #ef4444;
+}
+
+.premium-profile-item--danger:hover {
+  background-color: #fef2f2;
+  color: #dc2626;
+}
+
+/* Premium Login Button */
+.premium-login-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  background-color: #0f172a;
+  color: #ffffff;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.22s ease-out, transform 0.15s ease;
+}
+
+.premium-login-btn:hover {
+  background-color: #38bdf8;
+}
+
+.premium-login-btn:active {
+  transform: scale(0.97);
+}
+

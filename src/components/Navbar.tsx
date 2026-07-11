@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 
 // Navigation items definition
 const NAV_ITEMS = [
@@ -16,12 +17,16 @@ const NAV_ITEMS = [
 
 export default function Navbar() {
   const pathname = usePathname();
+  const { user, isAdminUser, signInWithGoogle, logout } = useAuth();
+  
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeHash, setActiveHash] = useState('');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   
   const drawerRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Monitor scroll for subtle shadow
   useEffect(() => {
@@ -30,6 +35,17 @@ export default function Navbar() {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   // Monitor hash changes to keep navigation states active
@@ -313,6 +329,76 @@ export default function Navbar() {
               </Link>
             );
           })}
+
+          {/* User Auth Profile / Login Button on Desktop */}
+          {user ? (
+            <div ref={dropdownRef} className="premium-profile-container ml-2">
+              <button
+                type="button"
+                className="premium-profile-trigger"
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+                aria-haspopup="true"
+                aria-expanded={dropdownOpen}
+              >
+                {user.photoURL ? (
+                  <Image
+                    src={user.photoURL}
+                    alt="Profile"
+                    width={24}
+                    height={24}
+                    className="rounded-full shrink-0"
+                  />
+                ) : (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 shrink-0 text-gray-500">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                )}
+                <span className="max-w-[100px] truncate text-xs font-semibold">{user.displayName}</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3 text-gray-400 shrink-0">
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </button>
+
+              <div className={`premium-profile-dropdown ${dropdownOpen ? 'premium-profile-dropdown--open' : ''}`}>
+                {isAdminUser && (
+                  <Link
+                    href="/admin"
+                    className="premium-profile-item"
+                    onClick={() => setDropdownOpen(false)}
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    </svg>
+                    <span>Admin Panel</span>
+                  </Link>
+                )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDropdownOpen(false);
+                    logout();
+                  }}
+                  className="premium-profile-item premium-profile-item--danger"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" y1="12" x2="9" y2="12" />
+                  </svg>
+                  <span>Sign Out</span>
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={signInWithGoogle}
+              className="premium-login-btn ml-2"
+            >
+              Sign In
+            </button>
+          )}
         </div>
       </nav>
 
@@ -398,6 +484,83 @@ export default function Navbar() {
               </Link>
             );
           })}
+
+          {/* Divider */}
+          <div className="h-px bg-gray-100 dark:bg-gray-800 my-4" />
+
+          {/* User Auth Section inside Mobile Drawer */}
+          {user ? (
+            <div className="space-y-2">
+              <div className="flex items-center gap-3 px-3 py-2 bg-gray-50 dark:bg-gray-800/40 rounded-xl mb-2">
+                {user.photoURL ? (
+                  <Image
+                    src={user.photoURL}
+                    alt="Profile"
+                    width={32}
+                    height={32}
+                    className="rounded-full shrink-0 border border-gray-150"
+                  />
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-sky-50 flex items-center justify-center text-sky-600 font-bold shrink-0 border border-sky-100 text-xs">
+                    {user.displayName?.[0] || 'U'}
+                  </div>
+                )}
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-bold text-gray-900 truncate">{user.displayName}</p>
+                  <p className="text-[10px] text-gray-400 truncate">{user.email}</p>
+                </div>
+              </div>
+
+              {isAdminUser && (
+                <Link
+                  href="/admin"
+                  className="premium-drawer-item !h-12 !px-3"
+                  onClick={() => setIsOpen(false)}
+                  role="menuitem"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                  </svg>
+                  <span>Admin Panel</span>
+                </Link>
+              )}
+
+              <button
+                type="button"
+                onClick={() => {
+                  setIsOpen(false);
+                  logout();
+                }}
+                className="premium-drawer-item !h-12 !px-3 text-red-500 hover:!bg-red-50 hover:!text-red-600"
+                role="menuitem"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-red-500">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                  <polyline points="16 17 21 12 16 7" />
+                  <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+                <span>Sign Out</span>
+              </button>
+            </div>
+          ) : (
+            <div className="px-1 mt-1">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsOpen(false);
+                  signInWithGoogle();
+                }}
+                className="w-full h-12 flex items-center justify-center gap-2 font-bold text-sm bg-gray-950 hover:bg-sky-600 text-white rounded-xl transition-all duration-300 cursor-pointer"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                  <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                  <polyline points="10 17 15 12 10 7" />
+                  <line x1="15" y1="12" x2="3" y2="12" />
+                </svg>
+                <span>Sign In</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </header>
