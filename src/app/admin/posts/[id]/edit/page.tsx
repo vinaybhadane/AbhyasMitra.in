@@ -66,10 +66,22 @@ export default function EditPostPage() {
         icon: null,
         color: s.color,
         iconColor: s.iconColor,
+        branch: s.branch,
       }));
       setCustomSubjects(mapped);
     }).catch(console.error);
   }, []);
+
+  const BRANCH_LABELS: Record<string, string> = {
+    'first-year': 'First Year (FE)',
+    'computer':   'Computer Engineering',
+    'it':         'Information Technology',
+    'ai-ds':      'AI & Data Science',
+    'mechanical': 'Mechanical Engineering',
+    'electrical': 'Electrical Engineering',
+    'civil':      'Civil Engineering',
+    'entc':       'Electronics & Telecomm.',
+  };
 
   // Load units when subject changes
   useEffect(() => {
@@ -217,9 +229,19 @@ export default function EditPostPage() {
               </select>
               <select value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value, unit: '' })} className="w-full px-3 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-gray-100">
                 <option value="">Select subject</option>
-                {[...SUBJECTS, ...customSubjects].filter((s) => s.year === form.year).map((s) => (
-                  <option key={s.id} value={s.name}>{s.name}</option>
-                ))}
+                {Object.entries(BRANCH_LABELS).map(([branchKey, branchName]) => {
+                  const branchSubjects = [...SUBJECTS, ...customSubjects].filter(
+                    (s) => s.year === form.year && (s.branch === branchKey || (!s.branch && (s.year === '1st' ? 'first-year' : 'computer') === branchKey))
+                  );
+                  if (branchSubjects.length === 0) return null;
+                  return (
+                    <optgroup key={branchKey} label={branchName}>
+                      {branchSubjects.map((s) => (
+                        <option key={s.id} value={s.name}>{s.name}</option>
+                      ))}
+                    </optgroup>
+                  );
+                })}
               </select>
               {form.subject && (
                 <div>
