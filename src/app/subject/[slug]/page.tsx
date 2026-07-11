@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ChevronRight, BookOpen, TrendingUp, CheckCircle2, Layers } from 'lucide-react';
 import { getSubjectBySlug, SUBJECTS, Post, SubjectUnit, getLucideIcon } from '@/lib/types';
-import { getPostsBySubject, getUnitsBySubject, getAllBrowseConfigs, getCustomSubjects } from '@/lib/firestore';
+import { getPostsBySubject, getUnitsBySubject, getAllBrowseConfigs, getCustomSubjects, getSubjectNotes, SubjectNoteUnit } from '@/lib/firestore';
 import PostGridCard from '@/components/PostGridCard';
 import { generateMetadata as genMeta } from '@/lib/seo';
 import Image from 'next/image';
@@ -72,23 +72,28 @@ export default async function SubjectPage({ params }: PageProps) {
   let posts: Post[] = [];
   let units: SubjectUnit[] = [];
   let bgImageUrl = '';
+  let directNotes: SubjectNoteUnit[] = [];
 
   try {
     const configKey = subject.year === '1st' ? `first-year/${slug}` : `computer/2nd/${slug}`;
-    const [postsData, unitsData, allConfigs] = await Promise.all([
+    const [postsData, unitsData, allConfigs, subjectNotesDoc] = await Promise.all([
       getPostsBySubject(subject.name, 50),
       getUnitsBySubject(slug),
       getAllBrowseConfigs(),
+      getSubjectNotes(slug),
     ]);
     posts = postsData;
     units = unitsData;
+    if (subjectNotesDoc && subjectNotesDoc.units) {
+      directNotes = subjectNotesDoc.units;
+    }
 
     const matchedConfig = allConfigs.find(c => c.id === configKey);
     if (matchedConfig?.bgImageUrl) {
       bgImageUrl = matchedConfig.bgImageUrl;
     }
   } catch {
-    posts = []; units = [];
+    posts = []; units = []; directNotes = [];
   }
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://abhyasmitra.in';
@@ -181,74 +186,151 @@ export default async function SubjectPage({ params }: PageProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="flex flex-col lg:flex-row gap-10">
             {/* Posts — unit-wise or flat */}
-            <div className="flex-1">
-              {posts.length === 0 ? (
-                /* Empty State */
-                <div className="text-center py-20 bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm px-6">
-                  <BookOpen className="w-16 h-16 mx-auto text-gray-300 dark:text-gray-600 mb-4" />
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">Notes Coming Soon</h2>
-                  <p className="text-gray-500 dark:text-gray-400 text-base max-w-md mx-auto mb-8 leading-relaxed">
-                    We are working on {subject.name} notes. Join our WhatsApp channel to get notified instantly!
-                  </p>
-                  <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <a href={WA_URL} target="_blank" rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-6 py-3.5 bg-[#25D366] hover:bg-[#20bd5a] text-white font-semibold rounded-xl transition-all shadow-lg shadow-[#25D366]/20 hover:-translate-y-0.5">
-                      <WhatsAppIcon /> Join WhatsApp Channel
-                    </a>
-                    <Link href="/" className="inline-flex items-center gap-2 px-6 py-3.5 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold rounded-xl transition-all">
-                      Back to Home
-                    </Link>
+            <div className="flex-1 space-y-10">
+              {/* 1. PDF Notes Table Section (if any direct notes exist) */}
+              {directNotes.length > 0 && (
+                <section className="space-y-5">
+                  <div className="mb-4">
+                    <h2 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white leading-tight">
+                      Download {subject.name} PDF Notes (SPPU 2024 Pattern)
+                    </h2>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      Direct unit-wise PDF downloads for {subject.name}. Clean & high speed notes.
+                    </p>
                   </div>
-                </div>
-              ) : hasUnits ? (
-                /* Unit-wise layout */
-                <div className="space-y-10">
-                  {units.map((unit, idx) => {
-                    const unitPosts = postsByUnit[unit.name] || [];
-                    if (unitPosts.length === 0) return null;
-                    return (
-                      <section key={unit.id}>
-                        <div className="flex items-center gap-3 mb-5">
-                          <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-indigo-600 text-white text-sm font-bold shrink-0">
-                            {idx + 1}
+
+                  {/* Modern Responsive Table */}
+                  <div className="overflow-hidden border border-gray-200 dark:border-gray-800 rounded-3xl shadow-sm bg-white dark:bg-gray-900">
+                    {/* Desktop View */}
+                    <div className="hidden sm:block overflow-x-auto">
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="bg-gray-50 dark:bg-gray-950 border-b border-gray-150 dark:border-gray-800 text-gray-700 dark:text-gray-300 text-xs font-bold uppercase tracking-wider">
+                            <th className="px-6 py-4 w-24">Unit No.</th>
+                            <th className="px-6 py-4">Unit / Chapter Name</th>
+                            <th className="px-6 py-4 text-center w-48">Download</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100 dark:divide-gray-850 text-sm text-gray-600 dark:text-gray-300">
+                          {directNotes.map((note, i) => (
+                            <tr key={i} className="hover:bg-gray-50/50 dark:hover:bg-gray-850/10 transition-colors">
+                              <td className="px-6 py-4 font-black text-indigo-600 dark:text-indigo-400">{note.unitNo}</td>
+                              <td className="px-6 py-4 font-semibold text-gray-900 dark:text-white">{note.unitName}</td>
+                              <td className="px-6 py-3 text-center">
+                                <a href={note.downloadUrl} target="_blank" rel="noopener noreferrer" className="hover:opacity-85 transition-opacity inline-flex items-center justify-center">
+                                  <img src="/downloadpng.png" alt="Download PDF" className="h-10 w-auto object-contain" />
+                                </a>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {/* Mobile Card List */}
+                    <div className="block sm:hidden divide-y divide-gray-100 dark:divide-gray-850">
+                      {directNotes.map((note, i) => (
+                        <div key={i} className="p-5 space-y-3">
+                          <div className="flex items-center justify-between">
+                            <span className="px-2.5 py-1 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 rounded-lg text-xs font-black">{note.unitNo}</span>
                           </div>
-                          <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">{unit.name}</h2>
-                          <span className="text-xs text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full">{unitPosts.length} notes</span>
+                          <p className="text-sm font-bold text-gray-900 dark:text-white leading-relaxed">{note.unitName}</p>
+                          <a href={note.downloadUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center pt-2">
+                            <img src="/downloadpng.png" alt="Download PDF" className="h-11 object-contain" />
+                          </a>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </section>
+              )}
+
+              {/* 2. Blog Posts Section */}
+              {posts.length > 0 ? (
+                hasUnits ? (
+                  /* Unit-wise layout */
+                  <div className="space-y-10">
+                    {units.map((unit, idx) => {
+                      const unitPosts = postsByUnit[unit.name] || [];
+                      if (unitPosts.length === 0) return null;
+                      return (
+                        <section key={unit.id}>
+                          <div className="flex items-center gap-3 mb-5">
+                            <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-indigo-600 text-white text-sm font-bold shrink-0">
+                              {idx + 1}
+                            </div>
+                            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">{unit.name}</h2>
+                            <span className="text-xs text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full">{unitPosts.length} notes</span>
+                          </div>
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                            {unitPosts.map(post => <PostGridCard key={post.id} post={post} />)}
+                          </div>
+                        </section>
+                      );
+                    })}
+                    {uncategorized.length > 0 && (
+                      <section>
+                        <div className="flex items-center gap-3 mb-5">
+                          <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Other Notes</h2>
+                          <span className="text-xs text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full">{uncategorized.length}</span>
                         </div>
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                          {unitPosts.map(post => <PostGridCard key={post.id} post={post} />)}
+                          {uncategorized.map(post => <PostGridCard key={post.id} post={post} />)}
                         </div>
                       </section>
-                    );
-                  })}
-                  {uncategorized.length > 0 && (
-                    <section>
-                      <div className="flex items-center gap-3 mb-5">
-                        <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Other Notes</h2>
-                        <span className="text-xs text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full">{uncategorized.length}</span>
-                      </div>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                        {uncategorized.map(post => <PostGridCard key={post.id} post={post} />)}
-                      </div>
-                    </section>
-                  )}
-                  {/* WhatsApp Banner */}
-                  <WhatsAppBanner subjectName={subject.name} />
-                </div>
+                    )}
+                    {/* WhatsApp Banner */}
+                    <WhatsAppBanner subjectName={subject.name} />
+                  </div>
+                ) : (
+                  /* Flat layout (no units defined) */
+                  <>
+                    <div className="flex items-center justify-between mb-6">
+                      <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                        All {subject.name} Notes ({posts.length})
+                      </h2>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-12">
+                      {posts.map(post => <PostGridCard key={post.id} post={post} />)}
+                    </div>
+                    <WhatsAppBanner subjectName={subject.name} />
+                  </>
+                )
               ) : (
-                /* Flat layout (no units defined) */
-                <>
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                      All {subject.name} Notes ({posts.length})
-                    </h2>
+                /* No posts, but check if we also have no direct notes before rendering empty state */
+                directNotes.length === 0 && (
+                  <div className="text-center py-20 bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm px-6">
+                    <BookOpen className="w-16 h-16 mx-auto text-gray-300 dark:text-gray-600 mb-4" />
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">Notes Coming Soon</h2>
+                    <p className="text-gray-500 dark:text-gray-400 text-base max-w-md mx-auto mb-8 leading-relaxed">
+                      We are working on {subject.name} notes. Join our WhatsApp channel to get notified instantly!
+                    </p>
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                      <a href={WA_URL} target="_blank" rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-6 py-3.5 bg-[#25D366] hover:bg-[#20bd5a] text-white font-semibold rounded-xl transition-all shadow-lg shadow-[#25D366]/20 hover:-translate-y-0.5">
+                        <WhatsAppIcon /> Join WhatsApp Channel
+                      </a>
+                      <Link href="/" className="inline-flex items-center gap-2 px-6 py-3.5 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold rounded-xl transition-all">
+                        Back to Home
+                      </Link>
+                    </div>
                   </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-12">
-                    {posts.map(post => <PostGridCard key={post.id} post={post} />)}
-                  </div>
-                  <WhatsAppBanner subjectName={subject.name} />
-                </>
+                )
               )}
+
+              {/* Dynamic Extreme SEO Tags */}
+              <div className="bg-gray-50 dark:bg-gray-900/40 border border-gray-155 dark:border-gray-800/80 rounded-3xl p-6 mt-8">
+                <h3 className="text-xs font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-3">Search Tags</h3>
+                <div className="flex flex-wrap gap-2.5 text-xs text-gray-500 dark:text-gray-400 font-semibold">
+                  <span className="px-3 py-1.5 bg-white dark:bg-gray-800 border border-gray-250 dark:border-gray-750 rounded-xl hover:text-indigo-650 dark:hover:text-indigo-400 transition-colors">#{subject.name} sppu 2024 notes</span>
+                  <span className="px-3 py-1.5 bg-white dark:bg-gray-800 border border-gray-250 dark:border-gray-750 rounded-xl hover:text-indigo-650 dark:hover:text-indigo-400 transition-colors">#{subject.name} engineering notes sppu</span>
+                  <span className="px-3 py-1.5 bg-white dark:bg-gray-800 border border-gray-250 dark:border-gray-750 rounded-xl hover:text-indigo-650 dark:hover:text-indigo-400 transition-colors">#sppu 2024 pattern notes</span>
+                  <span className="px-3 py-1.5 bg-white dark:bg-gray-800 border border-gray-250 dark:border-gray-750 rounded-xl hover:text-indigo-650 dark:hover:text-indigo-400 transition-colors">#sppu engineering study material</span>
+                  <span className="px-3 py-1.5 bg-white dark:bg-gray-800 border border-gray-250 dark:border-gray-750 rounded-xl hover:text-indigo-650 dark:hover:text-indigo-400 transition-colors">#{subject.name} syllabus unit notes</span>
+                  <span className="px-3 py-1.5 bg-white dark:bg-gray-800 border border-gray-250 dark:border-gray-750 rounded-xl hover:text-indigo-650 dark:hover:text-indigo-400 transition-colors">#{subject.name} question bank sppu</span>
+                  <span className="px-3 py-1.5 bg-white dark:bg-gray-800 border border-gray-250 dark:border-gray-750 rounded-xl hover:text-indigo-650 dark:hover:text-indigo-400 transition-colors">#sppu exam pdf downloads</span>
+                </div>
+              </div>
             </div>
 
             {/* Sidebar */}

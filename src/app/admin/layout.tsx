@@ -64,6 +64,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: '/admin', icon: LayoutDashboard, label: 'Dashboard' },
     { href: '/admin/browse', icon: Image, label: 'Browse Manager' },
     { href: '/admin/subjects', icon: BookOpen, label: 'Subjects' },
+    { href: '/admin/subject-notes', icon: FileText, label: 'Add Notes' },
     { href: '/admin/posts', icon: FileText, label: 'All Posts' },
     { href: '/admin/posts/new', icon: PlusCircle, label: 'New Post' },
     { href: '/admin/units', icon: BookMarked, label: 'Units' },

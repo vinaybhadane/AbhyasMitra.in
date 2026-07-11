@@ -494,3 +494,35 @@ export async function updateCustomSubject(
   }
 }
 
+export interface SubjectNoteUnit {
+  unitNo: string;
+  unitName: string;
+  downloadUrl: string;
+}
+
+export interface SubjectNotesDoc {
+  subjectSlug: string;
+  units: SubjectNoteUnit[];
+  updatedAt?: any;
+}
+
+export async function getSubjectNotes(subjectSlug: string): Promise<SubjectNotesDoc | null> {
+  const docRef = doc(db, 'subjectNotes', subjectSlug);
+  const snap = await getDoc(docRef);
+  if (!snap.exists()) return null;
+  return snap.data() as SubjectNotesDoc;
+}
+
+export async function saveSubjectNotes(
+  subjectSlug: string,
+  units: SubjectNoteUnit[]
+): Promise<void> {
+  const docRef = doc(db, 'subjectNotes', subjectSlug);
+  await setDoc(docRef, {
+    subjectSlug,
+    units,
+    updatedAt: serverTimestamp(),
+  });
+}
+
+
