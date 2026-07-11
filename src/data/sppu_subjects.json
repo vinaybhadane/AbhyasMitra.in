@@ -1,0 +1,1311 @@
+[
+  {
+    "subject": "Engineering Mathematics-I",
+    "branch": "Common (All Branches)",
+    "year": "FE",
+    "semester": 1,
+    "description": "Foundational calculus, linear algebra and differential equations for engineering problem solving."
+  },
+  {
+    "subject": "Engineering Physics / Engineering Chemistry",
+    "branch": "Common (All Branches)",
+    "year": "FE",
+    "semester": 1,
+    "description": "Core physics or chemistry principles applied to engineering materials and systems."
+  },
+  {
+    "subject": "Basic Electronics Engineering / Basic Electrical Engineering",
+    "branch": "Common (All Branches)",
+    "year": "FE",
+    "semester": 1,
+    "description": "Fundamentals of electronic components, circuits, electrical machines and basic circuit analysis."
+  },
+  {
+    "subject": "Engineering Graphics / Engineering Mechanics",
+    "branch": "Common (All Branches)",
+    "year": "FE",
+    "semester": 1,
+    "description": "Technical drawing and projection techniques, or statics and dynamics of rigid bodies."
+  },
+  {
+    "subject": "Fundamentals of Programming Languages",
+    "branch": "Common (All Branches)",
+    "year": "FE",
+    "semester": 1,
+    "description": "Introduction to programming logic, control structures and basic coding using a general-purpose language."
+  },
+  {
+    "subject": "Manufacturing Practice Workshop / Design Thinking and Idea Lab",
+    "branch": "Common (All Branches)",
+    "year": "FE",
+    "semester": 1,
+    "description": "Hands-on workshop practice in manufacturing processes, or a design-thinking based ideation and prototyping course."
+  },
+  {
+    "subject": "Professional Communication Skills",
+    "branch": "Common (All Branches)",
+    "year": "FE",
+    "semester": 1,
+    "description": "Development of verbal, written and presentation communication skills for professional settings."
+  },
+  {
+    "subject": "Co-Curricular Course-I",
+    "branch": "Common (All Branches)",
+    "year": "FE",
+    "semester": 1,
+    "description": "Value-added activity based course covering skills outside the core technical curriculum."
+  },
+  {
+    "subject": "Engineering Mathematics-II",
+    "branch": "Common (All Branches)",
+    "year": "FE",
+    "semester": 2,
+    "description": "Continuation of engineering mathematics covering multivariable calculus, series and differential equations."
+  },
+  {
+    "subject": "Engineering Chemistry / Engineering Physics",
+    "branch": "Common (All Branches)",
+    "year": "FE",
+    "semester": 2,
+    "description": "Core chemistry or physics principles applied to engineering materials and systems."
+  },
+  {
+    "subject": "Basic Electrical Engineering / Basic Electronics Engineering",
+    "branch": "Common (All Branches)",
+    "year": "FE",
+    "semester": 2,
+    "description": "Fundamentals of electrical circuits, machines, or electronic components and devices."
+  },
+  {
+    "subject": "Engineering Mechanics / Engineering Graphics",
+    "branch": "Common (All Branches)",
+    "year": "FE",
+    "semester": 2,
+    "description": "Statics and dynamics of rigid bodies, or technical drawing and projection techniques."
+  },
+  {
+    "subject": "Programming and Problem Solving",
+    "branch": "Common (All Branches)",
+    "year": "FE",
+    "semester": 2,
+    "description": "Problem-solving approaches and programming fundamentals using algorithms and coding constructs."
+  },
+  {
+    "subject": "Design Thinking and Idea Lab / Manufacturing Practice Workshop",
+    "branch": "Common (All Branches)",
+    "year": "FE",
+    "semester": 2,
+    "description": "Design-thinking based ideation and prototyping course, or hands-on manufacturing workshop practice."
+  },
+  {
+    "subject": "Indian Knowledge System",
+    "branch": "Common (All Branches)",
+    "year": "FE",
+    "semester": 2,
+    "description": "Study of traditional Indian knowledge, philosophy and scientific contributions."
+  },
+  {
+    "subject": "Co-Curricular Course-II",
+    "branch": "Common (All Branches)",
+    "year": "FE",
+    "semester": 2,
+    "description": "Value-added activity based course covering skills outside the core technical curriculum."
+  },
+  {
+    "subject": "Data Structures",
+    "branch": "Artificial Intelligence & Data Science",
+    "year": "SE",
+    "semester": 3,
+    "description": "Study of arrays, linked lists, stacks, queues, trees and graphs, and algorithms to organize and process data efficiently."
+  },
+  {
+    "subject": "Artificial Intelligence",
+    "branch": "Artificial Intelligence & Data Science",
+    "year": "SE",
+    "semester": 3,
+    "description": "Introduction to intelligent agents, search techniques, knowledge representation and reasoning in AI systems."
+  },
+  {
+    "subject": "Operating System",
+    "branch": "Artificial Intelligence & Data Science",
+    "year": "SE",
+    "semester": 3,
+    "description": "Study of process management, memory management, scheduling, and file systems in operating systems."
+  },
+  {
+    "subject": "Digital Electronics and Logic Design",
+    "branch": "Artificial Intelligence & Data Science",
+    "year": "SE",
+    "semester": 3,
+    "description": "Boolean algebra, combinational and sequential logic circuit design using digital electronics."
+  },
+  {
+    "subject": "Entrepreneurship Development",
+    "branch": "Artificial Intelligence & Data Science",
+    "year": "SE",
+    "semester": 3,
+    "description": "Concepts of entrepreneurship, business planning and startup development."
+  },
+  {
+    "subject": "Universal Human Values and Professional Ethics",
+    "branch": "Artificial Intelligence & Data Science",
+    "year": "SE",
+    "semester": 3,
+    "description": "Exploration of human values, ethics and professional responsibility for holistic development."
+  },
+  {
+    "subject": "Community Engagement Project",
+    "branch": "Artificial Intelligence & Data Science",
+    "year": "SE",
+    "semester": 3,
+    "description": "Field-based project engaging with local communities to apply engineering skills to real-world problems."
+  },
+  {
+    "subject": "Database Management System",
+    "branch": "Artificial Intelligence & Data Science",
+    "year": "SE",
+    "semester": 4,
+    "description": "Concepts of database design, relational models, SQL, normalization and transaction management."
+  },
+  {
+    "subject": "Data Science",
+    "branch": "Artificial Intelligence & Data Science",
+    "year": "SE",
+    "semester": 4,
+    "description": "Introduction to data analysis, statistical methods and tools used to extract insights from data."
+  },
+  {
+    "subject": "Probability and Statistics",
+    "branch": "Artificial Intelligence & Data Science",
+    "year": "SE",
+    "semester": 4,
+    "description": "Fundamentals of probability theory, statistical distributions and inference for engineering applications."
+  },
+  {
+    "subject": "Embedded Systems",
+    "branch": "Artificial Intelligence & Data Science",
+    "year": "SE",
+    "semester": 4,
+    "description": "Design and programming of microcontroller-based embedded hardware-software systems."
+  },
+  {
+    "subject": "Object Oriented Programming",
+    "branch": "Artificial Intelligence & Data Science",
+    "year": "SE",
+    "semester": 4,
+    "description": "Principles of object-oriented programming including classes, inheritance, polymorphism and encapsulation."
+  },
+  {
+    "subject": "Modern Indian Languages (Marathi)",
+    "branch": "Artificial Intelligence & Data Science",
+    "year": "SE",
+    "semester": 4,
+    "description": "Study of Marathi language for communication and cultural appreciation."
+  },
+  {
+    "subject": "Technology Commercialization and Startup Development",
+    "branch": "Artificial Intelligence & Data Science",
+    "year": "SE",
+    "semester": 4,
+    "description": "Concepts of converting technology innovations into viable commercial startups."
+  },
+  {
+    "subject": "Environmental Studies",
+    "branch": "Artificial Intelligence & Data Science",
+    "year": "SE",
+    "semester": 4,
+    "description": "Study of environmental science, ecosystems, pollution control and sustainability practices."
+  },
+  {
+    "subject": "Data Structures",
+    "branch": "Computer Engineering",
+    "year": "SE",
+    "semester": 3,
+    "description": "Study of arrays, linked lists, stacks, queues, trees and graphs, and algorithms to organize and process data efficiently."
+  },
+  {
+    "subject": "Object Oriented Programming and Computer Graphics",
+    "branch": "Computer Engineering",
+    "year": "SE",
+    "semester": 3,
+    "description": "Object-oriented programming concepts combined with fundamentals of computer graphics and rendering."
+  },
+  {
+    "subject": "Operating Systems",
+    "branch": "Computer Engineering",
+    "year": "SE",
+    "semester": 3,
+    "description": "Study of process management, memory management, scheduling, and file systems in operating systems."
+  },
+  {
+    "subject": "Digital Electronics and Logic Design",
+    "branch": "Computer Engineering",
+    "year": "SE",
+    "semester": 3,
+    "description": "Boolean algebra, combinational and sequential logic circuit design using digital electronics."
+  },
+  {
+    "subject": "Entrepreneurship Development",
+    "branch": "Computer Engineering",
+    "year": "SE",
+    "semester": 3,
+    "description": "Concepts of entrepreneurship, business planning and startup development."
+  },
+  {
+    "subject": "Universal Human Values and Professional Ethics",
+    "branch": "Computer Engineering",
+    "year": "SE",
+    "semester": 3,
+    "description": "Exploration of human values, ethics and professional responsibility for holistic development."
+  },
+  {
+    "subject": "Community Engagement Project",
+    "branch": "Computer Engineering",
+    "year": "SE",
+    "semester": 3,
+    "description": "Field-based project engaging with local communities to apply engineering skills to real-world problems."
+  },
+  {
+    "subject": "Database Management System",
+    "branch": "Computer Engineering",
+    "year": "SE",
+    "semester": 4,
+    "description": "Concepts of database design, relational models, SQL, normalization and transaction management."
+  },
+  {
+    "subject": "Discrete Mathematics",
+    "branch": "Computer Engineering",
+    "year": "SE",
+    "semester": 4,
+    "description": "Mathematical structures like sets, logic, graph theory and combinatorics relevant to computer science."
+  },
+  {
+    "subject": "Computer Organization and Microprocessor",
+    "branch": "Computer Engineering",
+    "year": "SE",
+    "semester": 4,
+    "description": "Study of computer architecture, instruction sets and microprocessor programming."
+  },
+  {
+    "subject": "Internet of Things",
+    "branch": "Computer Engineering",
+    "year": "SE",
+    "semester": 4,
+    "description": "Concepts of connected devices, sensors, protocols and IoT system architecture."
+  },
+  {
+    "subject": "Web Development",
+    "branch": "Computer Engineering",
+    "year": "SE",
+    "semester": 4,
+    "description": "Design and development of websites using front-end and back-end web technologies."
+  },
+  {
+    "subject": "Modern Indian Languages (Marathi)",
+    "branch": "Computer Engineering",
+    "year": "SE",
+    "semester": 4,
+    "description": "Study of Marathi language for communication and cultural appreciation."
+  },
+  {
+    "subject": "Engineering Product Design",
+    "branch": "Computer Engineering",
+    "year": "SE",
+    "semester": 4,
+    "description": "Principles of product design methodology, prototyping and design thinking for engineering products."
+  },
+  {
+    "subject": "Environmental Studies",
+    "branch": "Computer Engineering",
+    "year": "SE",
+    "semester": 4,
+    "description": "Study of environmental science, ecosystems, pollution control and sustainability practices."
+  },
+  {
+    "subject": "Data Structures & Algorithms",
+    "branch": "Information Technology",
+    "year": "SE",
+    "semester": 3,
+    "description": "Study of data organization techniques and algorithm design and analysis."
+  },
+  {
+    "subject": "Object Oriented Programming",
+    "branch": "Information Technology",
+    "year": "SE",
+    "semester": 3,
+    "description": "Principles of object-oriented programming including classes, inheritance, polymorphism and encapsulation."
+  },
+  {
+    "subject": "Basics of Computer Network",
+    "branch": "Information Technology",
+    "year": "SE",
+    "semester": 3,
+    "description": "Fundamentals of computer networking, protocols, topologies and the OSI/TCP-IP model."
+  },
+  {
+    "subject": "Digital Electronics and Logic Design",
+    "branch": "Information Technology",
+    "year": "SE",
+    "semester": 3,
+    "description": "Boolean algebra, combinational and sequential logic circuit design using digital electronics."
+  },
+  {
+    "subject": "Principles of Management & Entrepreneurship",
+    "branch": "Information Technology",
+    "year": "SE",
+    "semester": 3,
+    "description": "Basic management principles combined with entrepreneurship and business fundamentals."
+  },
+  {
+    "subject": "Universal Human Values",
+    "branch": "Information Technology",
+    "year": "SE",
+    "semester": 3,
+    "description": "Exploration of human values and holistic personal and professional development."
+  },
+  {
+    "subject": "Community Engagement Project",
+    "branch": "Information Technology",
+    "year": "SE",
+    "semester": 3,
+    "description": "Field-based project engaging with local communities to apply engineering skills to real-world problems."
+  },
+  {
+    "subject": "Database Management System",
+    "branch": "Information Technology",
+    "year": "SE",
+    "semester": 4,
+    "description": "Concepts of database design, relational models, SQL, normalization and transaction management."
+  },
+  {
+    "subject": "Computer Graphics",
+    "branch": "Information Technology",
+    "year": "SE",
+    "semester": 4,
+    "description": "Techniques for rendering, modeling and animating 2D/3D graphics on computers."
+  },
+  {
+    "subject": "Probability & Statistics",
+    "branch": "Information Technology",
+    "year": "SE",
+    "semester": 4,
+    "description": "Fundamentals of probability theory, statistical distributions and inference for engineering applications."
+  },
+  {
+    "subject": "Processor Architecture",
+    "branch": "Information Technology",
+    "year": "SE",
+    "semester": 4,
+    "description": "Study of processor design, instruction pipelines and computer architecture concepts."
+  },
+  {
+    "subject": "Digital Marketing and Social Media",
+    "branch": "Information Technology",
+    "year": "SE",
+    "semester": 4,
+    "description": "Concepts of online marketing strategies, social media platforms and digital branding."
+  },
+  {
+    "subject": "Modern Indian Language (Marathi)",
+    "branch": "Information Technology",
+    "year": "SE",
+    "semester": 4,
+    "description": "Study of Marathi language for communication and cultural appreciation."
+  },
+  {
+    "subject": "E-Commerce",
+    "branch": "Information Technology",
+    "year": "SE",
+    "semester": 4,
+    "description": "Fundamentals of online business models, digital transactions and e-commerce platforms."
+  },
+  {
+    "subject": "Environmental Studies",
+    "branch": "Information Technology",
+    "year": "SE",
+    "semester": 4,
+    "description": "Study of environmental science, ecosystems, pollution control and sustainability practices."
+  },
+  {
+    "subject": "Mechanics of Structures",
+    "branch": "Civil Engineering",
+    "year": "SE",
+    "semester": 3,
+    "description": "Study of stress, strain and deformation analysis of structural elements."
+  },
+  {
+    "subject": "Surveying",
+    "branch": "Civil Engineering",
+    "year": "SE",
+    "semester": 3,
+    "description": "Techniques and instruments used for land measurement and mapping in civil engineering."
+  },
+  {
+    "subject": "Building Construction & Materials",
+    "branch": "Civil Engineering",
+    "year": "SE",
+    "semester": 3,
+    "description": "Study of construction methods, building materials and their properties."
+  },
+  {
+    "subject": "Engineering Mathematics III",
+    "branch": "Civil Engineering",
+    "year": "SE",
+    "semester": 3,
+    "description": "Advanced mathematics topics including transforms and differential equations for engineering applications."
+  },
+  {
+    "subject": "Economics for Civil Engineers",
+    "branch": "Civil Engineering",
+    "year": "SE",
+    "semester": 3,
+    "description": "Application of economic principles to civil engineering project planning and cost analysis."
+  },
+  {
+    "subject": "Universal Human Values and Professional Ethics",
+    "branch": "Civil Engineering",
+    "year": "SE",
+    "semester": 3,
+    "description": "Exploration of human values, ethics and professional responsibility for holistic development."
+  },
+  {
+    "subject": "Field Survey Project",
+    "branch": "Civil Engineering",
+    "year": "SE",
+    "semester": 3,
+    "description": "Practical field-based surveying project applying land measurement techniques."
+  },
+  {
+    "subject": "Fluid Mechanics",
+    "branch": "Civil Engineering",
+    "year": "SE",
+    "semester": 4,
+    "description": "Study of fluid statics, dynamics and flow behavior relevant to engineering systems."
+  },
+  {
+    "subject": "Structural Analysis",
+    "branch": "Civil Engineering",
+    "year": "SE",
+    "semester": 4,
+    "description": "Analysis of forces, stresses and deflections in structural systems like beams and trusses."
+  },
+  {
+    "subject": "Concrete Technology",
+    "branch": "Civil Engineering",
+    "year": "SE",
+    "semester": 4,
+    "description": "Study of concrete materials, mix design, properties and quality testing."
+  },
+  {
+    "subject": "Engineering Geology",
+    "branch": "Civil Engineering",
+    "year": "SE",
+    "semester": 4,
+    "description": "Study of geological principles relevant to civil engineering construction and site assessment."
+  },
+  {
+    "subject": "Application of Python",
+    "branch": "Civil Engineering",
+    "year": "SE",
+    "semester": 4,
+    "description": "Use of Python programming for solving engineering and data-related problems."
+  },
+  {
+    "subject": "Modern Indian Language (Marathi)",
+    "branch": "Civil Engineering",
+    "year": "SE",
+    "semester": 4,
+    "description": "Study of Marathi language for communication and cultural appreciation."
+  },
+  {
+    "subject": "Project Management",
+    "branch": "Civil Engineering",
+    "year": "SE",
+    "semester": 4,
+    "description": "Principles of planning, scheduling, resource allocation and execution of engineering projects."
+  },
+  {
+    "subject": "Environment Awareness",
+    "branch": "Civil Engineering",
+    "year": "SE",
+    "semester": 4,
+    "description": "Study of environmental issues, sustainability and conservation practices."
+  },
+  {
+    "subject": "Electrical Measurements & Instrumentation",
+    "branch": "Electrical Engineering",
+    "year": "SE",
+    "semester": 3,
+    "description": "Study of measurement techniques, instruments and sensors used in electrical engineering."
+  },
+  {
+    "subject": "Analog and Digital Electronics",
+    "branch": "Electrical Engineering",
+    "year": "SE",
+    "semester": 3,
+    "description": "Fundamentals of analog circuits and digital logic design."
+  },
+  {
+    "subject": "Power System Engineering-I",
+    "branch": "Electrical Engineering",
+    "year": "SE",
+    "semester": 3,
+    "description": "Study of power generation, transmission and distribution system fundamentals."
+  },
+  {
+    "subject": "Electrical Machines-I",
+    "branch": "Electrical Engineering",
+    "year": "SE",
+    "semester": 3,
+    "description": "Study of construction, working principles and performance of DC machines and transformers."
+  },
+  {
+    "subject": "Engineering Mathematics-III",
+    "branch": "Electrical Engineering",
+    "year": "SE",
+    "semester": 3,
+    "description": "Advanced mathematics topics including transforms and differential equations for engineering applications."
+  },
+  {
+    "subject": "Universal Human Values",
+    "branch": "Electrical Engineering",
+    "year": "SE",
+    "semester": 3,
+    "description": "Exploration of human values and holistic personal and professional development."
+  },
+  {
+    "subject": "Community Engagement Project",
+    "branch": "Electrical Engineering",
+    "year": "SE",
+    "semester": 3,
+    "description": "Field-based project engaging with local communities to apply engineering skills to real-world problems."
+  },
+  {
+    "subject": "Network Analysis",
+    "branch": "Electrical Engineering",
+    "year": "SE",
+    "semester": 4,
+    "description": "Techniques for analyzing electrical circuits and network theorems."
+  },
+  {
+    "subject": "Electrical Engineering Materials",
+    "branch": "Electrical Engineering",
+    "year": "SE",
+    "semester": 4,
+    "description": "Study of properties and applications of materials used in electrical engineering."
+  },
+  {
+    "subject": "Electrical Workshop Practices",
+    "branch": "Electrical Engineering",
+    "year": "SE",
+    "semester": 4,
+    "description": "Hands-on training in electrical wiring, machine assembly and workshop practices."
+  },
+  {
+    "subject": "Modern Indian Language (Marathi)",
+    "branch": "Electrical Engineering",
+    "year": "SE",
+    "semester": 4,
+    "description": "Study of Marathi language for communication and cultural appreciation."
+  },
+  {
+    "subject": "Entrepreneurship Development",
+    "branch": "Electrical Engineering",
+    "year": "SE",
+    "semester": 4,
+    "description": "Concepts of entrepreneurship, business planning and startup development."
+  },
+  {
+    "subject": "Environmental Studies",
+    "branch": "Electrical Engineering",
+    "year": "SE",
+    "semester": 4,
+    "description": "Study of environmental science, ecosystems, pollution control and sustainability practices."
+  },
+  {
+    "subject": "Solid Mechanics",
+    "branch": "Mechanical Engineering",
+    "year": "SE",
+    "semester": 3,
+    "description": "Study of stress, strain and deformation behavior of solid materials."
+  },
+  {
+    "subject": "Engineering Thermodynamics",
+    "branch": "Mechanical Engineering",
+    "year": "SE",
+    "semester": 3,
+    "description": "Study of energy transfer, thermodynamic laws and cycles relevant to engineering systems."
+  },
+  {
+    "subject": "Engineering Materials & Metallurgy",
+    "branch": "Mechanical Engineering",
+    "year": "SE",
+    "semester": 3,
+    "description": "Study of material properties, structure and metallurgical processes."
+  },
+  {
+    "subject": "Engineering Mathematics-III",
+    "branch": "Mechanical Engineering",
+    "year": "SE",
+    "semester": 3,
+    "description": "Advanced mathematics topics including transforms and differential equations for engineering applications."
+  },
+  {
+    "subject": "Workshop Practices",
+    "branch": "Mechanical Engineering",
+    "year": "SE",
+    "semester": 3,
+    "description": "Hands-on training in basic manufacturing and fabrication workshop techniques."
+  },
+  {
+    "subject": "Entrepreneurship Development and Innovation",
+    "branch": "Mechanical Engineering",
+    "year": "SE",
+    "semester": 3,
+    "description": "Concepts of entrepreneurship, innovation and new venture creation."
+  },
+  {
+    "subject": "Universal Human Values",
+    "branch": "Mechanical Engineering",
+    "year": "SE",
+    "semester": 3,
+    "description": "Exploration of human values and holistic personal and professional development."
+  },
+  {
+    "subject": "Community Engagement Project",
+    "branch": "Mechanical Engineering",
+    "year": "SE",
+    "semester": 3,
+    "description": "Field-based project engaging with local communities to apply engineering skills to real-world problems."
+  },
+  {
+    "subject": "Fluid Mechanics",
+    "branch": "Mechanical Engineering",
+    "year": "SE",
+    "semester": 4,
+    "description": "Study of fluid statics, dynamics and flow behavior relevant to engineering systems."
+  },
+  {
+    "subject": "Manufacturing Processes-I",
+    "branch": "Mechanical Engineering",
+    "year": "SE",
+    "semester": 4,
+    "description": "Study of basic manufacturing techniques such as casting, forming and machining."
+  },
+  {
+    "subject": "Applied Thermodynamics",
+    "branch": "Mechanical Engineering",
+    "year": "SE",
+    "semester": 4,
+    "description": "Application of thermodynamic principles to engines, power plants and thermal systems."
+  },
+  {
+    "subject": "Artificial Intelligence and Machine Learning",
+    "branch": "Mechanical Engineering",
+    "year": "SE",
+    "semester": 4,
+    "description": "Introduction to AI concepts and machine learning algorithms for mechanical engineering applications."
+  },
+  {
+    "subject": "Solid Modeling and Drafting",
+    "branch": "Mechanical Engineering",
+    "year": "SE",
+    "semester": 4,
+    "description": "Use of CAD tools for 3D solid modeling and technical drafting."
+  },
+  {
+    "subject": "Data Science & AIML",
+    "branch": "Mechanical Engineering",
+    "year": "SE",
+    "semester": 4,
+    "description": "Introduction to data science techniques combined with AI and machine learning concepts."
+  },
+  {
+    "subject": "Modern Indian Language",
+    "branch": "Mechanical Engineering",
+    "year": "SE",
+    "semester": 4,
+    "description": "Study of a regional Indian language for communication and cultural appreciation."
+  },
+  {
+    "subject": "Engineering Economics and Financial Management",
+    "branch": "Mechanical Engineering",
+    "year": "SE",
+    "semester": 4,
+    "description": "Principles of economics and financial management applied to engineering decision-making."
+  },
+  {
+    "subject": "Environmental Science and Sustainable Development",
+    "branch": "Mechanical Engineering",
+    "year": "SE",
+    "semester": 4,
+    "description": "Study of environmental science principles and sustainable development practices."
+  },
+  {
+    "subject": "Networks and Security",
+    "branch": "Artificial Intelligence & Data Science",
+    "year": "TE",
+    "semester": 5,
+    "description": "Study of computer networking concepts along with network security principles."
+  },
+  {
+    "subject": "Machine Learning",
+    "branch": "Artificial Intelligence & Data Science",
+    "year": "TE",
+    "semester": 5,
+    "description": "Study of supervised, unsupervised and reinforcement learning algorithms and their applications."
+  },
+  {
+    "subject": "Natural Language Processing",
+    "branch": "Artificial Intelligence & Data Science",
+    "year": "TE",
+    "semester": 5,
+    "description": "Techniques for processing, understanding and generating human language using computational methods."
+  },
+  {
+    "subject": "Elective-I (Blockchain / Cloud Computing / Computer Vision / Gaming and Animation)",
+    "branch": "Artificial Intelligence & Data Science",
+    "year": "TE",
+    "semester": 5,
+    "description": "Elective course chosen from blockchain, cloud computing, computer vision, or gaming and animation."
+  },
+  {
+    "subject": "Internet of Things",
+    "branch": "Artificial Intelligence & Data Science",
+    "year": "TE",
+    "semester": 5,
+    "description": "Concepts of connected devices, sensors, protocols and IoT system architecture."
+  },
+  {
+    "subject": "Open Elective",
+    "branch": "Artificial Intelligence & Data Science",
+    "year": "TE",
+    "semester": 5,
+    "description": "Elective course chosen from a set of interdisciplinary subjects outside the core branch."
+  },
+  {
+    "subject": "Technical Seminar",
+    "branch": "Artificial Intelligence & Data Science",
+    "year": "TE",
+    "semester": 5,
+    "description": "Independent study and presentation on a chosen technical topic."
+  },
+  {
+    "subject": "Software Engineering",
+    "branch": "Artificial Intelligence & Data Science",
+    "year": "TE",
+    "semester": 6,
+    "description": "Study of software development life cycle, design principles and project management methodologies."
+  },
+  {
+    "subject": "Deep Learning",
+    "branch": "Artificial Intelligence & Data Science",
+    "year": "TE",
+    "semester": 6,
+    "description": "Study of neural networks, deep learning architectures and their applications."
+  },
+  {
+    "subject": "Elective-II (Cyber Security and Data Privacy / Big Data Engineering / High Performance Computing / AR/VR)",
+    "branch": "Artificial Intelligence & Data Science",
+    "year": "TE",
+    "semester": 6,
+    "description": "Elective course chosen from cyber security & data privacy, big data engineering, high performance computing, or AR/VR."
+  },
+  {
+    "subject": "Elective-III (Ethical Hacking / Quantum AI / Reinforcement Learning / UX/UI Design)",
+    "branch": "Artificial Intelligence & Data Science",
+    "year": "TE",
+    "semester": 6,
+    "description": "Elective course chosen from ethical hacking, quantum AI, reinforcement learning, or UX/UI design."
+  },
+  {
+    "subject": "Robotic and Automation",
+    "branch": "Artificial Intelligence & Data Science",
+    "year": "TE",
+    "semester": 6,
+    "description": "Fundamentals of robotics, automation systems and control mechanisms."
+  },
+  {
+    "subject": "Solar Technology and Development",
+    "branch": "Artificial Intelligence & Data Science",
+    "year": "TE",
+    "semester": 6,
+    "description": "Study of solar energy technologies and their development and applications."
+  },
+  {
+    "subject": "Internship/OJT",
+    "branch": "Artificial Intelligence & Data Science",
+    "year": "TE",
+    "semester": 6,
+    "description": "On-the-job training or internship providing industry exposure and practical experience."
+  },
+  {
+    "subject": "Artificial Intelligence",
+    "branch": "Computer Engineering",
+    "year": "TE",
+    "semester": 5,
+    "description": "Introduction to intelligent agents, search techniques, knowledge representation and reasoning in AI systems."
+  },
+  {
+    "subject": "Computer Networks",
+    "branch": "Computer Engineering",
+    "year": "TE",
+    "semester": 5,
+    "description": "Study of network architectures, protocols and communication technologies."
+  },
+  {
+    "subject": "Theory of Computation",
+    "branch": "Computer Engineering",
+    "year": "TE",
+    "semester": 5,
+    "description": "Study of automata theory, formal languages and computational complexity."
+  },
+  {
+    "subject": "Elective-I (Data Mining and Data Warehousing / Cloud Computing / Mobile Computing / Embedded Systems)",
+    "branch": "Computer Engineering",
+    "year": "TE",
+    "semester": 5,
+    "description": "Elective course chosen from data mining & warehousing, cloud computing, mobile computing, or embedded systems."
+  },
+  {
+    "subject": "Robotics and Automation",
+    "branch": "Computer Engineering",
+    "year": "TE",
+    "semester": 5,
+    "description": "Fundamentals of robotics, automation systems and control mechanisms."
+  },
+  {
+    "subject": "Open Elective",
+    "branch": "Computer Engineering",
+    "year": "TE",
+    "semester": 5,
+    "description": "Elective course chosen from a set of interdisciplinary subjects outside the core branch."
+  },
+  {
+    "subject": "Technical Seminar",
+    "branch": "Computer Engineering",
+    "year": "TE",
+    "semester": 5,
+    "description": "Independent study and presentation on a chosen technical topic."
+  },
+  {
+    "subject": "Machine Learning",
+    "branch": "Computer Engineering",
+    "year": "TE",
+    "semester": 6,
+    "description": "Study of supervised, unsupervised and reinforcement learning algorithms and their applications."
+  },
+  {
+    "subject": "Software Engineering and Modelling",
+    "branch": "Computer Engineering",
+    "year": "TE",
+    "semester": 6,
+    "description": "Study of software design, modelling techniques and engineering methodologies."
+  },
+  {
+    "subject": "Elective-II (Quantum Computing / Distributed Systems / UX/UI Design / System Programming)",
+    "branch": "Computer Engineering",
+    "year": "TE",
+    "semester": 6,
+    "description": "Elective course chosen from quantum computing, distributed systems, UX/UI design, or system programming."
+  },
+  {
+    "subject": "Elective-III (Information Retrieval / Data Visualization and Analytics / Cryptography and Network Security / Advanced Databases)",
+    "branch": "Computer Engineering",
+    "year": "TE",
+    "semester": 6,
+    "description": "Elective course chosen from information retrieval, data visualization & analytics, cryptography & network security, or advanced databases."
+  },
+  {
+    "subject": "Green Computing",
+    "branch": "Computer Engineering",
+    "year": "TE",
+    "semester": 6,
+    "description": "Study of energy-efficient and environmentally sustainable computing practices."
+  },
+  {
+    "subject": "Solar Technology and Maintenance",
+    "branch": "Computer Engineering",
+    "year": "TE",
+    "semester": 6,
+    "description": "Study of solar energy systems, their installation and maintenance practices."
+  },
+  {
+    "subject": "Internship/OJT",
+    "branch": "Computer Engineering",
+    "year": "TE",
+    "semester": 6,
+    "description": "On-the-job training or internship providing industry exposure and practical experience."
+  },
+  {
+    "subject": "Design of Steel Structure",
+    "branch": "Civil Engineering",
+    "year": "TE",
+    "semester": 5,
+    "description": "Principles and methods for designing steel structural elements."
+  },
+  {
+    "subject": "Geotechnical Engineering",
+    "branch": "Civil Engineering",
+    "year": "TE",
+    "semester": 5,
+    "description": "Study of soil mechanics and foundation engineering principles."
+  },
+  {
+    "subject": "Construction Management",
+    "branch": "Civil Engineering",
+    "year": "TE",
+    "semester": 5,
+    "description": "Principles of planning, scheduling and managing construction projects."
+  },
+  {
+    "subject": "Programme Elective",
+    "branch": "Civil Engineering",
+    "year": "TE",
+    "semester": 5,
+    "description": "Elective course chosen from a set of program-specific specialized subjects."
+  },
+  {
+    "subject": "Geo-informatics-I",
+    "branch": "Civil Engineering",
+    "year": "TE",
+    "semester": 5,
+    "description": "Introduction to geographic information systems, remote sensing and spatial data analysis."
+  },
+  {
+    "subject": "Open Elective",
+    "branch": "Civil Engineering",
+    "year": "TE",
+    "semester": 5,
+    "description": "Elective course chosen from a set of interdisciplinary subjects outside the core branch."
+  },
+  {
+    "subject": "Design of Reinforced Concrete Structure",
+    "branch": "Civil Engineering",
+    "year": "TE",
+    "semester": 6,
+    "description": "Principles and methods for designing reinforced concrete structural elements."
+  },
+  {
+    "subject": "Water Supply and Sanitation Engineering",
+    "branch": "Civil Engineering",
+    "year": "TE",
+    "semester": 6,
+    "description": "Study of water supply systems, treatment and sanitation engineering principles."
+  },
+  {
+    "subject": "Programme Elective-I",
+    "branch": "Civil Engineering",
+    "year": "TE",
+    "semester": 6,
+    "description": "Elective course chosen from a set of program-specific specialized subjects."
+  },
+  {
+    "subject": "Programme Elective-II",
+    "branch": "Civil Engineering",
+    "year": "TE",
+    "semester": 6,
+    "description": "Elective course chosen from a set of program-specific specialized subjects."
+  },
+  {
+    "subject": "Geo-informatics-II",
+    "branch": "Civil Engineering",
+    "year": "TE",
+    "semester": 6,
+    "description": "Advanced study of geographic information systems, remote sensing and spatial analysis techniques."
+  },
+  {
+    "subject": "Solar Technology & Maintenance",
+    "branch": "Civil Engineering",
+    "year": "TE",
+    "semester": 6,
+    "description": "Study of solar energy systems, their installation and maintenance practices."
+  },
+  {
+    "subject": "Electrical Machines-II",
+    "branch": "Electrical Engineering",
+    "year": "TE",
+    "semester": 5,
+    "description": "Study of construction, working principles and performance of AC machines."
+  },
+  {
+    "subject": "Power Electronics",
+    "branch": "Electrical Engineering",
+    "year": "TE",
+    "semester": 5,
+    "description": "Study of power semiconductor devices and power conversion circuits."
+  },
+  {
+    "subject": "Electrical Installation Design & Condition Based Maintenance",
+    "branch": "Electrical Engineering",
+    "year": "TE",
+    "semester": 5,
+    "description": "Principles of electrical installation design and condition-based equipment maintenance."
+  },
+  {
+    "subject": "Power System-II",
+    "branch": "Electrical Engineering",
+    "year": "TE",
+    "semester": 5,
+    "description": "Advanced study of power system analysis, protection and stability."
+  },
+  {
+    "subject": "Control System Engineering",
+    "branch": "Electrical Engineering",
+    "year": "TE",
+    "semester": 5,
+    "description": "Study of feedback control systems, stability analysis and controller design."
+  },
+  {
+    "subject": "AI Applications in Electrical Engineering",
+    "branch": "Electrical Engineering",
+    "year": "TE",
+    "semester": 5,
+    "description": "Application of artificial intelligence techniques to electrical engineering problems."
+  },
+  {
+    "subject": "Open Elective",
+    "branch": "Electrical Engineering",
+    "year": "TE",
+    "semester": 5,
+    "description": "Elective course chosen from a set of interdisciplinary subjects outside the core branch."
+  },
+  {
+    "subject": "Technical Seminar",
+    "branch": "Electrical Engineering",
+    "year": "TE",
+    "semester": 5,
+    "description": "Independent study and presentation on a chosen technical topic."
+  },
+  {
+    "subject": "Power System Protection",
+    "branch": "Electrical Engineering",
+    "year": "TE",
+    "semester": 6,
+    "description": "Study of protection schemes, relays and circuit breakers for power systems."
+  },
+  {
+    "subject": "Electrical Drives",
+    "branch": "Electrical Engineering",
+    "year": "TE",
+    "semester": 6,
+    "description": "Study of electric motor drive systems and their control techniques."
+  },
+  {
+    "subject": "Programme Electives",
+    "branch": "Electrical Engineering",
+    "year": "TE",
+    "semester": 6,
+    "description": "Elective course chosen from a set of program-specific specialized subjects."
+  },
+  {
+    "subject": "Solar Technology",
+    "branch": "Electrical Engineering",
+    "year": "TE",
+    "semester": 6,
+    "description": "Study of solar energy technologies and their applications."
+  },
+  {
+    "subject": "Internship/On-Job Training",
+    "branch": "Electrical Engineering",
+    "year": "TE",
+    "semester": 6,
+    "description": "On-the-job training or internship providing industry exposure and practical experience."
+  },
+  {
+    "subject": "Heat & Mass Transfer",
+    "branch": "Mechanical Engineering",
+    "year": "TE",
+    "semester": 5,
+    "description": "Study of conduction, convection, radiation and mass transfer principles."
+  },
+  {
+    "subject": "Theory of Machines",
+    "branch": "Mechanical Engineering",
+    "year": "TE",
+    "semester": 5,
+    "description": "Study of kinematics and dynamics of mechanisms and machines."
+  },
+  {
+    "subject": "Design of Machine Elements",
+    "branch": "Mechanical Engineering",
+    "year": "TE",
+    "semester": 5,
+    "description": "Principles for designing mechanical components such as shafts, gears and bearings."
+  },
+  {
+    "subject": "Manufacturing Process-II",
+    "branch": "Mechanical Engineering",
+    "year": "TE",
+    "semester": 5,
+    "description": "Advanced manufacturing techniques including machining and joining processes."
+  },
+  {
+    "subject": "Metrology and Quality Control",
+    "branch": "Mechanical Engineering",
+    "year": "TE",
+    "semester": 5,
+    "description": "Study of measurement techniques and quality control methods in manufacturing."
+  },
+  {
+    "subject": "Industrial Robotics",
+    "branch": "Mechanical Engineering",
+    "year": "TE",
+    "semester": 5,
+    "description": "Study of robotic systems and their applications in industrial automation."
+  },
+  {
+    "subject": "Smart Mechatronics Systems",
+    "branch": "Mechanical Engineering",
+    "year": "TE",
+    "semester": 5,
+    "description": "Integration of mechanical, electronic and control systems in smart mechatronic applications."
+  },
+  {
+    "subject": "Open Elective",
+    "branch": "Mechanical Engineering",
+    "year": "TE",
+    "semester": 5,
+    "description": "Elective course chosen from a set of interdisciplinary subjects outside the core branch."
+  },
+  {
+    "subject": "Computer Integrated Manufacturing",
+    "branch": "Mechanical Engineering",
+    "year": "TE",
+    "semester": 6,
+    "description": "Study of computer-integrated approaches to manufacturing planning and control."
+  },
+  {
+    "subject": "Refrigeration & Air-conditioning",
+    "branch": "Mechanical Engineering",
+    "year": "TE",
+    "semester": 6,
+    "description": "Study of refrigeration cycles and air-conditioning system design."
+  },
+  {
+    "subject": "Transmission System Design",
+    "branch": "Mechanical Engineering",
+    "year": "TE",
+    "semester": 6,
+    "description": "Design principles for mechanical power transmission systems."
+  },
+  {
+    "subject": "Engineering Simulation and Analysis",
+    "branch": "Mechanical Engineering",
+    "year": "TE",
+    "semester": 6,
+    "description": "Use of simulation tools for analyzing engineering designs and systems."
+  },
+  {
+    "subject": "Solar Technology and Maintenance",
+    "branch": "Mechanical Engineering",
+    "year": "TE",
+    "semester": 6,
+    "description": "Study of solar energy systems, their installation and maintenance practices."
+  },
+  {
+    "subject": "Programme Elective-I",
+    "branch": "Mechanical Engineering",
+    "year": "TE",
+    "semester": 6,
+    "description": "Elective course chosen from a set of program-specific specialized subjects."
+  },
+  {
+    "subject": "Programme Elective-II",
+    "branch": "Mechanical Engineering",
+    "year": "TE",
+    "semester": 6,
+    "description": "Elective course chosen from a set of program-specific specialized subjects."
+  },
+  {
+    "subject": "Microcontroller & Applications",
+    "branch": "Electronics & Telecommunication Engineering",
+    "year": "TE",
+    "semester": 5,
+    "description": "Study of microcontroller architecture, programming and applications."
+  },
+  {
+    "subject": "Cellular Network",
+    "branch": "Electronics & Telecommunication Engineering",
+    "year": "TE",
+    "semester": 5,
+    "description": "Study of cellular communication systems, architecture and protocols."
+  },
+  {
+    "subject": "VLSI Design",
+    "branch": "Electronics & Telecommunication Engineering",
+    "year": "TE",
+    "semester": 5,
+    "description": "Study of very large scale integration circuit design principles."
+  },
+  {
+    "subject": "Elective-I (Advanced Java Programming / Computer Networks / Digital Signal Processing / Cloud Computing)",
+    "branch": "Electronics & Telecommunication Engineering",
+    "year": "TE",
+    "semester": 5,
+    "description": "Elective course chosen from advanced Java programming, computer networks, digital signal processing, or cloud computing."
+  },
+  {
+    "subject": "Machine Learning",
+    "branch": "Electronics & Telecommunication Engineering",
+    "year": "TE",
+    "semester": 5,
+    "description": "Study of supervised, unsupervised and reinforcement learning algorithms and their applications."
+  },
+  {
+    "subject": "Technical Seminar",
+    "branch": "Electronics & Telecommunication Engineering",
+    "year": "TE",
+    "semester": 5,
+    "description": "Independent study and presentation on a chosen technical topic."
+  },
+  {
+    "subject": "Embedded System Design",
+    "branch": "Electronics & Telecommunication Engineering",
+    "year": "TE",
+    "semester": 6,
+    "description": "Design and development of embedded hardware-software systems."
+  },
+  {
+    "subject": "Broad Band Communication",
+    "branch": "Electronics & Telecommunication Engineering",
+    "year": "TE",
+    "semester": 6,
+    "description": "Study of broadband communication systems and technologies."
+  },
+  {
+    "subject": "Elective-II (Web Technology / Digital Image Processing / Network & Cyber Security / CMOS Process Technology)",
+    "branch": "Electronics & Telecommunication Engineering",
+    "year": "TE",
+    "semester": 6,
+    "description": "Elective course chosen from web technology, digital image processing, network & cyber security, or CMOS process technology."
+  },
+  {
+    "subject": "Elective-III (Power Electronics / Robotics & Automation / Artificial Intelligence / Industrial IoT)",
+    "branch": "Electronics & Telecommunication Engineering",
+    "year": "TE",
+    "semester": 6,
+    "description": "Elective course chosen from power electronics, robotics & automation, artificial intelligence, or industrial IoT."
+  },
+  {
+    "subject": "Database Management System",
+    "branch": "Electronics & Telecommunication Engineering",
+    "year": "TE",
+    "semester": 6,
+    "description": "Concepts of database design, relational models, SQL, normalization and transaction management."
+  },
+  {
+    "subject": "Mini Project",
+    "branch": "Electronics & Telecommunication Engineering",
+    "year": "TE",
+    "semester": 6,
+    "description": "Small-scale project applying engineering knowledge to solve a defined problem."
+  },
+  {
+    "subject": "Internship",
+    "branch": "Electronics & Telecommunication Engineering",
+    "year": "TE",
+    "semester": 6,
+    "description": "Industry internship providing practical exposure and hands-on experience."
+  }
+]

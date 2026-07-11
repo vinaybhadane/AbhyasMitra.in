@@ -471,3 +471,26 @@ export async function deleteCustomSubject(id: string, branch: string, semester: 
   } catch {}
 }
 
+export async function updateCustomSubject(
+  id: string,
+  data: Partial<Omit<CustomSubjectDoc, 'id' | 'createdAt'>>
+): Promise<void> {
+  const docRef = doc(db, 'subjects', id);
+  await updateDoc(docRef, {
+    ...data,
+    updatedAt: serverTimestamp(),
+  });
+
+  // Sync browseConfig if bannerUrl is present and we have enough info to build the config id
+  if (data.bannerUrl !== undefined && data.slug && data.branch && data.semester) {
+    const configId = `${data.branch}/${data.semester}/${data.slug}`;
+    if (data.bannerUrl) {
+      await setDoc(doc(db, 'browseConfig', configId), {
+        id: configId,
+        bgImageUrl: data.bannerUrl,
+        updatedAt: serverTimestamp(),
+      });
+    }
+  }
+}
+

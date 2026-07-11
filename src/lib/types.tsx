@@ -1,12 +1,6 @@
 import { Timestamp } from 'firebase/firestore';
 import React from 'react';
 import {
-  Calculator,
-  FlaskConical,
-  Telescope,
-  Settings,
-  Ruler,
-  TerminalSquare,
   Database,
   Binary,
   Cpu,
@@ -87,74 +81,7 @@ export interface Subject {
 }
 
 export const SUBJECTS: Subject[] = [
-  // First Year
-  {
-    id: 'engineering-mathematics-2',
-    name: 'Engineering Mathematics 2',
-    slug: 'engineering-mathematics-2',
-    year: '1st',
-    semester: 'FE Sem 2',
-    description: 'M2 notes, solutions and study material for SPPU 2024 pattern.',
-    icon: <Calculator className="w-5 h-5" />,
-    color: 'from-blue-500 to-indigo-600',
-    iconColor: '#2563eb',
-  },
-  {
-    id: 'engineering-chemistry',
-    name: 'Engineering Chemistry',
-    slug: 'engineering-chemistry',
-    year: '1st',
-    semester: 'FE Sem 1',
-    description: 'Chemistry notes, practicals and solutions for first year engineering.',
-    icon: <FlaskConical className="w-5 h-5" />,
-    color: 'from-green-500 to-emerald-600',
-    iconColor: '#059669',
-  },
-  {
-    id: 'engineering-physics',
-    name: 'Engineering Physics',
-    slug: 'engineering-physics',
-    year: '1st',
-    semester: 'FE Sem 1',
-    description: 'Physics concepts, derivations and solved problems for SPPU.',
-    icon: <Telescope className="w-5 h-5" />,
-    color: 'from-purple-500 to-violet-600',
-    iconColor: '#7c3aed',
-  },
-  {
-    id: 'engineering-mechanics',
-    name: 'Engineering Mechanics',
-    slug: 'engineering-mechanics',
-    year: '1st',
-    semester: 'FE Sem 1',
-    description: 'Mechanics theory, diagrams, and numerical solutions.',
-    icon: <Settings className="w-5 h-5" />,
-    color: 'from-orange-500 to-red-500',
-    iconColor: '#ea580c',
-  },
-  {
-    id: 'engineering-graphics',
-    name: 'Engineering Graphics',
-    slug: 'engineering-graphics',
-    year: '1st',
-    semester: 'FE Sem 2',
-    description: 'Drawing tutorials, AutoCAD basics and projection problems.',
-    icon: <Ruler className="w-5 h-5" />,
-    color: 'from-teal-500 to-cyan-600',
-    iconColor: '#0d9488',
-  },
-  {
-    id: 'programming-and-problem-solving',
-    name: 'Programming and Problem Solving',
-    slug: 'programming-and-problem-solving',
-    year: '1st',
-    semester: 'FE Sem 2',
-    description: 'C programming, algorithms and problem solving techniques.',
-    icon: <TerminalSquare className="w-5 h-5" />,
-    color: 'from-yellow-500 to-amber-600',
-    iconColor: '#d97706',
-  },
-  // Second Year Computer
+  // Second Year Computer Engineering — Sem 4 (notes already exist, kept as static)
   {
     id: 'database-management-system',
     name: 'Database Management System',
