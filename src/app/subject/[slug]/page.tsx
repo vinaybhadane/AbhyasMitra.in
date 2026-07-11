@@ -223,10 +223,38 @@ export default async function SubjectPage({ params }: PageProps) {
                               </td>
                             </tr>
                           ))}
+                          {/* Join WhatsApp Channel Row */}
+                          <tr className="bg-emerald-50/10 dark:bg-[#25D366]/5 hover:bg-emerald-50/20 dark:hover:bg-[#25D366]/10 transition-colors">
+                            <td colSpan={3} className="px-6 py-4">
+                              <a 
+                                href={WA_URL} 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className="flex flex-col sm:flex-row items-center justify-between gap-4 w-full"
+                              >
+                                <div className="flex items-center gap-3.5 min-w-0">
+                                  <div className="w-12 h-12 rounded-2xl bg-[#25D366] flex items-center justify-center text-white shrink-0 shadow-sm shadow-[#25D366]/20">
+                                    <WhatsAppIcon />
+                                  </div>
+                                  <div className="text-left">
+                                    <h4 className="text-sm font-black text-gray-900 dark:text-white mb-0.5">
+                                      Join WhatsApp Channel
+                                    </h4>
+                                    <p className="text-xs text-gray-600 dark:text-gray-400 font-medium">
+                                      Get Very Important Questions, Oneshot Notes, and instant notifications directly on your phone!
+                                    </p>
+                                  </div>
+                                </div>
+                                <span className="px-5 py-2.5 bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs font-bold rounded-xl transition-all shadow-md shrink-0">
+                                  Join Channel
+                                </span>
+                              </a>
+                            </td>
+                          </tr>
                         </tbody>
                       </table>
                     </div>
-
+ 
                     {/* Mobile Card List (Sleek Mobile App Layout) */}
                     <div className="block sm:hidden space-y-3 p-3 bg-gray-50/50 dark:bg-gray-900/30">
                       {directNotes.map((note, i) => {
@@ -254,7 +282,7 @@ export default async function SubjectPage({ params }: PageProps) {
                                 </h3>
                               </div>
                             </div>
-
+ 
                             {/* Right Side: Action Trigger */}
                             <a 
                               href={note.downloadUrl} 
@@ -267,6 +295,35 @@ export default async function SubjectPage({ params }: PageProps) {
                           </div>
                         );
                       })}
+                      {/* WhatsApp Channel Mobile Card */}
+                      <div className="bg-emerald-50/10 dark:bg-[#25D366]/5 border border-[#25D366]/30 dark:border-[#25D366]/20 rounded-2xl p-4 shadow-sm hover:shadow-md transition-all active:scale-[0.99]">
+                        <a 
+                          href={WA_URL} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="flex items-center justify-between gap-4 w-full"
+                        >
+                          <div className="flex items-center gap-3.5 min-w-0">
+                            <div className="w-11 h-11 rounded-xl bg-[#25D366] flex items-center justify-center text-white shrink-0 shadow-sm shadow-[#25D366]/10">
+                              <WhatsAppIcon />
+                            </div>
+                            <div className="min-w-0 text-left">
+                              <span className="text-[9px] uppercase font-extrabold tracking-wider text-[#25D366] block mb-0.5">
+                                Official Channel
+                              </span>
+                              <h4 className="text-xs font-black text-gray-900 dark:text-white leading-tight mb-1">
+                                Join WhatsApp Channel
+                              </h4>
+                              <p className="text-[10px] text-gray-500 dark:text-gray-400 leading-normal break-words pr-1 font-medium">
+                                For Very Important Questions, Oneshot Notes and Notifications.
+                              </p>
+                            </div>
+                          </div>
+                          <span className="px-3.5 py-2 bg-[#25D366] hover:bg-[#20bd5a] text-white text-[10px] font-black rounded-lg transition-all shrink-0">
+                            Join
+                          </span>
+                        </a>
+                      </div>
                     </div>
                   </div>
                 </section>
