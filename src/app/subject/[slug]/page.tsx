@@ -249,7 +249,7 @@ export default async function SubjectPage({ params }: PageProps) {
                                 <span className="text-[10px] uppercase font-extrabold tracking-wider text-indigo-600 dark:text-indigo-400 block mb-0.5">
                                   {note.unitNo}
                                 </span>
-                                <h3 className="text-sm font-bold text-gray-900 dark:text-white truncate">
+                                <h3 className="text-sm font-bold text-gray-900 dark:text-white break-words">
                                   {note.unitName}
                                 </h3>
                               </div>
