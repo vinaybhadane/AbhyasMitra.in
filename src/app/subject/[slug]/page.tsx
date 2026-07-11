@@ -227,19 +227,46 @@ export default async function SubjectPage({ params }: PageProps) {
                       </table>
                     </div>
 
-                    {/* Mobile Card List */}
-                    <div className="block sm:hidden divide-y divide-gray-100 dark:divide-gray-850">
-                      {directNotes.map((note, i) => (
-                        <div key={i} className="p-5 space-y-3">
-                          <div className="flex items-center justify-between">
-                            <span className="px-2.5 py-1 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 rounded-lg text-xs font-black">{note.unitNo}</span>
+                    {/* Mobile Card List (Sleek Mobile App Layout) */}
+                    <div className="block sm:hidden space-y-3 p-3 bg-gray-50/50 dark:bg-gray-900/30">
+                      {directNotes.map((note, i) => {
+                        // Create a short badge text (e.g. "Unit 1" -> "U1", "Syllabus" -> "SYL")
+                        const shortBadge = note.unitNo.toLowerCase().includes('unit')
+                          ? note.unitNo.toUpperCase().replace('UNIT', 'U').replace(/\s+/g, '')
+                          : note.unitNo.slice(0, 3).toUpperCase();
+                        
+                        return (
+                          <div 
+                            key={i} 
+                            className="bg-white dark:bg-gray-850 border border-gray-150 dark:border-gray-800/80 rounded-2xl p-4 flex items-center justify-between gap-4 shadow-sm hover:shadow-md transition-all active:scale-[0.99]"
+                          >
+                            {/* Left Side: Badge + Titles */}
+                            <div className="flex items-center gap-3.5 min-w-0">
+                              <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-650 flex items-center justify-center text-white text-xs font-black shrink-0 shadow-sm">
+                                {shortBadge}
+                              </div>
+                              <div className="min-w-0">
+                                <span className="text-[10px] uppercase font-extrabold tracking-wider text-indigo-600 dark:text-indigo-400 block mb-0.5">
+                                  {note.unitNo}
+                                </span>
+                                <h3 className="text-sm font-bold text-gray-900 dark:text-white truncate">
+                                  {note.unitName}
+                                </h3>
+                              </div>
+                            </div>
+
+                            {/* Right Side: Action Trigger */}
+                            <a 
+                              href={note.downloadUrl} 
+                              target="_blank" 
+                              rel="noopener noreferrer" 
+                              className="shrink-0 hover:scale-105 active:scale-95 transition-transform inline-block"
+                            >
+                              <img src="/downloadpng.png" alt="Download PDF" className="h-12 w-auto object-contain" />
+                            </a>
                           </div>
-                          <p className="text-sm font-bold text-gray-900 dark:text-white leading-relaxed">{note.unitName}</p>
-                          <a href={note.downloadUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center pt-2 hover:scale-105 active:scale-95 transition-transform">
-                            <img src="/downloadpng.png" alt="Download PDF" className="h-14 w-auto object-contain" />
-                          </a>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
                 </section>
