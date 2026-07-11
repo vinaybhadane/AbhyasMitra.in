@@ -23,6 +23,28 @@ async function getHomeData() {
   }
 }
 
+const renderStars = (rating: number) => {
+  return (
+    <div className="flex items-center gap-0.5 shrink-0">
+      {[1, 2, 3, 4, 5].map((star) => {
+        const isFilled = star <= Math.floor(rating);
+        const isHalf = !isFilled && star === Math.ceil(rating) && (rating % 1 !== 0);
+        return (
+          <svg
+            key={star}
+            viewBox="0 0 24 24"
+            fill={isFilled ? '#eab308' : isHalf ? 'url(#halfGrad)' : '#e2e8f0'}
+            className="w-3.5 h-3.5"
+            aria-hidden="true"
+          >
+            <path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.21l8.2-1.192z" />
+          </svg>
+        );
+      })}
+    </div>
+  );
+};
+
 const BRANCHES = [
   {
     id: 'first-year',
@@ -30,6 +52,9 @@ const BRANCHES = [
     href: '/subjects/first-year',
     badge: 'All Branches',
     gradientIndex: 0,
+    desc: 'First Year Engineering covers Basic Sciences, Mechanics, Programming, Graphics, and Fundamental Electrical Systems.',
+    rating: 4.8,
+    students: 2450,
   },
   {
     id: 'computer',
@@ -37,6 +62,9 @@ const BRANCHES = [
     href: '/browse/computer',
     badge: 'CE',
     gradientIndex: 1,
+    desc: 'Computer Engineering focuses on Programming, AI, Networking, Database and Software Engineering.',
+    rating: 4.9,
+    students: 1840,
   },
   {
     id: 'it',
@@ -44,6 +72,9 @@ const BRANCHES = [
     href: '/browse/it',
     badge: 'IT',
     gradientIndex: 2,
+    desc: 'Information Technology covers Web Dev, Cyber Security, Cloud Computing, Database Administration, and Network Systems.',
+    rating: 4.8,
+    students: 1520,
   },
   {
     id: 'ai-ds',
@@ -51,6 +82,9 @@ const BRANCHES = [
     href: '/browse/ai-ds',
     badge: 'AI&DS',
     gradientIndex: 3,
+    desc: 'AI & Data Science covers Machine Learning, Neural Networks, Big Data Analytics, Statistical Modeling, and AI Ethics.',
+    rating: 4.9,
+    students: 1150,
   },
   {
     id: 'mechanical',
@@ -58,6 +92,9 @@ const BRANCHES = [
     href: '/browse/mechanical',
     badge: 'ME',
     gradientIndex: 0,
+    desc: 'Mechanical Engineering focuses on Thermodynamics, Machine Design, Fluid Mechanics, CAD/CAM, and Material Science.',
+    rating: 4.7,
+    students: 1280,
   },
   {
     id: 'electrical',
@@ -65,6 +102,9 @@ const BRANCHES = [
     href: '/browse/electrical',
     badge: 'EE',
     gradientIndex: 1,
+    desc: 'Electrical Engineering covers Control Systems, Power Electronics, Electrical Machines, Grid Infrastructure, and Circuits.',
+    rating: 4.7,
+    students: 980,
   },
   {
     id: 'civil',
@@ -72,6 +112,9 @@ const BRANCHES = [
     href: '/browse/civil',
     badge: 'CE',
     gradientIndex: 2,
+    desc: 'Civil Engineering focuses on Structural Analysis, Concrete Technology, Fluid Mechanics, Surveying, and Environmental Engineering.',
+    rating: 4.6,
+    students: 850,
   },
   {
     id: 'entc',
@@ -79,6 +122,9 @@ const BRANCHES = [
     href: '/browse/entc',
     badge: 'E&TC',
     gradientIndex: 3,
+    desc: 'Electronics & Telecommunication covers Signal Processing, Embedded Systems, VLSI Design, and Communication Networks.',
+    rating: 4.8,
+    students: 1340,
   },
 ];
 
@@ -126,6 +172,15 @@ export default async function HomePage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }} />
+      {/* Global SVG Definitions for half-filled stars */}
+      <svg width="0" height="0" className="absolute" aria-hidden="true">
+        <defs>
+          <linearGradient id="halfGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="50%" stopColor="#eab308" />
+            <stop offset="50%" stopColor="#e2e8f0" />
+          </linearGradient>
+        </defs>
+      </svg>
       <div style={{ background: 'var(--am-bg-page)' }}>
 
         {/* ── Hero Header ─────────────────────────────────────────────── */}
@@ -173,8 +228,8 @@ export default async function HomePage() {
                     </div>
 
                     {/* Right side: Centered Content */}
-                    <div className="flex-1 min-w-0 flex flex-col justify-center">
-                      <div className="flex items-center gap-2 flex-wrap">
+                    <div className="flex-1 min-w-0 flex flex-col justify-center gap-1">
+                      <div className="flex items-center gap-2 flex-wrap mb-0.5">
                         <h3 className="text-base sm:text-xl font-bold text-gray-900 group-hover:text-sky-600 transition-colors duration-200 truncate">
                           {branch.label}
                         </h3>
@@ -183,6 +238,19 @@ export default async function HomePage() {
                             {branch.badge}
                           </span>
                         )}
+                      </div>
+                      
+                      {/* Description - Desktop Only */}
+                      <p className="hidden md:block text-xs sm:text-sm text-gray-500 leading-relaxed max-w-xl">
+                        {branch.desc}
+                      </p>
+
+                      {/* Ratings - Mobile and Desktop */}
+                      <div className="flex items-center gap-1.5 mt-0.5 text-[11px] sm:text-xs text-gray-500 font-medium">
+                        {renderStars(branch.rating)}
+                        <span className="text-amber-600 font-bold ml-0.5">{branch.rating.toFixed(1)}</span>
+                        <span className="text-gray-300">|</span>
+                        <span>Rated by {branch.students.toLocaleString()} students</span>
                       </div>
                     </div>
 
