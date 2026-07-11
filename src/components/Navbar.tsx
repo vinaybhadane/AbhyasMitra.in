@@ -10,7 +10,7 @@ import { useAuth } from '@/contexts/AuthContext';
 const NAV_ITEMS = [
   { label: 'Home', href: '/' },
   { label: 'Branches', href: '/#branches' },
-  { label: 'Study Material', href: '/search' },
+  { label: 'Syllabus', href: '/syllabus' },
   { label: 'Community', href: 'https://whatsapp.com/channel/0029VbD3UKE8aKvOTKJcwK1K', external: true },
   { label: 'Contact Us', href: '/contact' }
 ];
@@ -88,13 +88,8 @@ export default function Navbar() {
     if (item.href === '/#branches') {
       return pathname === '/' && activeHash === '#branches';
     }
-    if (item.href === '/search') {
-      return (
-        pathname === '/search' ||
-        pathname.startsWith('/subject') ||
-        pathname.startsWith('/browse') ||
-        pathname.startsWith('/subjects')
-      );
+    if (item.href === '/syllabus') {
+      return pathname === '/syllabus';
     }
     if (item.href === '/contact') {
       return pathname === '/contact';
@@ -120,7 +115,7 @@ export default function Navbar() {
             <path d="M21.5 12v6" />
           </svg>
         );
-      case 'Study Material':
+      case 'Syllabus':
         return (
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
@@ -377,7 +372,7 @@ export default function Navbar() {
         {[
           { label: 'Home', href: '/' },
           { label: 'Branches', href: '/#branches' },
-          { label: 'Study Material', href: '/search' },
+          { label: 'Syllabus', href: '/syllabus' },
           { label: 'Contact Us', href: '/contact' }
         ].map((item) => {
           const isActive = isItemActive(item);
