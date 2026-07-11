@@ -24,16 +24,16 @@ export default function SyllabusPage() {
   ];
 
   const tags = [
-    'SPPU 2024 Pattern', 'Syllabus PDF', 'Pune University', 'Engineering Syllabus', 
-    'FE Syllabus', 'SE Syllabus', 'TE Syllabus', 'Computer Engineering Syllabus', 
-    'IT Syllabus', 'AI & DS Syllabus', 'Mechanical Syllabus', 'Electrical Syllabus', 
+    'SPPU 2024 Pattern', 'Syllabus PDF', 'Pune University', 'Engineering Syllabus',
+    'FE Syllabus', 'SE Syllabus', 'TE Syllabus', 'Computer Engineering Syllabus',
+    'IT Syllabus', 'AI & DS Syllabus', 'Mechanical Syllabus', 'Electrical Syllabus',
     'Civil Syllabus', 'E&TC Syllabus', 'SPPU 2024 Syllabus Download'
   ];
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-24 pb-16">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Page Header */}
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-extrabold bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/60 uppercase tracking-wider mb-4">
@@ -61,11 +61,11 @@ export default function SyllabusPage() {
             </div>
             {/* downloadpng.png placed right after the year section title */}
             <div className="shrink-0">
-              <Image 
-                src="/downloadpng.png" 
-                alt="Syllabus Download Badge" 
-                width={96} 
-                height={28} 
+              <Image
+                src="/downloadpng.png"
+                alt="Syllabus Download Badge"
+                width={96}
+                height={28}
                 className="h-7 w-auto object-contain rounded-md opacity-90"
               />
             </div>
@@ -86,13 +86,13 @@ export default function SyllabusPage() {
                     <td className="py-4 px-4 font-semibold text-gray-450">{item.srNo}</td>
                     <td className="py-4 px-4 font-bold text-gray-850 dark:text-gray-200">{item.branch}</td>
                     <td className="py-4 px-4 text-right">
-                      <a href={item.href} className="inline-flex items-center hover:scale-105 transition-transform duration-200">
-                        <Image 
-                          src="/downloadpng.png" 
-                          alt="Download PDF" 
-                          width={110} 
-                          height={32} 
-                          className="h-8 w-auto object-contain rounded-lg"
+                      <a href={item.href} className="inline-flex items-center hover:scale-105 transition-transform duration-200 py-1">
+                        <Image
+                          src="/downloadpng.png"
+                          alt="Download PDF"
+                          width={180}
+                          height={42}
+                          className="h-10 w-auto object-contain rounded-lg"
                         />
                       </a>
                     </td>
@@ -116,11 +116,11 @@ export default function SyllabusPage() {
               </div>
             </div>
             <div className="shrink-0">
-              <Image 
-                src="/downloadpng.png" 
-                alt="Syllabus Download Badge" 
-                width={96} 
-                height={28} 
+              <Image
+                src="/downloadpng.png"
+                alt="Syllabus Download Badge"
+                width={96}
+                height={28}
                 className="h-7 w-auto object-contain rounded-md opacity-90"
               />
             </div>
@@ -141,13 +141,13 @@ export default function SyllabusPage() {
                     <td className="py-4 px-4 font-semibold text-gray-450">{index + 1}</td>
                     <td className="py-4 px-4 font-bold text-gray-850 dark:text-gray-200">{b.name}</td>
                     <td className="py-4 px-4 text-right">
-                      <a href={b.href} className="inline-flex items-center hover:scale-105 transition-transform duration-200">
-                        <Image 
-                          src="/downloadpng.png" 
-                          alt="Download PDF" 
-                          width={110} 
-                          height={32} 
-                          className="h-8 w-auto object-contain rounded-lg"
+                      <a href={b.href} className="inline-flex items-center hover:scale-105 transition-transform duration-200 py-1">
+                        <Image
+                          src="/downloadpng.png"
+                          alt="Download PDF"
+                          width={140}
+                          height={42}
+                          className="h-10 w-auto object-contain rounded-lg"
                         />
                       </a>
                     </td>
@@ -171,11 +171,11 @@ export default function SyllabusPage() {
               </div>
             </div>
             <div className="shrink-0">
-              <Image 
-                src="/downloadpng.png" 
-                alt="Syllabus Download Badge" 
-                width={96} 
-                height={28} 
+              <Image
+                src="/downloadpng.png"
+                alt="Syllabus Download Badge"
+                width={96}
+                height={28}
                 className="h-7 w-auto object-contain rounded-md opacity-90"
               />
             </div>
@@ -196,13 +196,13 @@ export default function SyllabusPage() {
                     <td className="py-4 px-4 font-semibold text-gray-450">{index + 1}</td>
                     <td className="py-4 px-4 font-bold text-gray-850 dark:text-gray-200">{b.name}</td>
                     <td className="py-4 px-4 text-right">
-                      <a href={b.href} className="inline-flex items-center hover:scale-105 transition-transform duration-200">
-                        <Image 
-                          src="/downloadpng.png" 
-                          alt="Download PDF" 
-                          width={110} 
-                          height={32} 
-                          className="h-8 w-auto object-contain rounded-lg"
+                      <a href={b.href} className="inline-flex items-center hover:scale-105 transition-transform duration-200 py-1">
+                        <Image
+                          src="/downloadpng.png"
+                          alt="Download PDF"
+                          width={140}
+                          height={42}
+                          className="h-10 w-auto object-contain rounded-lg"
                         />
                       </a>
                     </td>
@@ -221,8 +221,8 @@ export default function SyllabusPage() {
           </div>
           <div className="flex flex-wrap gap-2.5">
             {tags.map((tag, idx) => (
-              <span 
-                key={idx} 
+              <span
+                key={idx}
                 className="px-3 py-1 bg-white dark:bg-gray-800 border border-gray-150 dark:border-gray-700 text-xs font-bold text-gray-600 dark:text-gray-350 rounded-xl shadow-xs"
               >
                 #{tag}
