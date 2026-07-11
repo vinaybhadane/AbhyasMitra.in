@@ -67,7 +67,7 @@ export default function SyllabusPage() {
                 <tr className="border-b border-gray-200 dark:border-gray-700 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">
                   <th className="py-3.5 px-4 w-20">Sr No</th>
                   <th className="py-3.5 px-4">Branch / Stream</th>
-                  <th className="py-3.5 px-4 text-right w-40">Download</th>
+                  <th className="py-3.5 px-4 text-right w-48 md:w-60">Download</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-gray-750">
@@ -76,13 +76,13 @@ export default function SyllabusPage() {
                     <td className="py-4 px-4 font-semibold text-gray-450">{item.srNo}</td>
                     <td className="py-4 px-4 font-bold text-gray-850 dark:text-gray-200">{item.branch}</td>
                     <td className="py-4 px-4 text-right">
-                      <a href={item.href} className="inline-flex items-center hover:scale-105 transition-transform duration-200 py-1">
+                      <a href={item.href} className="inline-flex items-center hover:scale-105 active:scale-95 transition-all duration-200 py-1">
                         <Image
                           src="/downloadpng.png"
                           alt="Download PDF"
-                          width={180}
-                          height={42}
-                          className="h-10 w-auto object-contain rounded-lg"
+                          width={240}
+                          height={72}
+                          className="h-10 md:h-14 w-auto object-contain rounded-xl shadow-xs hover:shadow-md transition-shadow"
                         />
                       </a>
                     </td>
@@ -113,7 +113,7 @@ export default function SyllabusPage() {
                 <tr className="border-b border-gray-200 dark:border-gray-700 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">
                   <th className="py-3.5 px-4 w-20">Sr No</th>
                   <th className="py-3.5 px-4">Branch / Stream</th>
-                  <th className="py-3.5 px-4 text-right w-40">Download</th>
+                  <th className="py-3.5 px-4 text-right w-48 md:w-60">Download</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-gray-750">
@@ -122,13 +122,13 @@ export default function SyllabusPage() {
                     <td className="py-4 px-4 font-semibold text-gray-450">{index + 1}</td>
                     <td className="py-4 px-4 font-bold text-gray-850 dark:text-gray-200">{b.name}</td>
                     <td className="py-4 px-4 text-right">
-                      <a href={b.href} className="inline-flex items-center hover:scale-105 transition-transform duration-200 py-1">
+                      <a href={b.href} className="inline-flex items-center hover:scale-105 active:scale-95 transition-all duration-200 py-1">
                         <Image
                           src="/downloadpng.png"
                           alt="Download PDF"
-                          width={140}
-                          height={42}
-                          className="h-10 w-auto object-contain rounded-lg"
+                          width={240}
+                          height={72}
+                          className="h-10 md:h-14 w-auto object-contain rounded-xl shadow-xs hover:shadow-md transition-shadow"
                         />
                       </a>
                     </td>
@@ -159,7 +159,7 @@ export default function SyllabusPage() {
                 <tr className="border-b border-gray-200 dark:border-gray-700 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">
                   <th className="py-3.5 px-4 w-20">Sr No</th>
                   <th className="py-3.5 px-4">Branch / Stream</th>
-                  <th className="py-3.5 px-4 text-right w-40">Download</th>
+                  <th className="py-3.5 px-4 text-right w-48 md:w-60">Download</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-gray-750">
@@ -168,13 +168,13 @@ export default function SyllabusPage() {
                     <td className="py-4 px-4 font-semibold text-gray-450">{index + 1}</td>
                     <td className="py-4 px-4 font-bold text-gray-850 dark:text-gray-200">{b.name}</td>
                     <td className="py-4 px-4 text-right">
-                      <a href={b.href} className="inline-flex items-center hover:scale-105 transition-transform duration-200 py-1">
+                      <a href={b.href} className="inline-flex items-center hover:scale-105 active:scale-95 transition-all duration-200 py-1">
                         <Image
                           src="/downloadpng.png"
                           alt="Download PDF"
-                          width={140}
-                          height={42}
-                          className="h-10 w-auto object-contain rounded-lg"
+                          width={240}
+                          height={72}
+                          className="h-10 md:h-14 w-auto object-contain rounded-xl shadow-xs hover:shadow-md transition-shadow"
                         />
                       </a>
                     </td>
