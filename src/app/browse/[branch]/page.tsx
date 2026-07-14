@@ -23,7 +23,7 @@ const SEMESTERS = [
   { id: 'sem8', label: 'SEMESTER 8', badge: '4th Year - Sem 2', locked: true, gradientIndex: 1 },
 ];
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
 
 interface Props {
   params: Promise<{ branch: string }>;

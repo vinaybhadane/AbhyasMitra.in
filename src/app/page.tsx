@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   keywords: 'SPPU 2024 pattern notes, engineering notes, first year engineering, computer engineering notes',
 };
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
 
 async function getHomeData() {
   try {

@@ -25,6 +25,7 @@ import {
   serverTimestamp,
   Timestamp,
   QueryDocumentSnapshot,
+  increment,
 } from 'firebase/firestore/lite';
 import { getStorage, ref, uploadBytes, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
 // Import onSnapshot from the full SDK (lite doesn't support real-time listeners)
@@ -92,6 +93,7 @@ export {
   startAfter,
   serverTimestamp,
   Timestamp,
+  increment,
   ref,
   uploadBytes,
   uploadBytesResumable,

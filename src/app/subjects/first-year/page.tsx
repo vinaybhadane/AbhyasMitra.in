@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   },
 };
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
 
 const SEMESTERS = [
   { id: 'sem1', label: 'SEMESTER 1', badge: '1st Year - Sem 1', gradientIndex: 0 },

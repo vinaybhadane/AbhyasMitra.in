@@ -24,7 +24,7 @@ const SEM_LABELS: Record<string, string> = {
   sem8: 'Semester 8',
 };
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
 
 interface Props {
   params: Promise<{ branch: string; sem: string }>;

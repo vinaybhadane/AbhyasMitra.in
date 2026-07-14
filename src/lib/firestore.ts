@@ -16,6 +16,7 @@ import {
   serverTimestamp,
   QueryDocumentSnapshot,
   Timestamp,
+  increment,
 } from './firebase';
 import { Post, Comment, ContactMessage, SubjectUnit } from './types';
 import { calculateReadingTime } from './seo';
@@ -25,6 +26,21 @@ import slugify from 'slugify';
 export function countWords(html: string): number {
   const text = html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
   return text ? text.split(' ').filter(Boolean).length : 0;
+}
+
+// ─── Revalidation Helper ───────────────────────────────────────────────────────
+
+async function triggerRevalidate() {
+  try {
+    if (typeof window !== 'undefined') {
+      fetch('/api/revalidate').catch(() => {});
+    } else {
+      const { revalidatePath } = await import('next/cache');
+      revalidatePath('/', 'layout');
+    }
+  } catch (e) {
+    console.error('Revalidation error:', e);
+  }
 }
 
 // ─── Posts ────────────────────────────────────────────────────────────────────
@@ -53,6 +69,7 @@ export async function createPost(
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   });
+  triggerRevalidate();
   return docRef.id;
 }
 
@@ -87,10 +104,12 @@ export async function updatePost(
     updates.wordCount = countWords(data.content);
   }
   await updateDoc(postRef, updates);
+  triggerRevalidate();
 }
 
 export async function deletePost(id: string): Promise<void> {
   await deleteDoc(doc(db, 'posts', id));
+  triggerRevalidate();
 }
 
 export async function getPost(id: string): Promise<Post | null> {
@@ -195,10 +214,7 @@ export async function getRelatedPosts(subject: string, currentId: string, limitC
 
 export async function incrementPostViews(id: string): Promise<void> {
   const postRef = doc(db, 'posts', id);
-  const snap = await getDoc(postRef);
-  if (snap.exists()) {
-    await updateDoc(postRef, { views: (snap.data().views || 0) + 1 });
-  }
+  await updateDoc(postRef, { views: increment(1) });
 }
 
 // ─── Comments ─────────────────────────────────────────────────────────────────
@@ -308,15 +324,18 @@ export async function createUnit(data: Omit<SubjectUnit, 'id' | 'createdAt'>): P
     ...data,
     createdAt: serverTimestamp(),
   });
+  triggerRevalidate();
   return docRef.id;
 }
 
 export async function updateUnit(id: string, data: Partial<SubjectUnit>): Promise<void> {
   await updateDoc(doc(db, 'units', id), data);
+  triggerRevalidate();
 }
 
 export async function deleteUnit(id: string): Promise<void> {
   await deleteDoc(doc(db, 'units', id));
+  triggerRevalidate();
 }
 
 // ─── Browse Config (bgImageUrl per branch / year / subject) ───────────────────
@@ -342,11 +361,13 @@ export async function setBrowseConfig(id: string, data: Partial<BrowseConfig>): 
     // If doc doesn't exist yet, create it
     await addDoc(collection(db, 'browseConfig'), { id, ...data });
   });
+  triggerRevalidate();
 }
 
 export async function upsertBrowseConfig(id: string, bgImageUrl: string): Promise<void> {
   const docRef = doc(db, 'browseConfig', id);
   await setDoc(docRef, { bgImageUrl }, { merge: true });
+  triggerRevalidate();
 }
 
 // ─── Notifications ─────────────────────────────────────────────────────────────
@@ -396,11 +417,13 @@ export async function createNotification(title: string, content: string, link?: 
     type: 'notification',
     createdAt: serverTimestamp(),
   });
+  triggerRevalidate();
   return docRef.id;
 }
 
 export async function deleteNotification(id: string): Promise<void> {
   await deleteDoc(doc(db, 'units', id));
+  triggerRevalidate();
 }
 
 // ─── Custom Subjects ─────────────────────────────────────────────────────────
@@ -457,6 +480,7 @@ export async function createCustomSubject(data: Omit<CustomSubjectDoc, 'id' | 'c
     });
   }
 
+  triggerRevalidate();
   return docRef.id;
 }
 
@@ -469,6 +493,8 @@ export async function deleteCustomSubject(id: string, branch: string, semester: 
   try {
     await deleteDoc(doc(db, 'browseConfig', configId));
   } catch {}
+
+  triggerRevalidate();
 }
 
 export async function updateCustomSubject(
@@ -492,6 +518,8 @@ export async function updateCustomSubject(
       });
     }
   }
+
+  triggerRevalidate();
 }
 
 export interface SubjectNoteUnit {
@@ -523,6 +551,7 @@ export async function saveSubjectNotes(
     units,
     updatedAt: serverTimestamp(),
   });
+  triggerRevalidate();
 }
 
 

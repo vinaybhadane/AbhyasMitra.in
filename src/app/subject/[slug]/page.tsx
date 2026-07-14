@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ChevronRight, BookOpen, TrendingUp, CheckCircle2, Layers } from 'lucide-react';
 import { getSubjectBySlug, SUBJECTS, Post, SubjectUnit, getLucideIcon } from '@/lib/types';
-import { getPostsBySubject, getUnitsBySubject, getAllBrowseConfigs, getCustomSubjects, getSubjectNotes, SubjectNoteUnit } from '@/lib/firestore';
+import { getPostsBySubject, getUnitsBySubject, getBrowseConfig, getCustomSubjects, getSubjectNotes, SubjectNoteUnit } from '@/lib/firestore';
 import PostGridCard from '@/components/PostGridCard';
 import { generateMetadata as genMeta } from '@/lib/seo';
 import Image from 'next/image';
@@ -80,7 +80,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   });
 }
 
-export const dynamic = 'force-dynamic'; // Always fresh post counts
+export const revalidate = 3600;
 
 export default async function SubjectPage({ params }: PageProps) {
   const { slug } = await params;
@@ -94,10 +94,10 @@ export default async function SubjectPage({ params }: PageProps) {
 
   try {
     const configKey = subject.year === '1st' ? `first-year/${slug}` : `computer/2nd/${slug}`;
-    const [postsData, unitsData, allConfigs, subjectNotesDoc] = await Promise.all([
+    const [postsData, unitsData, matchedConfig, subjectNotesDoc] = await Promise.all([
       getPostsBySubject(subject.name, 50),
       getUnitsBySubject(slug),
-      getAllBrowseConfigs(),
+      getBrowseConfig(configKey),
       getSubjectNotes(slug),
     ]);
     posts = postsData;
@@ -106,7 +106,6 @@ export default async function SubjectPage({ params }: PageProps) {
       directNotes = subjectNotesDoc.units;
     }
 
-    const matchedConfig = allConfigs.find(c => c.id === configKey);
     if (matchedConfig?.bgImageUrl) {
       bgImageUrl = matchedConfig.bgImageUrl;
     }
