@@ -93,25 +93,36 @@ export default async function SubjectPage({ params }: PageProps) {
   let bgImageUrl = '';
   let directNotes: SubjectNoteUnit[] = [];
 
-  try {
-    const configKey = subject.year === '1st' ? `first-year/${slug}` : `computer/2nd/${slug}`;
-    const [postsData, unitsData, matchedConfig, subjectNotesDoc] = await Promise.all([
-      getPostsBySubject(subject.name, 50),
-      getUnitsBySubject(slug),
-      getBrowseConfig(configKey),
-      getSubjectNotes(slug),
-    ]);
-    posts = postsData;
-    units = unitsData;
-    if (subjectNotesDoc && subjectNotesDoc.units) {
-      directNotes = subjectNotesDoc.units;
-    }
+  const configKey = subject.year === '1st' ? `first-year/${slug}` : `computer/2nd/${slug}`;
 
-    if (matchedConfig?.bgImageUrl) {
-      bgImageUrl = matchedConfig.bgImageUrl;
-    }
-  } catch {
-    posts = []; units = []; directNotes = [];
+  // Resolve each promise individually so that one failing (e.g. permission error on browseConfig)
+  // does not discard or prevent loading of others (e.g. subjectNotesDoc containing the PDF notes).
+  const [postsData, unitsData, matchedConfig, subjectNotesDoc] = await Promise.all([
+    getPostsBySubject(subject.name, 50).catch((err) => {
+      console.error('Error fetching posts:', err);
+      return [];
+    }),
+    getUnitsBySubject(slug).catch((err) => {
+      console.error('Error fetching units:', err);
+      return [];
+    }),
+    getBrowseConfig(configKey).catch((err) => {
+      console.error('Error fetching browse config:', err);
+      return null;
+    }),
+    getSubjectNotes(slug).catch((err) => {
+      console.error('Error fetching subject notes:', err);
+      return null;
+    }),
+  ]);
+
+  posts = postsData;
+  units = unitsData;
+  if (subjectNotesDoc && subjectNotesDoc.units) {
+    directNotes = subjectNotesDoc.units;
+  }
+  if (matchedConfig?.bgImageUrl) {
+    bgImageUrl = matchedConfig.bgImageUrl;
   }
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://abhyasmitra.in';
