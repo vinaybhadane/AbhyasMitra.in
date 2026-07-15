@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import SemesterGrid from '@/components/SemesterGrid';
 import Breadcrumb from '@/components/Breadcrumb';
-import { getAllBrowseConfigs } from '@/lib/firestore';
+import { getCachedBrowseConfigs } from '@/lib/firestoreCache';
 
 // Map branch slugs to display names
 const BRANCH_NAMES: Record<string, string> = {
@@ -56,7 +56,7 @@ export default async function BranchPage({ params }: Props) {
   // Load configs
   let configsMapObj: Record<string, string> = {};
   try {
-    const all = await getAllBrowseConfigs();
+    const all = await getCachedBrowseConfigs();
     all.forEach(c => {
       if (c.bgImageUrl) configsMapObj[c.id] = c.bgImageUrl;
     });

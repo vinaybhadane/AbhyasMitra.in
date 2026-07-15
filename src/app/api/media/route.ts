@@ -117,9 +117,19 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || '';
-    const baseUrl = siteUrl.endsWith('/') ? siteUrl.slice(0, -1) : siteUrl;
-    const fileUrl = `${baseUrl}/media/${blobPath}`;
+    // For PDFs, use the direct Azure Blob URL for reliable, fast downloads.
+    // For images, use the proxied site URL for Next.js image optimization compatibility.
+    const isPdf = extension === 'pdf';
+    let fileUrl: string;
+
+    if (isPdf) {
+      // Direct Azure Blob URL — bypasses Next.js server entirely
+      fileUrl = blockBlobClient.url;
+    } else {
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || '';
+      const baseUrl = siteUrl.endsWith('/') ? siteUrl.slice(0, -1) : siteUrl;
+      fileUrl = `${baseUrl}/media/${blobPath}`;
+    }
 
     return NextResponse.json({
       url: fileUrl,

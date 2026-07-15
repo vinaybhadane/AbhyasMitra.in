@@ -1,8 +1,11 @@
 import { MetadataRoute } from 'next';
-import { getPublishedPosts, getCustomSubjects } from '@/lib/firestore';
+import { getPublishedPosts } from '@/lib/firestore';
+import { getCachedCustomSubjects } from '@/lib/firestoreCache';
 import { SUBJECTS } from '@/lib/types';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://abhyasmitra.in';
+
+export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Static pages
@@ -20,7 +23,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Combine static and custom subjects
   let allSubjectsList = [...SUBJECTS];
   try {
-    const customList = await getCustomSubjects();
+    const customList = await getCachedCustomSubjects();
     const customMapped = customList.map(s => ({
       slug: s.slug
     }));

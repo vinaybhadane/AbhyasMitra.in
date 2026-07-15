@@ -32,6 +32,12 @@ export function countWords(html: string): number {
 
 async function triggerRevalidate() {
   try {
+    // Clear in-memory server-side Firestore cache
+    const { invalidateFirestoreCache } = await import('./firestoreCache');
+    invalidateFirestoreCache();
+  } catch {}
+
+  try {
     if (typeof window !== 'undefined') {
       fetch('/api/revalidate').catch(() => {});
     } else {

@@ -3,7 +3,7 @@ import { SUBJECTS, getLucideIcon } from '@/lib/types';
 import GridCard from '@/components/GridCard';
 import WhatsAppCard from '@/components/WhatsAppCard';
 import Breadcrumb from '@/components/Breadcrumb';
-import { getAllBrowseConfigs, getCustomSubjects } from '@/lib/firestore';
+import { getCachedBrowseConfigs, getCachedCustomSubjects } from '@/lib/firestoreCache';
 
 const BRANCH_NAMES: Record<string, string> = {
   computer: 'Computer Engineering',
@@ -71,7 +71,7 @@ export default async function BranchSemPage({ params }: Props) {
   // Fetch custom subjects
   let customSubjects: any[] = [];
   try {
-    const list = await getCustomSubjects();
+    const list = await getCachedCustomSubjects();
     customSubjects = list
       .filter((s) => s.branch === branch && s.semester === sem)
       .map((s) => ({
@@ -105,7 +105,7 @@ export default async function BranchSemPage({ params }: Props) {
   // Load configs
   let configsMap = new Map<string, string>();
   try {
-    const all = await getAllBrowseConfigs();
+    const all = await getCachedBrowseConfigs();
     all.forEach(c => {
       if (c.bgImageUrl) configsMap.set(c.id, c.bgImageUrl);
     });

@@ -3,7 +3,8 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ChevronRight, BookOpen, TrendingUp, CheckCircle2, Layers } from 'lucide-react';
 import { getSubjectBySlug, SUBJECTS, Post, SubjectUnit, getLucideIcon } from '@/lib/types';
-import { getPostsBySubject, getUnitsBySubject, getBrowseConfig, getCustomSubjects, getSubjectNotes, SubjectNoteUnit } from '@/lib/firestore';
+import { getPostsBySubject, getUnitsBySubject, getBrowseConfig, getSubjectNotes, SubjectNoteUnit } from '@/lib/firestore';
+import { getCachedCustomSubjects } from '@/lib/firestoreCache';
 import PostGridCard from '@/components/PostGridCard';
 import { generateMetadata as genMeta } from '@/lib/seo';
 import Image from 'next/image';
@@ -43,7 +44,7 @@ async function resolveSubject(slug: string) {
   if (staticSub) return staticSub;
 
   try {
-    const list = await getCustomSubjects();
+    const list = await getCachedCustomSubjects();
     const found = list.find((s) => s.slug === slug);
     if (found) {
       return {

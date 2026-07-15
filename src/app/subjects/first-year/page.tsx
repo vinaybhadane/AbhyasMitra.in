@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import GridCard from '@/components/GridCard';
 import Breadcrumb from '@/components/Breadcrumb';
-import { getAllBrowseConfigs } from '@/lib/firestore';
+import { getCachedBrowseConfigs } from '@/lib/firestoreCache';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://abhyasmitra.in';
 
@@ -31,7 +31,7 @@ export default async function FirstYearPage() {
   // Load configs
   let configsMap = new Map<string, string>();
   try {
-    const all = await getAllBrowseConfigs();
+    const all = await getCachedBrowseConfigs();
     all.forEach(c => {
       if (c.bgImageUrl) configsMap.set(c.id, c.bgImageUrl);
     });

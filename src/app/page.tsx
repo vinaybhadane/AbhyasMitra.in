@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
 import { Metadata } from 'next';
-import { getNotifications, getAllBrowseConfigs } from '@/lib/firestore';
+import { getCachedNotifications, getCachedBrowseConfigs } from '@/lib/firestoreCache';
 import LastVisitedBanner from '@/components/LastVisitedBanner';
 
 export const metadata: Metadata = {
@@ -16,7 +16,7 @@ export const revalidate = 3600;
 
 async function getHomeData() {
   try {
-    const notifications = await getNotifications(15);
+    const notifications = await getCachedNotifications(15);
     return { notifications };
   } catch {
     return { notifications: [] };
@@ -161,7 +161,7 @@ export default async function HomePage() {
   // Fetch configs
   let configsMap = new Map<string, string>();
   try {
-    const allConfigs = await getAllBrowseConfigs();
+    const allConfigs = await getCachedBrowseConfigs();
     allConfigs.forEach(c => {
       if (c.bgImageUrl) configsMap.set(c.id, c.bgImageUrl);
     });
