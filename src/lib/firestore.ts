@@ -41,8 +41,11 @@ async function triggerRevalidate() {
     if (typeof window !== 'undefined') {
       fetch('/api/revalidate').catch(() => {});
     } else {
-      const { revalidatePath } = await import('next/cache');
+      const { revalidatePath, revalidateTag } = await import('next/cache');
       revalidatePath('/', 'layout');
+      revalidateTag('customSubjects', 'max');
+      revalidateTag('browseConfigs', 'max');
+      revalidateTag('notifications', 'max');
     }
   } catch (e) {
     console.error('Revalidation error:', e);
