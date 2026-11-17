@@ -66,13 +66,33 @@ test('Auth: missing, invalid, expired, revoked, non-admin denied; verified admin
  await assert.rejects(requireAdmin(request('/')), (e: HttpError)=>e.status===401);
  const stub=mock.method(adminAuth(),'verifyIdToken',async (token:string,revoked:boolean)=>{
   assert.equal(revoked,true);
-  if (['invalid','expired','revoked'].includes(token)) throw new Error('Rejected');
+  if (['invalid','expired','revoked'].includes(token)) {
+    const codes: Record<string,string> = { invalid:'auth/invalid-id-token', expired:'auth/id-token-expired', revoked:'auth/id-token-revoked' };
+    throw Object.assign(new Error('Rejected'), { code: codes[token] });
+  }
   return {uid:'test',admin:token==='admin',exp:Math.floor(Date.now()/1000)+3600};
  });
  for(const token of ['invalid','expired','revoked']) await assert.rejects(requireAdmin(request('/',token)),(e:HttpError)=>e.status===401);
  await assert.rejects(requireAdmin(request('/','reader')),(e:HttpError)=>e.status===403);
  assert.equal((await requireAdmin(request('/','admin'))).uid,'test');
  stub.mock.restore();
+});
+test('Credential and verification service failures return 503 without exposing SDK details', async () => {
+ const logs: string[] = [];
+ const logger = mock.method(console, 'error', (value: string) => { logs.push(value); });
+ try {
+  for (const code of ['app/invalid-credential','auth/insufficient-permission','auth/certificate-fetch-failed','unrecognized-sensitive-value']) {
+   const stub = mock.method(adminAuth(),'verifyIdToken',async () => { throw Object.assign(new Error('private-test-error-details'), { code }); });
+   try {
+    const response = await session(new NextRequest('http://localhost:3000/api/session', { method:'POST', headers:{ Origin:'http://localhost:3000', Authorization:'Bearer test-token' } }));
+    assert.equal(response.status,503);
+    const body = await response.text();
+    assert.ok(!body.includes(code)); assert.ok(!body.includes('private-test-error-details'));
+   } finally { stub.mock.restore(); }
+  }
+  assert.ok(logs.some(value => value.includes('auth/insufficient-permission')));
+  assert.ok(logs.every(value => !value.includes('private-test-error-details') && !value.includes('unrecognized-sensitive-value') && !value.includes('test-token')));
+ } finally { logger.mock.restore(); }
 });
 test('Direct API access fails before Azure or cache operations', async () => {
  for (const handler of [mediaGet,mediaPost,mediaDelete,revalidate]) assert.equal((await handler(request('/api/media'))).status,401);

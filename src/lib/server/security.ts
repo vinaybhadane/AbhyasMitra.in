@@ -1,5 +1,5 @@
 import { getAppCheck } from 'firebase-admin/app-check';
-import { adminApp } from './firebase-admin';
+import { adminApp, FirebaseServerConfigurationError } from './firebase-admin';
 import { NextResponse } from 'next/server';
 import { adminAuth, adminDb } from './firebase-admin';
 import { createHash } from 'node:crypto';
@@ -8,8 +8,28 @@ export class HttpError extends Error {
 }
 export async function verifyToken(token: string) {
   if (!token || token.length > 8192) throw new HttpError(401, 'Authentication required');
-  try { return await adminAuth().verifyIdToken(token, true); }
-  catch { throw new HttpError(401, 'Invalid or expired authentication'); }
+  let auth;
+  try { auth = adminAuth(); }
+  catch (error) {
+    const reason = error instanceof FirebaseServerConfigurationError ? error.reason : 'sdk_initialization_failed';
+    console.error(JSON.stringify({ event: 'auth_verification_failed', stage: 'initialization', code: 'app/invalid-credential', reason }));
+    throw new HttpError(503, 'Server sign-in is unavailable. Please contact the site owner.');
+  }
+  try { return await auth.verifyIdToken(token, true); }
+  catch (error) {
+    const code = error && typeof error === 'object' && 'code' in error ? error.code : undefined;
+    const invalidTokenCodes = ['auth/argument-error', 'auth/invalid-argument', 'auth/invalid-id-token', 'auth/id-token-expired', 'auth/id-token-revoked', 'auth/user-disabled', 'auth/user-not-found', 'auth/tenant-id-mismatch', 'auth/mismatching-tenant-id'];
+    const serviceCodes = ['app/invalid-credential', 'auth/invalid-credential', 'auth/insufficient-permission', 'auth/internal-error', 'auth/project-not-found', 'auth/certificate-fetch-failed', 'app/network-error'];
+    const invalidToken = typeof code === 'string' && invalidTokenCodes.includes(code);
+    // Only fixed SDK codes are logged. SDK messages can contain credentials or token claims.
+    const projectMismatch = code === 'auth/argument-error' && error instanceof Error
+      && (error.message.includes('incorrect "aud"') || error.message.includes('incorrect "iss"'));
+    const safeCode = projectMismatch ? 'auth/project-mismatch'
+      : typeof code === 'string' && (invalidToken || serviceCodes.includes(code)) ? code : 'unknown';
+    console.error(JSON.stringify({ event: 'auth_verification_failed', stage: 'id_token_verification', code: safeCode }));
+    if (invalidToken) throw new HttpError(401, 'Invalid or expired authentication');
+    throw new HttpError(503, 'Server sign-in is unavailable. Please contact the site owner.');
+  }
 }
 export async function requireUser(request: Request) {
   const match = /^Bearer ([^\s]+)$/.exec(request.headers.get('authorization') || '');

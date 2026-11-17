@@ -36,11 +36,16 @@ test('Malformed PEM produces a generic credential error', async () => {
 test('Vercel credentials support literal and escaped PEM newlines and reuse the app', async () => {
   // Ephemeral test key generated in memory; no real credentials or network requests.
   const { privateKey } = generateKeyPairSync('rsa', { modulusLength: 2048, privateKeyEncoding: { type: 'pkcs8', format: 'pem' }, publicKeyEncoding: { type: 'spki', format: 'pem' } });
-  for (const pem of [privateKey, privateKey.replace(/\n/g, '\\n')]) {
+  for (const pem of [privateKey, privateKey.replace(/\n/g, '\\n'), JSON.stringify(privateKey), `'${privateKey}'`, privateKey.replace(/\n/g, '\\r\\n')]) {
     await withEnvironment({ FIREBASE_ADMIN_PROJECT_ID: 'demo-credentials', FIREBASE_ADMIN_CLIENT_EMAIL: 'test@example.invalid', FIREBASE_ADMIN_PRIVATE_KEY: pem }, async () => {
       const app = adminApp();
       try { assert.equal(app.options.projectId, 'demo-credentials'); assert.equal(adminApp(), app); }
       finally { await deleteApp(app); }
     });
   }
+});
+test('Mismatched Firebase server/client projects fail before initialization', async () => {
+  await withEnvironment({ FIREBASE_ADMIN_PROJECT_ID:'demo-server', NEXT_PUBLIC_FIREBASE_PROJECT_ID:'demo-client' }, async () => {
+    assert.throws(() => adminApp(), /Firebase server and client projects do not match/);
+  });
 });

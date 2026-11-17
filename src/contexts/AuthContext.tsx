@@ -42,7 +42,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const result = response.ok ? await response.json() : null;
           if (current === generation) {
             setIsAdminUser(response.ok && result?.admin === true && token.claims.admin === true);
-            if (!response.ok) setSessionError('We could not verify your sign-in. Please sign out and try again.');
+            if (!response.ok) setSessionError(response.status >= 500
+              ? 'Server sign-in is unavailable. The site owner needs to check the server configuration.'
+              : 'We could not verify your sign-in. Please sign out and try again.');
           }
         } else { await fetch('/api/session', { method: 'DELETE' }); }
       } catch {

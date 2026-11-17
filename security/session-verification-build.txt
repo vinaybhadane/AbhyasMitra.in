@@ -1,0 +1,71 @@
+
+> abhyasmitra@0.1.0 build
+> next build
+
+▲ Next.js 16.4.6 (Turbopack)
+- Environments: .env.local
+✓ Running next.config.ts took 46ms
+- Experiments (use with caution):
+  · optimizePackageImports
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 7.9s
+  Running TypeScript ...
+  Finished TypeScript in 4.3s ...
+  Collecting page data using 15 workers ...
+  Generating static pages using 15 workers (0/27) ...
+  Generating static pages using 15 workers (6/27)
+  Generating static pages using 15 workers (13/27)
+  Generating static pages using 15 workers (20/27)
+✓ Generating static pages using 15 workers (27/27) in 1321ms
+  Finalizing page optimization ...
+
+Route (app)                                              Revalidate  Expire
+┌ ○ /                                                            1h      1y
+├ ○ /_not-found
+├ ƒ /[subject]/[slug]
+├ ○ /about
+├ ƒ /admin
+├ ƒ /admin/browse
+├ ƒ /admin/comments
+├ ƒ /admin/media
+├ ƒ /admin/messages
+├ ƒ /admin/posts
+├ ƒ /admin/posts/[id]/edit
+├ ƒ /admin/posts/new
+├ ƒ /admin/subject-notes
+├ ƒ /admin/subjects
+├ ƒ /admin/subjects/seed
+├ ƒ /admin/units
+├ ƒ /api/media
+├ ƒ /api/revalidate
+├ ƒ /api/session
+├ ƒ /api/submissions
+├ ƒ /api/views
+├ ƒ /browse/[branch]
+├ ƒ /browse/[branch]/[sem]
+├ ○ /contact
+├ ○ /cookie-policy
+├ ○ /faq
+├ ○ /login
+├ ƒ /media/[...path]
+├ ○ /privacy-policy
+├ ○ /robots.txt
+├ ○ /search
+├ ○ /sitemap.xml                                                 1h      1y
+├   /subject/[slug]
+│ ├ ● /subject/database-management-system                        1h      1y
+│ ├ ● /subject/discrete-mathematics                              1h      1y
+│ ├ ● /subject/computer-organization-and-microprocessor          1h      1y
+│ └ ● [+4 more paths]
+├ ○ /subjects/first-year                                         1h      1y
+├ ƒ /subjects/first-year/[sem]
+├ ○ /syllabus
+└ ○ /terms-and-conditions
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
