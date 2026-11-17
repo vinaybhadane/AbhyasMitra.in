@@ -110,3 +110,8 @@ Known residual risks: CSP permits unsafe-inline for Next ISR hydration and next-
 [Firebase custom claims](https://firebase.google.com/docs/auth/admin/custom-claims), [Firebase token verification](https://firebase.google.com/docs/auth/admin/verify-id-tokens), [Firebase revocation/session guidance](https://firebase.google.com/docs/auth/admin/manage-sessions), [Next.js security advisories](https://github.com/vercel/next.js/security/advisories). Relevant installed Next.js guides for Proxy, cookies, route handlers and CSP were read before implementation.
 
 The development server was restarted with Next.js 16.4.6 at http://localhost:3000 after validation; the temporary production smoke-test server on port 3100 was stopped.
+
+
+## Vercel credential follow-up
+
+Hosting was subsequently confirmed as Vercel, with Firebase Admin credentials and admin claims not yet configured. Server initialization now supports server-only FIREBASE_ADMIN_PROJECT_ID, FIREBASE_ADMIN_CLIENT_EMAIL and FIREBASE_ADMIN_PRIVATE_KEY variables, with ADC retained for local/Google environments. Partial/malformed secret configuration fails closed with generic errors. Three additional credential tests validate incomplete input, malformed PEM and both literal/escaped newline formats using an ephemeral in-memory key. The original 15 emulator security tests were rerun. Production configuration and administrator migration remain prerequisites; main has not been changed. See the Vercel section of DEPLOYMENT.md for exact variable mappings.

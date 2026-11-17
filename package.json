@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "test:security": "tsx --test tests/security.test.ts",
-    "test:rules": "firebase emulators:exec --project demo-abhyasmitra-security --only firestore,storage \"npm run test:security\""
+    "test:rules": "firebase emulators:exec --project demo-abhyasmitra-security --only firestore,storage \"npm run test:security\"",
+    "test:credentials": "tsx --test tests/firebase-admin.test.ts"
   },
   "dependencies": {
     "@azure/storage-blob": "^12.33.0",

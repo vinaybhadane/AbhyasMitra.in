@@ -67,3 +67,28 @@ npx firebase deploy --project YOUR_PROJECT_ID --only firestore:rules,storage
 This command is documentation only and was NOT executed. Deploy the production Next.js build through your existing host, clear old CDN responses, and verify both admin accounts and normal/public features again. Avoid a window where old submission permissions remain active with the new APIs. Existing legacy public comment emails remain exposed until the new Firestore rules are deployed; public API projection alone cannot close that path.
 
 Review current secret-scan evidence without printing any secrets. If incident review finds exposed Azure account keys, regenerate one key in Azure Portal > Storage account > Access keys, update the host secret, validate staging, then regenerate the retired key. For a leaked Firebase service account disable/delete the affected key in Google Cloud IAM, replace with workload identity, and review audit logs. Only rewrite Git history after coordination with repository collaborators if a real committed secret is found.
+
+
+## Vercel setup (added after hosting was confirmed)
+
+Do this BEFORE merging the security branch into the Vercel production branch. An application push does not deploy Firebase rules.
+
+1. In Firebase Console > Project settings > Service accounts, identify a dedicated runtime service account. Prefer Vercel OIDC/workload identity federation if already configured. For the environment-secret option implemented here, obtain its JSON key and store the file securely outside Git. Give the runtime account only Firestore data and Firebase Auth user-read permissions; do not reuse the privileged claim-migration operator account as the permanent runtime identity.
+2. In Vercel > your project > Settings > Environment Variables, add these for Production (and separately for an isolated Preview environment):
+
+| Variable | Value / source | Type |
+|---|---|---|
+| FIREBASE_ADMIN_PROJECT_ID | project_id from the Firebase service-account JSON | Config |
+| FIREBASE_ADMIN_CLIENT_EMAIL | client_email from that JSON | Secret |
+| FIREBASE_ADMIN_PRIVATE_KEY | private_key from that JSON, without outer JSON quotes; real or escaped newlines work | Secret |
+| NEXT_PUBLIC_SITE_URL | https://abhyasmitra.in in Production; exact preview origin for Preview | Config |
+| AZURE_STORAGE_CONNECTION_STRING | Existing Azure runtime credential | Secret |
+| AZURE_STORAGE_CONTAINER_NAME | Existing media container name | Config |
+
+Never prefix Admin credentials with NEXT_PUBLIC_. Do not commit the JSON file or put a Windows GOOGLE_APPLICATION_CREDENTIALS file path in Vercel. Vercel environment changes apply to new deployments; redeploy the preview to validate configuration. For a separate preview Firebase project, update all NEXT_PUBLIC_FIREBASE_* variables to that project as well. Keep FIREBASE_APPCHECK_ENFORCE unset until the App Check rollout is verified.
+
+3. Use a separate trusted operator credential locally with scripts/admin-role.mjs to grant and verify claims for existing administrators as described above. Do not send credentials in chat. Verify Google 2-Step Verification, then re-login to refresh tokens.
+4. Use a Vercel Preview deployment to verify real login, admin navigation, uploads and submissions. Add its origin to the isolated Firebase project's authorized domains. Ensure NEXT_PUBLIC_SITE_URL exactly matches the preview origin. Avoid exercising write flows against production Firebase from a preview.
+5. After these prerequisites and production-rule approval, coordinate the main merge/Vercel production deployment with Firebase rule deployment in a maintenance window. Validate both administrator accounts immediately afterward. Preserve old rule/app snapshots for incident response; do not reopen public write rules just to bypass an access failure.
+
+Current server initialization supports the three FIREBASE_ADMIN_* variables above and retains ADC fallback. Partial or malformed credentials fail closed with generic errors. Credential setup tests use only an ephemeral in-memory key and make no network requests.
