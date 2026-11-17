@@ -1,3 +1,5 @@
+import { appCheckHeaders } from './app-check';
+import { authFetch } from './auth-fetch';
 import {
   db,
   collection,
@@ -39,7 +41,7 @@ async function triggerRevalidate() {
 
   try {
     if (typeof window !== 'undefined') {
-      fetch('/api/revalidate').catch(() => {});
+      authFetch('/api/revalidate', { method: 'POST' }).catch(() => {});
     } else {
       const { revalidatePath, revalidateTag } = await import('next/cache');
       revalidatePath('/', 'layout');
@@ -222,34 +224,23 @@ export async function getRelatedPosts(subject: string, currentId: string, limitC
 }
 
 export async function incrementPostViews(id: string): Promise<void> {
-  const postRef = doc(db, 'posts', id);
-  await updateDoc(postRef, { views: increment(1) });
+  const response = await fetch('/api/views', { method: 'POST', headers: { 'Content-Type': 'application/json', ...await appCheckHeaders() }, body: JSON.stringify({ id }) });
+  if (!response.ok) throw new Error('View count unavailable');
 }
 
 // ─── Comments ─────────────────────────────────────────────────────────────────
 
 export async function addComment(data: Omit<Comment, 'id' | 'createdAt'>): Promise<string> {
-  const docRef = await addDoc(collection(db, 'comments'), {
-    ...data,
-    createdAt: serverTimestamp(),
-  });
-  return docRef.id;
+  const response = await authFetch('/api/submissions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...data, kind: 'comment' }) });
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.error || 'Comment failed');
+  return result.id;
 }
-
 export async function getCommentsByPost(postId: string): Promise<Comment[]> {
-  // Avoid composite index by sorting in memory
-  const q = query(
-    collection(db, 'comments'),
-    where('postId', '==', postId)
-  );
-  const snap = await getDocs(q);
-  const comments = snap.docs.map((d) => ({ id: d.id, ...d.data() } as Comment));
-  
-  return comments.sort((a, b) => {
-    const aTime = a.createdAt instanceof Timestamp ? a.createdAt.toMillis() : (a.createdAt as any).getTime?.() || new Date(a.createdAt as any).getTime();
-    const bTime = b.createdAt instanceof Timestamp ? b.createdAt.toMillis() : (b.createdAt as any).getTime?.() || new Date(b.createdAt as any).getTime();
-    return aTime - bTime;
-  });
+  const response = await fetch(`/api/submissions?postId=${encodeURIComponent(postId)}`);
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.error || 'Comments unavailable');
+  return result.comments.map((c: Comment) => ({ ...c, createdAt: new Date(c.createdAt as unknown as string) }));
 }
 
 export async function deleteComment(id: string): Promise<void> {
@@ -265,12 +256,10 @@ export async function getAllComments(): Promise<Comment[]> {
 // ─── Contact Messages ─────────────────────────────────────────────────────────
 
 export async function submitContactMessage(data: Omit<ContactMessage, 'id' | 'createdAt' | 'read'>): Promise<string> {
-  const docRef = await addDoc(collection(db, 'contacts'), {
-    ...data,
-    read: false,
-    createdAt: serverTimestamp(),
-  });
-  return docRef.id;
+  const response = await fetch('/api/submissions', { method: 'POST', headers: { 'Content-Type': 'application/json', ...await appCheckHeaders() }, body: JSON.stringify({ ...data, kind: 'contact' }) });
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.error || 'Contact submission failed');
+  return result.id;
 }
 
 export async function getContactMessages(): Promise<ContactMessage[]> {
@@ -294,7 +283,7 @@ export async function uploadImage(file: File, path: string): Promise<string> {
   formData.append('file', file);
   formData.append('path', path);
 
-  const response = await fetch('/api/media', {
+  const response = await authFetch('/api/media', {
     method: 'POST',
     body: formData,
   });
@@ -309,7 +298,7 @@ export async function uploadImage(file: File, path: string): Promise<string> {
 }
 
 export async function deleteImage(url: string): Promise<void> {
-  const response = await fetch(`/api/media?url=${encodeURIComponent(url)}`, {
+  const response = await authFetch(`/api/media?url=${encodeURIComponent(url)}`, {
     method: 'DELETE',
   });
 

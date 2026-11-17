@@ -1,3 +1,4 @@
+import { sanitizeArticle, safeJson } from '@/lib/sanitize';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
@@ -55,10 +56,10 @@ export default async function BlogPostPage({ params }: PageProps) {
   }
 
   const related = await getRelatedPosts(post.subject, post.id, 3);
-  const toc = generateTOC(post.content);
+  const toc = generateTOC(sanitizeArticle(post.content));
 
   // Add IDs to headings in rendered HTML
-  const processedContent = post.content.replace(/<h([2-6])([^>]*)>(.*?)<\/h[2-6]>/gi, (_, level, attrs, text) => {
+  const processedContent = sanitizeArticle(post.content).replace(/<h([2-6])([^>]*)>(.*?)<\/h[2-6]>/gi, (_, level, attrs, text) => {
     const cleanText = text.replace(/<[^>]*>/g, '');
     const id = cleanText.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
     return `<h${level}${attrs} id="${id}">${text}</h${level}>`;
@@ -84,12 +85,12 @@ export default async function BlogPostPage({ params }: PageProps) {
       {/* JSON-LD: Article */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(generateArticleJsonLd(post)) }}
+        dangerouslySetInnerHTML={{ __html: safeJson(generateArticleJsonLd(post)) }}
       />
       {/* JSON-LD: Breadcrumb */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJson(breadcrumbLd) }}
       />
 
       <ViewCounter postId={post.id} />

@@ -1,0 +1,20 @@
+✔ Firestore: published public, draft/private/unknown denied (2670.0848ms)
+✔ Firestore: ordinary user cannot write admin content, assign roles, impersonate comments or bypass submissions (334.2318ms)
+✔ Firestore: admin valid CRUD; owner comment delete; malformed content denied (121.0652ms)
+✔ Storage: only intended paths public; all direct uploads blocked; owner/admin deletion scoped (642.6625ms)
+✔ Auth: missing, invalid, expired, revoked, non-admin denied; verified admin accepted (5.1492ms)
+✔ Direct API access fails before Azure or cache operations (4.3262ms)
+✔ Cookie session rejects cross-origin requests (0.8155ms)
+✔ Persistent rate limit works concurrently and body parser bounds input (6623.1051ms)
+✔ Malicious HTML and JSON-LD cannot escape rendering context (4.1056ms)
+✔ Upload byte validation, immutable paths, size limits and traversal (9.2764ms)
+✔ Submission rejects invalid payload, derives identity and hides legacy emails (263.0485ms)
+✔ Server route gate returns redirect, 403, or admin response; session cookie flags and expiry (10.6269ms)
+✔ Contact input rejects malformed data and stores only validated fields (118.0812ms)
+✔ Admin upload rejects bad input before touching Azure; App Check fails closed when enforced (26.1686ms)
+✔ Public view counter only updates published posts through bounded API (220.613ms)
+ℹ tests 15
+ℹ pass 15
+ℹ fail 0
+ℹ duration_ms 14406.9616
++  Script exited successfully (code 0)

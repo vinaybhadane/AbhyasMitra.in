@@ -1,38 +1,20 @@
 rules_version = '2';
 service firebase.storage {
-  match /b/{bucket}/o {
-
-    // ─── Helper functions ─────────────────────────────────────────────────────
-    function isAdmin() {
-      return request.auth != null &&
-        (request.auth.token.email == 'vinaybhadane06@gmail.com' ||
-         request.auth.token.email == 'bhadane123vinay@gmail.com');
-    }
-
-    function isValidImage() {
-      return (request.resource.contentType.matches('image/.*') ||
-              request.resource.contentType == 'image/webp')
-        && request.resource.size <= 10 * 1024 * 1024; // 10MB max (client compresses to <1MB)
-    }
-
-    // ─── Post images (admin only can upload) ──────────────────────────────────
-    match /posts/{allPaths=**} {
-      allow read: if true;
-      allow write: if isAdmin() && isValidImage();
-    }
-
-    // ─── User avatars (any auth user) ─────────────────────────────────────────
-    match /avatars/{userId}/{allPaths=**} {
-      allow read: if true;
-      allow write: if request.auth != null
-        && request.auth.uid == userId
-        && isValidImage();
-    }
-
-    // Block everything else
-    match /{allPaths=**} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
+ match /b/{bucket}/o {
+  function isAdmin() { return request.auth != null && request.auth.token.admin == true; }
+  function image() {
+   return request.resource.size > 0 && request.resource.size <= 10 * 1024 * 1024
+    && request.resource.contentType in ['image/jpeg','image/png','image/webp','image/gif','image/avif'];
   }
+  // Existing public images stay readable. New uploads use the server raster validation pipeline.
+  match /{folder}/{path=**} {
+   allow read: if folder in ['posts','avatars','images','browse','subjects','media','pdfs'];
+   allow create, update: if false;
+   allow delete: if isAdmin() && folder in ['posts','images','browse','subjects','media','pdfs'];
+  }
+  match /avatars/{uid}/{path=**} {
+   allow delete: if request.auth != null && request.auth.uid == uid;
+  }
+  match /{path=**} { allow read, write: if false; }
+ }
 }

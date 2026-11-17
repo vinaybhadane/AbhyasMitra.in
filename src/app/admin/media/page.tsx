@@ -1,4 +1,5 @@
 'use client';
+import { authFetch } from '@/lib/auth-fetch';
 
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
@@ -83,7 +84,7 @@ export default function AdminMediaPage() {
   const fetchMedia = async () => {
     setLoadingMedia(true);
     try {
-      const res = await fetch('/api/media');
+      const res = await authFetch('/api/media');
       const data = await res.json();
       if (res.ok) {
         setImages(data.files || []);

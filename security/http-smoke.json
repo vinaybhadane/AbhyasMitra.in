@@ -1,0 +1,79 @@
+[
+  {
+    "path": "/",
+    "method": "GET",
+    "status": 200,
+    "expected": 200,
+    "pass": true,
+    "headers": {
+      "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://pagead2.googlesyndication.com https://tpc.googlesyndication.com https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://*.google-analytics.com https://*.blob.core.windows.net https://pagead2.googlesyndication.com; frame-src https://www.google.com https://www.recaptcha.net https://abhyasmitra-in.firebaseapp.com https://accounts.google.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests",
+      "X-Content-Type-Options": "nosniff",
+      "Strict-Transport-Security": "max-age=31536000",
+      "Referrer-Policy": "strict-origin-when-cross-origin",
+      "Permissions-Policy": "camera=(), microphone=(), geolocation=()"
+    }
+  },
+  {
+    "path": "/login",
+    "method": "GET",
+    "status": 200,
+    "expected": 200,
+    "pass": true
+  },
+  {
+    "path": "/admin",
+    "method": "GET",
+    "status": 307,
+    "expected": 307,
+    "pass": true
+  },
+  {
+    "path": "/api/media",
+    "method": "GET",
+    "status": 401,
+    "expected": 401,
+    "pass": true
+  },
+  {
+    "path": "/api/media",
+    "method": "POST",
+    "status": 401,
+    "expected": 401,
+    "pass": true
+  },
+  {
+    "path": "/api/media",
+    "method": "DELETE",
+    "status": 401,
+    "expected": 401,
+    "pass": true
+  },
+  {
+    "path": "/api/revalidate",
+    "method": "GET",
+    "status": 405,
+    "expected": 405,
+    "pass": true
+  },
+  {
+    "path": "/api/revalidate",
+    "method": "POST",
+    "status": 401,
+    "expected": 401,
+    "pass": true
+  },
+  {
+    "path": "/media/private/key.txt",
+    "method": "GET",
+    "status": 404,
+    "expected": 404,
+    "pass": true
+  },
+  {
+    "path": "/api/session",
+    "method": "POST",
+    "status": 403,
+    "expected": 403,
+    "pass": true
+  }
+]

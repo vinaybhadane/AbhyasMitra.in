@@ -58,16 +58,6 @@ export const rtWhere = _where;
 export const rtLimit = _limit;
 export { rtDb };
 
-// Admin emails
-export const ADMIN_EMAILS = [
-  'vinaybhadane06@gmail.com',
-  'bhadane123vinay@gmail.com',
-];
-
-export const isAdmin = (user: User | null): boolean => {
-  if (!user?.email) return false;
-  return ADMIN_EMAILS.includes(user.email);
-};
 
 export {
   app,
