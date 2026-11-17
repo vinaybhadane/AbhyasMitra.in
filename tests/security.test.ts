@@ -99,6 +99,7 @@ test('Malicious HTML and JSON-LD cannot escape rendering context', () => {
 test('Upload byte validation, immutable paths, size limits and traversal', async () => {
  for(const path of ['private/key','posts/../key','posts//key','posts/a\\b','https://evil/x']) assert.equal(publicPath(path),false);
  assert.equal(publicPath('posts/inline/old-image.webp'),true);
+ assert.equal(publicPath('pdfs/1783762954130_TE COMPUTER ENGINEERING 2024 PATTERN.pdf'),true);
  await assert.rejects(validateUpload(Buffer.from('<svg onload="alert(1)"/>')));
  await assert.rejects(validateUpload(Buffer.alloc(11*1024*1024)),(e:HttpError)=>e.status===413);
  const bytes=await sharp({create:{width:2,height:2,channels:3,background:'red'}}).png().toBuffer();
@@ -155,4 +156,14 @@ test('Public view counter only updates published posts through bounded API', asy
  assert.equal((await POST(request('/api/views',undefined,{id:'../private'}))).status,400);
  const data=(await adminDb().collection('posts').doc('public').get()).data();
  assert.equal(data?.views,1);
+});
+
+test('Origin validation accepts only configured origin and the owned www/apex pair', async () => {
+ const { sameOrigin } = await import('../src/lib/server/security');
+ const saved = process.env.NEXT_PUBLIC_SITE_URL;
+ process.env.NEXT_PUBLIC_SITE_URL = 'https://abhyasmitra.in';
+ try {
+  for (const origin of ['https://abhyasmitra.in','https://www.abhyasmitra.in']) assert.doesNotThrow(() => sameOrigin(new Request('https://www.abhyasmitra.in/api/session',{headers:{Origin:origin}})));
+  for (const origin of ['https://attacker.test','https://www.abhyasmitra.in.attacker.test','http://www.abhyasmitra.in','https://www.abhyasmitra.in:8443','null']) assert.throws(() => sameOrigin(new Request('https://www.abhyasmitra.in/api/session',{headers:{Origin:origin}})),(error:HttpError)=>error.status===403);
+ } finally { process.env.NEXT_PUBLIC_SITE_URL=saved; }
 });

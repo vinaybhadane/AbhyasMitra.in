@@ -22,7 +22,15 @@ export async function requireAdmin(request: Request) {
 }
 export function sameOrigin(request: Request) {
   const expected = new URL(process.env.NEXT_PUBLIC_SITE_URL || request.url).origin;
-  if (request.headers.get('origin') !== expected) throw new HttpError(403, 'Invalid request origin');
+  const allowed = new Set([expected]);
+  const site = new URL(expected);
+  // Both are operator-owned origins; Vercel redirects the apex to www.
+  if (site.hostname === 'abhyasmitra.in' || site.hostname === 'www.abhyasmitra.in') {
+    const alias = new URL(site);
+    alias.hostname = site.hostname === 'abhyasmitra.in' ? 'www.abhyasmitra.in' : 'abhyasmitra.in';
+    allowed.add(alias.origin);
+  }
+  if (!allowed.has(request.headers.get('origin') || '')) throw new HttpError(403, 'Invalid request origin');
 }
 export function failure(error: unknown) {
   if (error instanceof HttpError) {

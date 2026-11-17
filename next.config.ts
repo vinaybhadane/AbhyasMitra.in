@@ -1,6 +1,9 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  // Compile this mixed CJS/ESM chain so function startup does not rely on
+  // native require(esm), which can be disabled by the serverless runtime.
+  transpilePackages: ['firebase-admin', 'jwks-rsa', 'jose'],
   // ─── Image Optimization ────────────────────────────────────────────────────
   images: {
     unoptimized: true,

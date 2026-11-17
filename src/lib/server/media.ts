@@ -3,7 +3,7 @@ import sharp from 'sharp';
 import { randomUUID } from 'node:crypto';
 import { HttpError } from './security';
 export const MAX_UPLOAD = 10 * 1024 * 1024;
-export const publicPath = (path: string) => /^(posts|avatars|images|browse|subjects|media|pdfs)\/[a-zA-Z0-9_./-]+$/.test(path)
+export const publicPath = (path: string) => /^(posts|avatars|images|browse|subjects|media|pdfs)\/[a-zA-Z0-9_ .()/-]+$/.test(path)
   && path.split('/').every(part => part && part !== '.' && part !== '..') && !path.includes('\\');
 export function container() {
  const connection = process.env.AZURE_STORAGE_CONNECTION_STRING;

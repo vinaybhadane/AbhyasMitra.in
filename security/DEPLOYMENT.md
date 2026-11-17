@@ -81,7 +81,7 @@ Do this BEFORE merging the security branch into the Vercel production branch. An
 | FIREBASE_ADMIN_PROJECT_ID | project_id from the Firebase service-account JSON | Config |
 | FIREBASE_ADMIN_CLIENT_EMAIL | client_email from that JSON | Secret |
 | FIREBASE_ADMIN_PRIVATE_KEY | private_key from that JSON, without outer JSON quotes; real or escaped newlines work | Secret |
-| NEXT_PUBLIC_SITE_URL | https://abhyasmitra.in in Production; exact preview origin for Preview | Config |
+| NEXT_PUBLIC_SITE_URL | https://www.abhyasmitra.in in Production; exact preview origin for Preview | Config |
 | AZURE_STORAGE_CONNECTION_STRING | Existing Azure runtime credential | Secret |
 | AZURE_STORAGE_CONTAINER_NAME | Existing media container name | Config |
 
@@ -92,3 +92,8 @@ Never prefix Admin credentials with NEXT_PUBLIC_. Do not commit the JSON file or
 5. After these prerequisites and production-rule approval, coordinate the main merge/Vercel production deployment with Firebase rule deployment in a maintenance window. Validate both administrator accounts immediately afterward. Preserve old rule/app snapshots for incident response; do not reopen public write rules just to bypass an access failure.
 
 Current server initialization supports the three FIREBASE_ADMIN_* variables above and retains ADC fallback. Partial or malformed credentials fail closed with generic errors. Credential setup tests use only an ephemeral in-memory key and make no network requests.
+
+
+## Production startup fix
+
+The ERR_REQUIRE_ESM incident was reproduced locally with native require(esm) disabled. package.json now pins Vercel to Node 24.x; next.config.ts bundles firebase-admin/jwks-rsa/jose together so startup does not depend on native require(esm). No JWT verification or revocation checks were removed. NEXT_PUBLIC_SITE_URL must use the live canonical origin https://www.abhyasmitra.in (Vercel redirects the apex to www). Origin checks also explicitly accept the owned apex/www pair while rejecting unrelated domains, HTTP downgrades and alternate ports. Legacy media paths permit spaces and parentheses so existing PDF URLs remain valid; private prefixes and traversal remain blocked.

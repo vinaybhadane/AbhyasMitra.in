@@ -1,0 +1,70 @@
+{
+  "runtime": "Node 24 with --no-experimental-require-module",
+  "baseline_session_delete": 500,
+  "results": [
+    {
+      "path": "/login",
+      "method": "GET",
+      "origin": null,
+      "status": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "path": "/admin",
+      "method": "GET",
+      "origin": null,
+      "status": 307,
+      "expected": 307,
+      "pass": true
+    },
+    {
+      "path": "/api/session",
+      "method": "DELETE",
+      "origin": "https://www.abhyasmitra.in",
+      "status": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "path": "/api/session",
+      "method": "POST",
+      "origin": "https://www.abhyasmitra.in",
+      "status": 401,
+      "expected": 401,
+      "pass": true
+    },
+    {
+      "path": "/api/session",
+      "method": "DELETE",
+      "origin": "https://abhyasmitra.in",
+      "status": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "path": "/api/session",
+      "method": "DELETE",
+      "origin": "https://attacker.test",
+      "status": 403,
+      "expected": 403,
+      "pass": true
+    },
+    {
+      "path": "/api/media",
+      "method": "GET",
+      "origin": null,
+      "status": 401,
+      "expected": 401,
+      "pass": true
+    },
+    {
+      "path": "/media/private/secret.txt",
+      "method": "GET",
+      "origin": null,
+      "status": 404,
+      "expected": 404,
+      "pass": true
+    }
+  ]
+}
